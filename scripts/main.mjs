@@ -1,11 +1,9 @@
-import { AFFINITY_TYPES, AFF_WORD, MODULE_ID, SOCKET, bundledAssets, cap, setting } from './util.mjs';
+import { AFFINITY_TYPES, AFF_WORD, MODULE_ID, SOCKET, cap, setting } from './util.mjs';
 import { Clocks } from './clocks.mjs';
 import { BattleUI } from './hud.mjs';
 import { loadBasicConsumables } from './points.mjs';
 import { registerSfxSettings, sfx } from './sfx.mjs';
 import { FRIENDLY, actorKey, combatantsOf } from './model.mjs';
-import { ARMORY_TYPES, applyToWorld, isArmoryIcon, onPreCreateItem, onPreUpdateItem, resetIcon, suggestIcon } from './armory.mjs';
-import { ArmoryApplyMenu, ArmoryPicker } from './armory-picker.mjs';
 import { sheetData } from './sheet.mjs';
 import { registerCheckDialog } from './check-dialog.mjs';
 import { registerBrowserStyle } from './browser-style.mjs';
@@ -24,7 +22,6 @@ const api = {
 		game.socket.emit(SOCKET, { type: 'banner', data });
 		ui2.banner(data);
 	},
-	armory: { suggest: suggestIcon, pick: (item) => ArmoryPicker.open(item), reset: resetIcon, applyToWorld },
 	sheetData,
 	broadcastFloat(data) {
 		game.socket.emit(SOCKET, { type: 'float', data });
@@ -69,9 +66,6 @@ function registerSettings() {
 	reg('sheetShowInit', { name: 'Sheet: show Initiative', hint: 'Show the INIT tile in the Battle UI sheet header. The Gear tab always lists it.', scope: 'client', type: Boolean, default: false, onChange: resheet });
 	reg('sheetShowCrisis', { name: 'Sheet: show Crisis threshold', hint: 'Show the CRISIS tile in the Battle UI sheet header. The HP bar always marks it.', scope: 'client', type: Boolean, default: false, onChange: resheet });
 	reg('sheetCrisisTint', { name: 'Sheet: turn red in Crisis', hint: 'The Battle UI sheet changes from blue to red while its character is in Crisis.', scope: 'client', type: Boolean, default: true, onChange: resheet });
-	reg('armoryAuto', { name: 'Armory icons for weapons and armor', hint: 'Give new weapons, shields, armor and accessories a pixel icon from the Premium Armory pack, picked by category, damage type, price and name. Only replaces default or system art.', scope: 'world', type: Boolean, default: bundledAssets() });
-	reg('armoryPath', { name: 'Armory icon folder', hint: 'Where the icons live. Change this if you move them out of the module, for example to share the module without the paid pack.', scope: 'world', type: String, default: `modules/${MODULE_ID}/icons/armory` });
-	game.settings.registerMenu(MODULE_ID, 'armoryApply', { name: 'Armory icons for existing items', label: 'Apply armory icons', hint: 'Give icons to the weapons and armor already in this world.', icon: 'fa-solid fa-shield-halved', type: ArmoryApplyMenu, restricted: true });
 
 	game.settings.register(MODULE_ID, 'turnGlow', { scope: 'world', config: false, type: Object, default: foundry.utils.deepClone(GLOW_DEFAULTS), onChange: () => TurnGlow.reconfigure() });
 	game.settings.registerMenu(MODULE_ID, 'turnGlowMenu', { name: 'Turn glow', label: 'Configure turn glow', hint: 'The token whose turn it is glows instead of showing the turn marker. Set the color, style and strength for heroes, enemies and bosses, and how each changes in Crisis.', icon: 'fa-solid fa-sun', type: TurnGlowConfig, restricted: true });
@@ -249,13 +243,7 @@ Hooks.on('createChatMessage', (msg) => {
 	let tgt = targets.length ? `on ${targets.map((t) => t.name).join(', ')}` : '';
 	if (check.critical) tgt += `${tgt ? ' · ' : ''}CRITICAL`;
 	else if (check.fumble) tgt += `${tgt ? ' · ' : ''}FUMBLE`;
-	let img = '';
-	try {
-		const item = check.itemUuid ? fromUuidSync(check.itemUuid) : null;
-		if (item && ARMORY_TYPES.includes(item.type) && isArmoryIcon(item.img)) img = item.img;
-	} catch {
-		/* item gone or in a pack */
-	}
+	const img = '';
 	ui2.banner({ side: c.faction === FRIENDLY ? 'hero' : 'foe', who: c.name, what, tgt, img });
 	const def = check.type === 'magic' ? 'M.DEF' : 'DEF';
 	for (const t of targets) {
@@ -301,35 +289,3 @@ Hooks.on('renderCombatTracker', (app, html) => {
 	header.append(btn);
 });
 
-/* ------------------------------------------------------------------ */
-/*  Armory icons                                                       */
-/* ------------------------------------------------------------------ */
-
-Hooks.on('preCreateItem', onPreCreateItem);
-Hooks.on('preUpdateItem', onPreUpdateItem);
-
-/* An "Armory icon" button in the header of weapon, shield, armor and accessory sheets */
-Hooks.on('getHeaderControlsDocumentSheetV2', (app, controls) => {
-	const doc = app.document;
-	if (!(doc instanceof Item) || !ARMORY_TYPES.includes(doc.type) || !doc.isOwner) return;
-	app.options.actions ??= {};
-	app.options.actions.fbuiArmoryIcon ??= () => ArmoryPicker.open(app.document);
-	if (controls.some((c) => c.action === 'fbuiArmoryIcon')) return;
-	controls.push({ action: 'fbuiArmoryIcon', icon: 'fa-solid fa-shield-halved', label: 'Armory icon', ownership: 'OWNER' });
-});
-
-/* Same choice from the Items directory's right-click menu */
-Hooks.on('getItemContextOptions', (app, options) => {
-	options.push({
-		name: 'Armory icon',
-		icon: '<i class="fa-solid fa-shield-halved"></i>',
-		condition: (li) => {
-			const item = game.items.get(li?.dataset?.entryId ?? li?.[0]?.dataset?.entryId);
-			return !!item && ARMORY_TYPES.includes(item.type) && item.isOwner;
-		},
-		callback: (li) => {
-			const item = game.items.get(li?.dataset?.entryId ?? li?.[0]?.dataset?.entryId);
-			if (item) ArmoryPicker.open(item);
-		},
-	});
-});

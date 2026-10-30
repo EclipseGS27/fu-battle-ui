@@ -105,5 +105,3 @@ export function randomId() {
 	return foundry?.utils?.randomID?.() ?? Math.random().toString(36).slice(2, 12);
 }
 
-/** True in the private build that ships the paid armory icons (module.json flags.bundledAssets) */
-export const bundledAssets = () => !!game.modules?.get?.(MODULE_ID)?.flags?.bundledAssets;

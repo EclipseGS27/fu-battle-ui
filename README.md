@@ -57,18 +57,6 @@ Pick **Battle UI Party Sheet** from a party's Sheet button, or make it the defau
 - **Check dialog**: Project FU's check prompt (Attribute, Open, Opposed, Group, Ritual) gets the same look: attribute diamonds with their current dice for Primary and Secondary, the roll formula and DL up top, a − / + modifier, and Easy 7 / Normal 10 / Hard 13 / Very hard 16 buttons. It's still the system's dialog underneath, so remembered choices and bonuses work as before. Turn it off with "Battle UI check dialog".
 - **Sounds**: cursor and confirm sounds from the chosen pack. Turn them off for the sheet alone with "Sounds on the character sheet".
 
-## Armory icons
-Weapons, shields, armor and accessories can get pixel icons from the Premium Armory pack. The pack is a paid asset and is not included: put your own copy in your Foundry Data folder, set "Armory icon folder" to it, and turn on "Armory icons for weapons and armor".
-- **Automatic**: new items get an icon when created or dropped on a sheet, if they still have default or system art. Custom art you set is never replaced.
-  - Weapon shape follows the Project FU category (sword, dagger, spear, arcane staff, heavy axe or hammer, flail whip, firearm, bow or crossbow, thrown); brawling weapons use gauntlets. Names refine it: "crossbow", "rifle", "pistol", "boomerang", "hammer", "axe", "staff", "trident", "greatsword" and so on.
-  - Metal follows the damage type for rare elemental gear (fire Crimson, ice Cobalt, air Platinum, bolt Gold, earth Copper, poison Adamantine, light Angelic, dark Fateful or Nova) or the price for the rest (Copper, Iron, Steel, Silver, Gold, then Altair). Metal words in the name win: "Bronze", "Iron", "Steel", "Silver", "Golden", "Mithril", "Frost", "Flame", "Holy", "Shadow", "Runic"...
-  - Armor: light pieces for non-martial armor, plate for martial; robes that favor M.DEF get Nova or Angelic. Accessories get a helmet, boots, gloves or leggings when the name says so ("Hat", "Boots", "Gauntlets", "Belt"); rings and amulets keep their art.
-  - Renaming an item or changing its category, damage type or price re-picks its icon, unless you picked one by hand.
-- **Pick by hand**: the **Armory icon** button in a weapon/armor sheet's header, the Items directory right-click menu, or click the icon on the Battle UI sheet. Pick a piece and a metal, click an icon. "Use automatic" goes back to the automatic pick.
-- **Existing items**: Settings → Armory icons for existing items → Apply icons (GM). Covers the Items directory, every actor and unlinked tokens.
-- **Battle UI**: equipped gear icons on party cards, the weapon on the Attack command, weapon icons on enemy attacks, and the weapon on the action banner.
-- The Premium Armory pack is a paid asset and is not distributed with this module.
-
 ## Sound effects
 Cues play on Foundry's Interface volume channel, each client for itself. Action banners are silent. Pick the pack per player in settings (Sound effects): FFXIII (default), FFVII, a custom folder, or Off. The same pack plays on the Battle UI character, NPC and party sheets: cursor on hover, confirm on choosing, back on closing or removing, a chime for party rests and awards, a fanfare on level up.
 
@@ -87,7 +75,7 @@ Files live in sounds/ff13 and sounds/ff7, named after the cue. A custom folder n
 The bundled sounds come from the free "FFVII Menu Sounds" and "Final Fantasy XIII Menu Sounds" packs.
 
 ## Settings
-World: turn glow (style per side and in Crisis), Battle UI sheet as default (characters, NPCs and parties separately), armory icons on/off, armory icon folder, custom sound folder, replace system HUD, hide unstudied stats, auto-reveal Affinities, players change clocks directly, tick round clocks, surrender prompt.
+World: turn glow (style per side and in Crisis), Battle UI sheet as default (characters, NPCs and parties separately), custom sound folder, replace system HUD, hide unstudied stats, auto-reveal Affinities, players change clocks directly, tick round clocks, surrender prompt.
 Client: opportunity menu (open on crit / from the chat button only / off), INIT and Crisis tiles on the sheet (off by default), sheet turns red in Crisis (on by default), sound effects (FFXIII / FFVII / custom / Off), SFX volume, menu sounds on/off, sounds on the character sheet on/off, auto-open, UI size (multiplier on top of auto-fit; also the A− / A+ buttons in the top bar), banners, floating numbers.
 
 GM tip: the eye button in the top bar previews the player view.

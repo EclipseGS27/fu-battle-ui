@@ -1,5 +1,4 @@
 import { AFFINITY_TYPES, AFF_ABBR, MODULE_ID, STATUS_CHIPS, cap, setting, tintFor } from './util.mjs';
-import { isArmoryIcon } from './armory.mjs';
 
 export const FRIENDLY = 'friendly';
 export const HOSTILE = 'hostile';
@@ -360,5 +359,5 @@ export function equippedGear(actor) {
 	return out;
 }
 
-/** Only pixel armory icons go into menus; system art there would be noise */
-export const armoryImg = (item) => (item && isArmoryIcon(item.img) ? item.img : '');
+/** Menus show no item art in this build */
+export const armoryImg = () => '';

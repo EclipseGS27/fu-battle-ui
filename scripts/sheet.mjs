@@ -1,6 +1,4 @@
 import { AFFINITY_TYPES, AFF_ABBR, AFF_COLOR, COMMANDS, MODULE_ID, STATUS_CHIPS, pct, setting } from './util.mjs';
-import { ARMORY_TYPES } from './armory.mjs';
-import { ArmoryPicker } from './armory-picker.mjs';
 import { itemHelp } from './model.mjs';
 import { sfx } from './sfx.mjs';
 import { openLevelUp } from './levelup.mjs';
@@ -138,7 +136,7 @@ export function sheetData(actor) {
 			key,
 			label: SLOT_LABEL[key],
 			item: item
-				? { id: item.id, uuid: item.uuid, name: item.name, img: item.img, line: same ? 'Held in both hands' : itemLine(item), armory: ARMORY_TYPES.includes(item.type), rollable: ['weapon', 'customWeapon', 'shield'].includes(item.type) }
+				? { id: item.id, uuid: item.uuid, name: item.name, img: item.img, line: same ? 'Held in both hands' : itemLine(item), rollable: ['weapon', 'customWeapon', 'shield'].includes(item.type) }
 				: null,
 			empty: { mainHand: 'Unarmed', offHand: 'Empty hand', armor: 'No armor', accessory: 'No accessory', phantom: 'Empty' }[key],
 		};
@@ -395,10 +393,6 @@ function equipVia(actor, target, slot) {
 const SHARED_ACTIONS = {
 	fbuiEquip(event, target) {
 		return equipVia(this.actor, target, target.dataset.slot ?? 'mainHand');
-	},
-	fbuiIcon(event, target) {
-		const item = this.actor.items.get(target.closest('[data-item-id]')?.dataset.itemId);
-		if (item) ArmoryPicker.open(item);
 	},
 	fbuiDelete(event, target) {
 		const item = this.actor.items.get(target.closest('[data-item-id]')?.dataset.itemId);
