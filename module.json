@@ -1,7 +1,7 @@
 {
   "id": "fu-battle-ui",
   "title": "Fabula Ultima Battle UI",
-  "description": "A JRPG-style battle screen and character sheet for Project FU: turn track, scene clocks, Study-gated target panel, command menu, party cards, banners and floating numbers, a Battle UI character sheet.",
+  "description": "JRPG-style battle UI for Project FU: turn track, command menus, scene clocks, Study-gated target panel, Fabula, Inventory, Ultima and Opportunity menus, a customizable turn glow, Battle UI character, NPC and party sheets that turn red in Crisis, and FFXIII/FFVII menu sounds with a per-cue sound editor.",
   "version": "1.14.0",
   "authors": [
     {
