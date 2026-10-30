@@ -1,6 +1,6 @@
-import { MODULE_ID, STATUS_CHIPS, setting } from './util.mjs';
+import { AFFINITY_TYPES, AFF_COLOR, MODULE_ID, STATUS_CHIPS, setting } from './util.mjs';
 import { sheetData } from './sheet.mjs';
-import { conditionTip } from './model.mjs';
+import { affinities, conditionTip, foeActionRows, npcInfo, resources } from './model.mjs';
 import { sfx } from './sfx.mjs';
 import { openLevelUp } from './levelup.mjs';
 
@@ -88,6 +88,103 @@ export function inspectData(actor, members = []) {
 	};
 }
 
+/* ------------------------------------------------------------------ */
+/*  Adversaries: what the party has learned                            */
+/* ------------------------------------------------------------------ */
+
+const TIER_OF = { none: 0, basic: 1, complete: 2, detailed: 3 };
+const TIER_WORD = ['Unstudied', 'Basic', 'Complete', 'Detailed'];
+const TIER_TEXT = [
+	'Not studied yet. Affinities show up as the party hits them.',
+	'Basic (10+): level, rank, Species, HP and MP.',
+	'Complete (13+): also Traits, Attributes, Defense, Magic Defense and Affinities.',
+	'Detailed (16+): everything, including attacks, spells, skills and special rules.',
+];
+const AFF_NAME = { VU: 'Vulnerable', RS: 'Resistant', IM: 'Immune', AB: 'Absorbs', '·': 'Normal' };
+
+function studyMax() {
+	try {
+		const tiers = (game.settings.get('projectfu', 'useRevisedStudyRule') ? CONFIG.FU?.studyRoll?.revised : CONFIG.FU?.studyRoll?.core) ?? [10, 13, 16];
+		return Math.max(...tiers);
+	} catch {
+		return 16;
+	}
+}
+
+/**
+ * The adversary list and the picked one's details, gated by the party's Study like the battle screen
+ * (the GM sees everything, with a note on what players know).
+ */
+export function adversaryData(entries, selected) {
+	const max = studyMax();
+	const tierOf = (e) => TIER_OF[e.studyResult] ?? 0;
+	const list = entries.map((e) => {
+		const tier = tierOf(e);
+		return { uuid: e.uuid, name: e.name, img: e.img, species: game.i18n.localize(e.species ?? ''), rank: game.i18n.localize(e.rank ?? ''), known: tier > 0 || game.user.isGM, tier, tierWord: TIER_WORD[tier], pct: Math.round(Math.min(1, (Number(e.study) || 0) / max) * 100), sel: e.uuid === selected };
+	});
+	const entry = entries.find((e) => e.uuid === selected) ?? null;
+	let actor = null;
+	try {
+		actor = entry ? fromUuidSync(entry.uuid) : null;
+	} catch {
+		actor = null;
+	}
+	if (!entry || !actor) return { list, detail: null };
+
+	const gm = game.user.isGM;
+	const partyTier = tierOf(entry);
+	const tier = gm ? 3 : partyTier;
+	const info = npcInfo(actor);
+	const r = resources(actor);
+	const aff = affinities(actor);
+	const revealed = entry.revealed?.affinities ?? {};
+	const at = actor.system?.attributes ?? {};
+	const ATTR = [['dex', 'DEX', '#5aa9ff'], ['ins', 'INS', '#c7a6ff'], ['mig', 'MIG', '#6fe3a0'], ['wlp', 'WLP', '#f2c45a']];
+	let prev = null;
+	const abilities = tier >= 3
+		? foeActionRows(actor).map((m) => {
+				const head = m.group !== prev ? m.group : '';
+				prev = m.group;
+				return { head, label: m.label, meta: m.meta, help: m.help };
+			})
+		: [];
+	const tags = tier >= 1 ? [info.rankLabel, info.species].filter(Boolean) : ['Unknown'];
+	return {
+		list,
+		detail: {
+			uuid: entry.uuid,
+			name: entry.name,
+			img: entry.img ?? actor.img,
+			villain: tier >= 1 && info.villain ? info.villain.toUpperCase() : '',
+			tags,
+			tier,
+			level: info.level,
+			pct: list.find((x) => x.uuid === entry.uuid)?.pct ?? 0,
+			studyLine: `${TIER_WORD[partyTier]}${Number(entry.study) ? ` · ${entry.study}` : ''}`,
+			tierText: TIER_TEXT[partyTier],
+			gmNote: gm ? `You see everything. Players see: ${TIER_WORD[partyTier].toLowerCase()}.` : '',
+			hp: r.hp,
+			hpMax: r.hpMax,
+			hpPct: Math.round((r.hp / Math.max(1, r.hpMax)) * 100),
+			crisis: r.crisis,
+			mp: r.mp,
+			mpMax: r.mpMax,
+			mpPct: Math.round((r.mp / Math.max(1, r.mpMax)) * 100),
+			attrs: ATTR.map(([k, abbr, color]) => ({ abbr, color, die: at[k]?.current ?? at[k]?.base ?? '?' })),
+			def: info.def ?? '?',
+			mdef: info.mdef ?? '?',
+			traits: info.traits,
+			aff: AFFINITY_TYPES.map(([k, abbr, color]) => {
+				const known = tier >= 2 || !!revealed[k];
+				const word = known ? aff[k] : '?';
+				return { abbr, color, word, wordColor: AFF_COLOR[word] ?? '#eef3ff', tip: `${k[0].toUpperCase()}${k.slice(1)}: ${known ? AFF_NAME[word] : 'not known yet'}` };
+			}),
+			abilities,
+			canOpen: actor.isOwner,
+		},
+	};
+}
+
 export function companionCard(entry) {
 	const actor = entry.actor;
 	const r = actor.system?.resources ?? {};
@@ -122,6 +219,7 @@ export function registerBattlePartySheet(Base) {
 	parts.tabs = { template: T('tabs') };
 	parts.overview = { template: T('roster'), scrollable: [''] };
 	parts.character = { template: T('inspect'), scrollable: [''] };
+	if (parts.adversaries) parts.adversaries = { template: T('adversaries'), scrollable: ['.entry-list', '.fbp-adv-main'] };
 
 	class FUBattlePartySheet extends Base {
 		static DEFAULT_OPTIONS = {
@@ -132,6 +230,15 @@ export function registerBattlePartySheet(Base) {
 				async fbuiLevelUp(event, target) {
 					const actor = await fromUuid(target.dataset.actor);
 					if (actor) return openLevelUp(actor, { sheet: actor.sheet });
+				},
+				/** pick an adversary to read about */
+				fbuiAdversary(event, target) {
+					this._fbAdvSel = target.dataset.uuid;
+					return this.render({ parts: ['adversaries'] });
+				},
+				async fbuiOpenActor(event, target) {
+					const actor = await fromUuid(target.dataset.uuid);
+					actor?.sheet?.render(true);
 				},
 				fbuiEditImage() {
 					if (!this.isEditable) return;
@@ -177,6 +284,16 @@ export function registerBattlePartySheet(Base) {
 
 		async _preparePartContext(partId, context, options) {
 			context = await super._preparePartContext(partId, context, options);
+			if (partId === 'adversaries') {
+				const list = context.adversaries ?? [];
+				if (!list.some((a) => a.uuid === this._fbAdvSel)) this._fbAdvSel = list[0]?.uuid ?? null;
+				try {
+					context.fba = adversaryData(list, this._fbAdvSel);
+				} catch (err) {
+					console.warn(`${MODULE_ID} | adversaries`, err);
+					context.fba = { list: [], detail: null };
+				}
+			}
 			if (partId === 'character') {
 				const actor = this.inspectedCharacter?.actor ?? context.character?.actor ?? null;
 				const members = (context.characters ?? []).map((c) => c.actor).filter(Boolean);
