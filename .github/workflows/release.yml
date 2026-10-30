@@ -22,7 +22,7 @@ jobs:
           if gh release view "v${{ steps.v.outputs.version }}" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then echo "exists=true" >> "$GITHUB_OUTPUT"; else echo "exists=false" >> "$GITHUB_OUTPUT"; fi
       - name: Zip module
         if: steps.check.outputs.exists == 'false'
-        run: zip -r fu-battle-ui.zip . -x '.git/*' '.github/*'
+        run: zip -r fu-battle-ui.zip . -x '.git/*' '.github/*' 'docs/*'
       - uses: softprops/action-gh-release@v2
         if: steps.check.outputs.exists == 'false'
         with:

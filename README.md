@@ -4,6 +4,16 @@ JRPG-style battle screen for the Project FU system (Foundry v13, Project FU 4.14
 
 Highlights: turn track and command menus, scene clocks, Study-gated enemy info, Fabula / Inventory / Ultima point menus, an Opportunity menu on every critical, a customizable glow on the active token (stronger for bosses, different in Crisis), Battle UI character, NPC and party sheets that turn red in Crisis, lockable full-length skill and spell descriptions, and FFXIII / FFVII menu sounds with a per-cue sound editor.
 
+## Screenshots
+| | |
+|---|---|
+| ![Battle UI sheet, normal and in Crisis](docs/sheet-crisis.png) | ![NPC sheet](docs/npc-sheet.png) |
+| Character sheet, normal and in Crisis | NPC sheet |
+| ![Fabula and Inventory menus](docs/point-menus.png) | ![Opportunity menu](docs/opportunity.png) |
+| Fabula and Inventory Point menus | Opportunity menu on a critical |
+| ![Battle menu with a locked description](docs/battle-menu.png) | ![Turn glow styles](docs/turn-glow.png) |
+| Battle menu with a locked spell description | Turn glow: hero, hero in Crisis, enemy / enemy in Crisis, boss, boss in Crisis |
+
 ## Install
 In Foundry: Add-on Modules → Install Module → paste this Manifest URL:
 `https://github.com/EclipseGS27/fu-battle-ui/releases/latest/download/module.json`
