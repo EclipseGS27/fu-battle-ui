@@ -71,6 +71,8 @@ Cues play on Foundry's Interface volume channel, each client for itself. Action 
 | fanfare | conflict start, new round | deck_ui_achievement_toast | deck_ui_launch_game |
 | error | not enough IP/FP, unavailable invoke, charged-attack warning | deck_ui_hide_modal | bumper_end |
 
+Settings → Customize sounds lets each player pick what every cue plays: any FFXIII or FFVII sound, their own file, or silence. Default follows the chosen pack.
+
 Files live in sounds/ff13 and sounds/ff7, named after the cue. A custom folder needs the same 8 .ogg names.
 The bundled sounds come from the free "FFVII Menu Sounds" and "Final Fantasy XIII Menu Sounds" packs.
 
