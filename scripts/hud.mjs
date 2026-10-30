@@ -1,4 +1,4 @@
-import { AFFINITY_TYPES, AFF_COLOR, AFF_WORD, CLOCK_KINDS, COLORS, COMMANDS, MODULE_ID, STATUS_CHIPS, clamp, esc, initials, pct, setting } from './util.mjs';
+import { AFFINITY_TYPES, AFF_COLOR, AFF_WORD, CLOCK_KINDS, COLORS, COMMANDS, MODULE_ID, STATUS_CHIPS, animationNumbers, clamp, esc, initials, pct, setting } from './util.mjs';
 import { Clocks } from './clocks.mjs';
 import { sfx } from './sfx.mjs';
 import { alterStory, canInvoke, inventoryMenu, invoke, lastCheck, pullOut, ultimaEscape, ultimaRecovery, useConsumable } from './points.mjs';
@@ -9,6 +9,7 @@ import {
 	affinities,
 	buildTrack,
 	classLine,
+	conditionTip,
 	combatantsOf,
 	foeActionRows,
 	inventoryRows,
@@ -34,7 +35,7 @@ const TIER_TEXT = [
 	'Not studied. Affinities appear when hit; Study reveals the rest.',
 	'Studied (basic): rank, Species, level, HP and MP known.',
 	'Studied (complete): Traits, Attributes, defenses and Affinities known.',
-	'Studied (detailed): everything, including attacks and spells.',
+	'Studied (detailed): everything, including attacks, spells, skills and special rules.',
 ];
 
 export class BattleUI {
@@ -56,6 +57,8 @@ export class BattleUI {
 		this.pending = [];
 		this.hpCache = new Map();
 		this.typedFloatAt = new Map();
+		/** actor uuid -> floats still on screen, so new ones stack above them */
+		this.liveFloats = new Map();
 		this.bannerQueue = [];
 		this.bannerBusy = false;
 		this.lastRound = new Map();
@@ -463,6 +466,17 @@ export class BattleUI {
 			details = `<div class="fbui-details">${esc(attrs)}${defs ? `<br>${esc(defs)}` : ''}${info.traits ? `<div class="traits">${esc(info.traits)}</div>` : ''}</div>`;
 		}
 
+		// Attacks, spells, skills and special rules, as on its sheet: players see them once Study reaches detailed
+		let abilities = '';
+		if (isNpc && (tier >= 3 || know.full)) {
+			const list = BattleUI.grouped(
+				foeActionRows(actor),
+				(m) =>
+					`<button type="button" class="fbui-cmd-row" data-action="foeInfo" data-id="${esc(m.id)}" data-help="${esc(m.help)}"><span class="cur"><svg width="12" height="12" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 1 12 7 2 13Z" fill="currentColor"/></svg></span><span class="l">${esc(m.label)}</span><span class="m">${esc(m.meta)}</span></button>`,
+			);
+			if (list) abilities = `<div class="fbui-abil"><div class="fbui-kicker">ABILITIES</div><div class="fbui-abil-list">${list}</div><div class="fbui-help" data-help-out>Hover an attack, spell, skill or special rule to read it. Click to pin it.</div></div>`;
+		}
+
 		const aff = affinities(actor);
 		const gm = this.isGM;
 		const cells = AFFINITY_TYPES.map(([k, abbr, col]) => {
@@ -500,6 +514,7 @@ export class BattleUI {
 			<div class="fbui-chips">${this.#chips(actor, false)}</div>
 			${details}
 			<div><div class="fbui-kicker">AFFINITIES</div><div class="fbui-aff">${cells}</div><div class="fbui-note">${esc(studyText)}</div>${tierCtl}</div>
+			${abilities}
 		</div>
 		<div class="fbui-panel roster">${roster}</div>`;
 	}
@@ -517,7 +532,7 @@ export class BattleUI {
 		return statusList(actor)
 			.map((s) => {
 				const [label, col] = STATUS_CHIPS[s];
-				return `<span class="fbui-chip ${small ? 'sm' : ''}" style="--c:${col}">${esc(label)}</span>`;
+				return `<span class="fbui-chip ${small ? 'sm' : ''}" style="--c:${col}" data-tooltip="${esc(conditionTip(s))}">${esc(label)}</span>`;
 			})
 			.join('');
 	}
@@ -722,14 +737,25 @@ export class BattleUI {
 		return `<div class="fbui-panel foe"><div class="fbui-kicker foe">GAME MASTER</div><div class="fbui-big">Which enemy acts?</div><p>Elites and Champions can’t take two turns in a row while others can still act.</p><div class="fbui-picks">${rows}</div></div>`;
 	}
 
+	/** A heading whenever the kind of entry changes: Attacks, Spells, Skills, Special rules */
+	static grouped(rows, render) {
+		let prev = null;
+		return rows
+			.map((m) => {
+				const head = m.group && m.group !== prev ? `<div class="fbui-sep">${esc(m.group)}</div>` : '';
+				prev = m.group;
+				return head + render(m);
+			})
+			.join('');
+	}
+
 	#foeAct(combat, c) {
 		const actor = c.actor;
-		const rows = foeActionRows(actor)
-			.map(
-				(m) =>
-					`<div class="fbui-foe-row"><button type="button" class="fbui-cmd-row" data-action="item" data-id="${esc(m.id)}" data-help="${esc(m.help)}"><span class="cur"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 1 12 7 2 13Z" fill="currentColor"/></svg></span><span class="l">${esc(m.label)}</span>${m.img ? `<img class="ico" src="${esc(m.img)}" alt="">` : ''}<span class="m">${esc(m.meta)}</span></button><button type="button" class="fbui-tele" data-action="telegraph" data-id="${esc(m.id)}" data-tooltip="Telegraph as a charged attack"><i class="fa-solid fa-triangle-exclamation"></i></button></div>`,
-			)
-			.join('');
+		const rows = BattleUI.grouped(
+			foeActionRows(actor),
+			(m) =>
+				`<div class="fbui-foe-row"><button type="button" class="fbui-cmd-row" data-action="item" data-id="${esc(m.id)}" data-help="${esc(m.help)}"><span class="cur"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 1 12 7 2 13Z" fill="currentColor"/></svg></span><span class="l">${esc(m.label)}</span>${m.img ? `<img class="ico" src="${esc(m.img)}" alt="">` : ''}<span class="m">${esc(m.meta)}</span></button><button type="button" class="fbui-tele" data-action="telegraph" data-id="${esc(m.id)}" data-tooltip="Telegraph as a charged attack"><i class="fa-solid fa-triangle-exclamation"></i></button></div>`,
+		);
 		const cards = [
 			['study', 'Study'],
 			['guard', 'Guard'],
@@ -822,10 +848,18 @@ export class BattleUI {
 		if (!this.root || !this.state.open || setting('floatingNumbers') === false) return;
 		const pos = this.#anchorFor(data);
 		if (!pos) return;
+		// Several numbers on one target (a MISS then a hit, multi-hit skills) stack upward instead of overlapping
+		const key = data.actorUuid ?? data.tokenId ?? '';
+		const now = Date.now();
+		const live = (this.liveFloats.get(key) ?? []).filter((t) => now - t.at < 1900);
+		let slot = 0;
+		while (live.some((t) => t.slot === slot)) slot++;
+		live.push({ at: now, slot });
+		this.liveFloats.set(key, live);
 		const el = document.createElement('div');
 		el.className = `fbui-float ${data.kind ?? 'dmg'}`;
 		el.style.left = `${pos.x}px`;
-		el.style.top = `${pos.y}px`;
+		el.style.top = `${pos.y - slot * 38}px`;
 		el.innerHTML = `<b>${esc(data.text)}</b>${data.sub ? `<small>${esc(data.sub)}</small>` : ''}`;
 		this.floatEl.append(el);
 		setTimeout(() => el.remove(), 1900);
@@ -849,6 +883,8 @@ export class BattleUI {
 		const el = c ? this.main.querySelector(`[data-cid="${c.id}"]`) : null;
 		if (!el) return null;
 		const r = el.getBoundingClientRect();
+		// panels hidden (mini mode): nowhere sensible to put it
+		if (!r.width && !r.height) return null;
 		return { x: (r.left + r.width / 2 - rootRect.left) / s, y: (r.top + 20 - rootRect.top) / s };
 	}
 
@@ -858,6 +894,7 @@ export class BattleUI {
 
 	/** HP changed since the last render: show a number unless a typed damage float already covered it */
 	#hpDelta(uuid, d) {
+		if (animationNumbers()) return;
 		setTimeout(() => {
 			const t = this.typedFloatAt.get(uuid) ?? 0;
 			if (Date.now() - t < 1800) return;
@@ -891,9 +928,14 @@ export class BattleUI {
 			out.innerHTML = this.#helpHtml(row);
 			out.scrollTop = 0;
 		}
-		if (row.dataset.id && row.dataset.id !== this.state.hover) {
+		const panel = row.closest('.fbui-panel');
+		if (row.dataset.id && !row.closest('.fbui-right')) {
+			// lists outside the command menu (the target's abilities) highlight on their own
+			panel?.querySelectorAll('.fbui-cmd-row.on').forEach((x) => x.classList.remove('on'));
+			if (row.classList.contains('fbui-cmd-row')) row.classList.add('on');
+		} else if (row.dataset.id && row.dataset.id !== this.state.hover) {
 			this.state.hover = row.dataset.id;
-			this.root.querySelectorAll('.fbui-cmd-row.on').forEach((x) => x.classList.remove('on'));
+			this.root.querySelectorAll('.fbui-right .fbui-cmd-row.on').forEach((x) => x.classList.remove('on'));
 			if (!row.disabled) row.classList.add('on');
 		}
 	}
@@ -925,7 +967,7 @@ export class BattleUI {
 		if (!btn || !this.root.contains(btn) || btn.disabled) return;
 		e.preventDefault();
 		const a = btn.dataset.action;
-		const CUE = { helpPin: null, back: 'back', pointsClose: 'back', close: 'back', deny: 'back', mini: 'cursor', viewAs: 'cursor', size: 'cursor', endTurn: 'activate', telegraph: null, clockTick: 'cursor' };
+		const CUE = { helpPin: null, foeInfo: null, back: 'back', pointsClose: 'back', close: 'back', deny: 'back', mini: 'cursor', viewAs: 'cursor', size: 'cursor', endTurn: 'activate', telegraph: null, clockTick: 'cursor' };
 		const cue = a in CUE ? CUE[a] : 'confirm';
 		if (cue) sfx(cue);
 		const combat = this.combat;
@@ -937,6 +979,8 @@ export class BattleUI {
 					return this.close();
 				case 'helpPin':
 					return this.#toggleLock(btn.closest('.fbui-helpbox'), null);
+				case 'foeInfo':
+					return this.#toggleLock(btn.closest('.fbui-panel')?.querySelector('.fbui-helpbox'), btn);
 				case 'mini':
 					this.state.mini = !this.state.mini;
 					return this.render();

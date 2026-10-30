@@ -1,0 +1,142 @@
+<section class="tab fbs-tab fbp-inspect {{tab.cssClass}}" data-tab="character" data-group="primary">
+	{{#with fbi}}
+		<nav class="fbi-bar">
+			<a class="fbi-back" data-action="tab" data-group="primary" data-tab="overview"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M10 3 5 8l5 5"/></svg> Party</a>
+			<span class="fbi-kick">STATUS</span>
+			{{#if many}}
+				<span class="fbi-cycle">
+					<button type="button" data-action="inspectCharacter" data-actor="{{prev}}" data-tooltip="Previous" aria-label="Previous character"><svg width="12" height="12" viewBox="0 0 14 14" aria-hidden="true"><path d="M12 1 2 7l10 6Z" fill="currentColor"/></svg></button>
+					<small>{{index}} / {{count}}</small>
+					<button type="button" data-action="inspectCharacter" data-actor="{{next}}" data-tooltip="Next" aria-label="Next character"><svg width="12" height="12" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 1 12 7 2 13Z" fill="currentColor"/></svg></button>
+				</span>
+			{{/if}}
+			<span class="sp"></span>
+			{{#if canLevel}}<button type="button" class="fbs-lvbtn sm" data-action="fbuiLevelUp" data-actor="{{uuid}}"><i class="fa-solid fa-angles-up"></i> LEVEL UP</button>{{/if}}
+			<button type="button" class="fbs-btn" data-action="revealActor" data-actor="{{uuid}}" data-type="character"><i class="fa-solid fa-id-card"></i> Open sheet</button>
+		</nav>
+
+		<div class="fbi-top {{#if hp.inCrisis}}crisis{{/if}} {{#if ko}}ko{{/if}}">
+			<div class="fbi-por {{#if imgVideo}}vid{{/if}}">
+				{{#if imgVideo}}<video src="{{img}}" autoplay muted loop playsinline></video>{{else}}<img src="{{img}}" alt="">{{/if}}
+				<span class="fbi-lv"><small>LV</small><b>{{level}}</b></span>
+				<span class="fbi-emb {{#if token.mirror}}mir{{/if}}" aria-hidden="true">{{#if token.video}}<video src="{{token.src}}" autoplay muted loop playsinline></video>{{else}}<img src="{{token.src}}" alt="">{{/if}}</span>
+				{{#if ko}}<span class="fbi-flag ko">KNOCKED OUT</span>{{else if hp.inCrisis}}<span class="fbi-flag">CRISIS</span>{{/if}}
+			</div>
+
+			<div class="fbi-main">
+				<div class="fbi-name">
+					<b>{{name}}</b>
+					{{#if pronouns}}<small>{{pronouns}}</small>{{/if}}
+				</div>
+				<div class="fbi-trio">
+					<span><small>Identity</small>{{#if identity}}{{identity}}{{else}}<i>none</i>{{/if}}</span>
+					<span><small>Theme</small>{{#if theme}}{{theme}}{{else}}<i>none</i>{{/if}}</span>
+					<span><small>Origin</small>{{#if origin}}{{origin}}{{else}}<i>none</i>{{/if}}</span>
+				</div>
+				<div class="fbi-exp {{#if canLevel}}full{{/if}}" data-tooltip="{{exp}} of 10 EXP to the next level">
+					<small>EXP</small>
+					<span class="pips">{{#each expPips}}<i class="{{#if this}}on{{/if}}"></i>{{/each}}</span>
+					<b>{{exp}}<em>/10</em></b>
+				</div>
+
+				<div class="fbi-res">
+					<div class="r hp {{#if hp.inCrisis}}crisis{{/if}}">
+						<div class="ln"><small>HP</small><b>{{hp.value}}<em>/ {{hp.max}}</em></b></div>
+						<div class="fbs-bar hp {{#if hp.inCrisis}}crisis{{/if}}" data-tooltip="Crisis at {{hp.crisis}} HP"><span style="width:{{hp.pct}}%"></span><i style="left:{{hp.crisisPct}}%"></i></div>
+					</div>
+					<div class="r mp">
+						<div class="ln"><small>MP</small><b>{{mp.value}}<em>/ {{mp.max}}</em></b></div>
+						<div class="fbs-bar mp"><span style="width:{{mp.pct}}%"></span></div>
+					</div>
+				</div>
+
+				<div class="fbi-pts">
+					<span class="p ip"><small>IP</small>{{#if ip.pips}}<span class="pips">{{#each ip.pips}}<i class="{{#if this}}on{{/if}}"></i>{{/each}}</span>{{/if}}<b>{{ip.value}}<em>/{{ip.max}}</em></b></span>
+					<span class="p fp"><small>Fabula</small><b>{{#if fpPips}}{{#each fpPips}}◆{{else}}0{{/each}}{{else}}◆ × {{fp}}{{/if}}</b></span>
+					<span class="p zen"><small>{{zenitName}}</small><b>{{zenit}}</b></span>
+				</div>
+
+				<div class="fbi-defs">
+					{{#each defenses}}
+						<div class="d" data-tooltip="{{parts}}"><small>{{k}}</small><b>{{total}}</b></div>
+					{{/each}}
+					<div class="d cr"><small>CRISIS</small><b>{{hp.crisis}}</b></div>
+				</div>
+			</div>
+		</div>
+
+		<div class="fbi-row2">
+			<div class="fbi-attrs">
+				{{#each attrs}}
+					<div class="a" data-tooltip="{{name}}{{#if changed}}: d{{base}} {{#if up}}raised{{else}}lowered{{/if}} to d{{current}}{{/if}}">
+						<span class="dia" style="--c:{{color}}"><span class="{{#if changed}}{{#if up}}up{{else}}down{{/if}}{{/if}}">d{{current}}</span></span>
+						<b>{{abbr}}</b>
+					</div>
+				{{/each}}
+			</div>
+			<div class="fbi-aff">
+				<small class="cap">Affinities</small>
+				<div class="fbs-aff">
+					{{#each affinities}}
+						<span class="cell" data-tooltip="{{tooltip}}"><small style="color:{{color}}">{{abbr}}</small><b style="color:{{wordColor}}">{{word}}</b></span>
+					{{/each}}
+				</div>
+			</div>
+		</div>
+		{{#if activeStatuses.length}}
+			<div class="fbi-sts"><small class="cap">Status</small>{{#each activeStatuses}}<span class="fbs-chip on" style="--c:{{color}}" {{#if tip}}data-tooltip="{{tip}}"{{/if}}>{{label}}</span>{{/each}}</div>
+		{{/if}}
+
+		<h3 class="fbi-h">Equipment</h3>
+		<div class="fbi-eq">
+			{{#each equipped}}
+				<div class="fbs-slot {{#unless item}}empty{{/unless}}">
+					{{#if item}}
+						<span class="ic"><img src="{{item.img}}" alt=""></span>
+						<span class="body"><small>{{label}}</small><b>{{item.name}}</b><span>{{item.line}}</span></span>
+					{{else}}
+						<span class="ic none" aria-hidden="true"><i></i></span>
+						<span class="body"><small>{{label}}</small><b>{{empty}}</b></span>
+					{{/if}}
+				</div>
+			{{/each}}
+		</div>
+
+		<h3 class="fbi-h">Classes <small>{{totalSkill.value}} / {{totalSkill.max}} skill levels</small></h3>
+		{{#if classes.length}}
+			<div class="fbi-classes">
+				{{#each classes}}
+					<article class="fbi-class {{#if mastered}}mastered{{/if}}">
+						<header><b>{{name}}</b><span class="lv">LV {{level}}<small>/{{max}}</small></span></header>
+						<div class="pips gold">{{#each pips}}<i class="{{#if this}}on{{/if}}"></i>{{/each}}</div>
+						{{#if mastered}}<span class="badge">MASTERED</span>{{/if}}
+						<ul>
+							{{#each skills}}
+								<li><span>{{name}}</span><span class="pips sky">{{#each pips}}<i class="{{#if this}}on{{/if}}"></i>{{/each}}</span></li>
+							{{else}}
+								<li class="none">No skills yet.</li>
+							{{/each}}
+						</ul>
+					</article>
+				{{/each}}
+			</div>
+		{{else}}
+			<p class="fbs-empty">No classes yet.</p>
+		{{/if}}
+
+		{{#if bonds.length}}
+			<h3 class="fbi-h">Bonds</h3>
+			<div class="fbi-bonds">
+				{{#each bonds}}
+					<div class="b">
+						<b>{{name}}</b>
+						<span class="f">{{#each feelings}}{{#if value}}<em>{{value}}</em>{{/if}}{{/each}}</span>
+						<span class="pips gold" data-tooltip="Strength {{strength}}">{{#each pips}}<i class="{{#if this}}on{{/if}}"></i>{{/each}}</span>
+					</div>
+				{{/each}}
+			</div>
+		{{/if}}
+	{{else}}
+		<p class="fbs-empty">Click a character's emblem on the Party page to inspect them.</p>
+	{{/with}}
+</section>

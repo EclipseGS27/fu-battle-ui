@@ -62,3 +62,13 @@
 :is(#fbs-z, html) .application.fbui-browser *::-webkit-scrollbar { width: 6px; height: 6px; }
 :is(#fbs-z, html) .application.fbui-browser *::-webkit-scrollbar-thumb { background: rgba(159, 208, 255, 0.3); border-radius: 3px; }
 :is(#fbs-z, html) .application.fbui-browser * { scrollbar-width: thin; scrollbar-color: rgba(159, 208, 255, 0.3) transparent; }
+
+/* + on a row: add it to the open character sheet */
+:is(#fbs-z, html) .application.fbui-browser li.fu-table__row-container { position: relative; }
+:is(#fbs-z, html) .application.fbui-browser .fbui-add {
+	position: absolute; top: 5px; right: 6px; z-index: 2; width: 26px; height: 26px; padding: 0; margin: 0;
+	display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--gold); background: rgba(11, 18, 32, 0.92); color: var(--gold);
+	font-size: 12px; line-height: 1; box-shadow: 0 0 0 4px rgba(11, 18, 32, 0.85); cursor: pointer; opacity: 0; transition: opacity 0.12s, background 0.12s;
+}
+:is(#fbs-z, html) .application.fbui-browser li.fu-table__row-container:is(:hover, :focus-within) > .fbui-add, :is(#fbs-z, html) .application.fbui-browser .fbui-add:focus-visible { opacity: 1; }
+:is(#fbs-z, html) .application.fbui-browser .fbui-add:hover { background: var(--gold); color: #0b1220; }

@@ -2,4 +2,5 @@
 	<button type="button" class="ic" data-action="roll" data-tooltip="Use {{name}}"><img src="{{img}}" alt=""></button>
 	<button type="button" class="body" data-action="roll"><b>{{name}}{{#if kind}} <i class="kind">{{kind}}</i>{{/if}}</b><span>{{line}}</span>{{#if quality}}<span class="q">{{quality}}</span>{{/if}}</button>
 	<button type="button" class="fbs-icobtn" data-action="fbuiOpen" data-tooltip="Edit" aria-label="Edit {{name}}"><i class="fa-solid fa-pen"></i></button>
+	{{#if @root.fbEditable}}<button type="button" class="fbs-icobtn del" data-action="fbuiDelete" data-tooltip="Remove" aria-label="Remove {{name}}"><i class="fa-solid fa-trash"></i></button>{{/if}}
 </div>

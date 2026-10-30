@@ -13,6 +13,12 @@
 					<header>
 						<button type="button" class="nm" data-action="editItem">{{name}}</button>
 						<span class="lv">LV {{level}}<small>/{{max}}</small></span>
+						{{#if @root.fbEditable}}
+							<span class="ctl">
+								<button type="button" data-action="editItem" data-tooltip="Open {{name}}" aria-label="Open {{name}}"><i class="fa-solid fa-pen"></i></button>
+								<button type="button" data-action="fbuiDelete" data-tooltip="Remove {{name}}" aria-label="Remove {{name}}"><i class="fa-solid fa-trash"></i></button>
+							</span>
+						{{/if}}
 					</header>
 					<div class="pips gold">{{#each pips}}<i class="{{#if this}}on{{/if}}"></i>{{/each}}</div>
 					{{#if mastered}}<div class="badge">MASTERED</div>{{/if}}

@@ -250,6 +250,15 @@ body.fbui-replace #combat-hud, body.fbui-replace #combat-hud-controls { display:
 #fbui .fbui-cmd-row[disabled] .m { color: rgba(238, 243, 255, 0.3); }
 #fbui .fbui-cmd-row.back { font-size: 15px; color: var(--ink2); }
 #fbui .fbui-panel.foe .fbui-cmd-row.on, #fbui .fbui-panel.foe .fbui-cmd-row:hover { background: linear-gradient(90deg, rgba(255, 107, 122, 0.3), rgba(255, 107, 122, 0.04)); }
+#fbui .fbui-sep { font-family: var(--disp); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(238, 243, 255, 0.5); padding: 7px 12px 2px; border-top: 1px solid rgba(159, 208, 255, 0.12); margin-top: 3px; }
+#fbui .fbui-sep:first-child { border-top: 0; margin-top: 0; padding-top: 2px; }
+/* target panel: the enemy's attacks, spells, skills and special rules */
+#fbui .fbui-abil { display: flex; flex-direction: column; }
+#fbui .fbui-abil-list { display: flex; flex-direction: column; gap: 1px; max-height: 250px; overflow-x: hidden; overflow-y: auto; margin: 0 -8px 6px; padding: 0 2px; scrollbar-width: thin; scrollbar-color: rgba(255, 141, 153, 0.35) transparent; }
+#fbui .fbui-abil .fbui-cmd-row { font-size: 15px; padding: 3px 10px; gap: 7px; }
+#fbui .fbui-abil .fbui-cmd-row .m { font-size: 13px; color: rgba(255, 141, 153, 0.85); }
+#fbui .fbui-abil .fbui-cmd-row .cur { width: 12px; }
+#fbui .fbui-abil .fbui-helpbox .fbui-help { margin: 0; height: 7.4em; font-size: 13px; }
 #fbui .fbui-foe-row { display: flex; align-items: center; gap: 4px; }
 #fbui .fbui-foe-row .fbui-cmd-row { flex: 1; min-width: 0; }
 #fbui .fbui-tele { width: 32px; height: 32px; padding: 0; display: grid; place-items: center; border-radius: 4px; border: 1px solid rgba(242, 196, 90, 0.35); background: transparent; color: var(--gold); font-size: 12px; opacity: 0.6; }
@@ -430,3 +439,20 @@ body.fbui-replace #combat-hud, body.fbui-replace #combat-hud-controls { display:
 .fbui-opp .ft span { flex: 1; }
 .fbui-opp .later { padding: 5px 12px; border-radius: 4px; border: 1px solid var(--line); color: var(--ink2); font-size: 13px; }
 .fbui-opp .later:hover { color: var(--ink); background: rgba(255, 255, 255, 0.06); }
+
+/* Condition card: hover a token on the map to read what its conditions do */
+.fbui-condtip {
+	position: fixed; z-index: 99; left: 0; top: 0; width: 270px; max-width: calc(100vw - 16px);
+	padding: 8px 10px 9px; border-radius: 6px; pointer-events: none;
+	background: rgba(9, 15, 32, 0.96); border: 1px solid rgba(159, 208, 255, 0.45); box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
+	color: #eef3ff; font-family: 'FBUI PT Sans', 'PT Sans', system-ui, sans-serif; font-size: 13px; line-height: 1.35;
+	opacity: 0; transform: translateY(4px); transition: opacity 0.12s, transform 0.12s; visibility: hidden;
+}
+.fbui-condtip.show { opacity: 1; transform: none; visibility: visible; }
+.fbui-condtip .hd { font-family: 'FBUI Antonio', 'Antonio', 'Arial Narrow', sans-serif; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(238, 243, 255, 0.6); margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fbui-condtip .c { display: flex; gap: 8px; padding: 5px 0; border-top: 1px solid rgba(159, 208, 255, 0.14); }
+.fbui-condtip .c > img { width: 26px; height: 26px; flex: none; border: 0; border-radius: 4px; object-fit: contain; }
+.fbui-condtip .c > i { width: 10px; height: 10px; flex: none; margin: 4px 8px 0 6px; transform: rotate(45deg); background: var(--c); }
+.fbui-condtip .c b { display: block; color: var(--c); font-size: 14px; }
+.fbui-condtip .c p { margin: 1px 0 0; color: rgba(238, 243, 255, 0.85); }
+.fbui-condtip .c small { display: block; margin-top: 2px; font-size: 11px; color: rgba(238, 243, 255, 0.5); font-style: italic; }
