@@ -345,6 +345,7 @@ img[src*='/icons/armory/'] { image-rendering: pixelated; image-rendering: crisp-
 .application.fbui-sheet .fbs-two > .fbs-sec { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .application.fbui-sheet .fbs-icobtn { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 4px; color: var(--ink3); flex: none; }
 .application.fbui-sheet .fbs-icobtn:hover { color: var(--ink); background: rgba(90, 169, 255, 0.15); }
+.application.fbui-sheet .fbs-icobtn.del:hover { color: #ff8d99; background: rgba(255, 107, 122, 0.15); }
 
 /* overview */
 .application.fbui-sheet .fbs-cols { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 16px; align-items: start; }
@@ -400,6 +401,12 @@ img[src*='/icons/armory/'] { image-rendering: pixelated; image-rendering: crisp-
 .application.fbui-sheet .fbs-class .nm:hover { color: var(--gold); }
 .application.fbui-sheet .fbs-class .lv { font-family: var(--disp); font-size: 17px; color: var(--gold); }
 .application.fbui-sheet .fbs-class .lv small { color: var(--ink3); font-size: 13px; }
+.application.fbui-sheet .fbs-class header .nm { margin-right: auto; }
+.application.fbui-sheet .fbs-class .ctl { display: inline-flex; gap: 2px; align-self: center; opacity: 0.35; transition: opacity 0.12s; }
+.application.fbui-sheet .fbs-class:is(:hover, :focus-within) .ctl { opacity: 1; }
+:is(#fbs-z, html) .application.fbui-sheet .fbs-class .ctl button { width: 22px; height: 22px; padding: 0; display: grid; place-items: center; border: 0; border-radius: 4px; background: transparent; color: var(--ink3); font-size: 11px; box-shadow: none; }
+:is(#fbs-z, html) .application.fbui-sheet .fbs-class .ctl button:hover { color: var(--ink); background: rgba(90, 169, 255, 0.16); }
+:is(#fbs-z, html) .application.fbui-sheet .fbs-class .ctl button[data-action='fbuiDelete']:hover { color: #ff8d99; background: rgba(255, 107, 122, 0.16); }
 .application.fbui-sheet .fbs-class .badge { position: absolute; top: -8px; right: 10px; font-family: var(--disp); font-size: 10px; letter-spacing: 0.16em; padding: 1px 6px; border-radius: 3px; background: var(--gold); color: #0b1220; }
 .application.fbui-sheet .pips { display: inline-flex; gap: 5px; flex-wrap: wrap; }
 .application.fbui-sheet .pips i { width: 8px; height: 8px; transform: rotate(45deg); border: 1px solid; display: inline-block; }

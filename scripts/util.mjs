@@ -101,6 +101,16 @@ export function setting(key) {
 	}
 }
 
+/** Fabula Ultima Battle Animations is drawing damage numbers (and MISS) on the tokens for this player */
+export function animationNumbers() {
+	if (!game.modules?.get?.('fu-animations')?.active) return false;
+	try {
+		return game.settings.get('fu-animations', 'numbers') !== false && game.settings.get('fu-animations', 'enabled') !== false;
+	} catch {
+		return false;
+	}
+}
+
 export function randomId() {
 	return foundry?.utils?.randomID?.() ?? Math.random().toString(36).slice(2, 12);
 }

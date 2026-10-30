@@ -10,7 +10,7 @@
 		{{#if fb.canLevel}}<button type="button" class="fbs-lvbtn sm" data-action="fbuiLevelUp"><i class="fa-solid fa-angles-up"></i> LEVEL UP</button>{{/if}}
 		<span class="sp"></span>
 		<span class="fbs-chips">
-			{{#each fb.statuses}}{{#if on}}<span class="fbs-chip on" style="--c:{{color}}">{{label}}</span>{{/if}}{{/each}}
+			{{#each fb.statuses}}{{#if on}}<span class="fbs-chip on" style="--c:{{color}}" data-tooltip="{{tip}}">{{label}}</span>{{/if}}{{/each}}
 		</span>
 	</div>
 
@@ -88,7 +88,7 @@
 				<small class="cap">Status</small>
 				<div class="fbs-chips">
 					{{#each fb.statuses}}
-						<button type="button" class="fbs-chip {{#if on}}on{{/if}} {{#if immune}}immune{{/if}}" style="--c:{{color}}" data-action="toggleStatusEffect" data-status-id="{{id}}" aria-pressed="{{#if on}}true{{else}}false{{/if}}" {{#if immune}}data-tooltip="Immune"{{/if}}>{{label}}</button>
+						<button type="button" class="fbs-chip {{#if on}}on{{/if}} {{#if immune}}immune{{/if}}" style="--c:{{color}}" data-action="toggleStatusEffect" data-status-id="{{id}}" aria-pressed="{{#if on}}true{{else}}false{{/if}}" data-tooltip="{{#if immune}}Immune. {{/if}}{{tip}}">{{label}}</button>
 					{{/each}}
 				</div>
 			</div>

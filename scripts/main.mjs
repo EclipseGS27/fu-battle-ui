@@ -1,4 +1,4 @@
-import { AFFINITY_TYPES, AFF_WORD, MODULE_ID, SOCKET, cap, setting } from './util.mjs';
+import { AFFINITY_TYPES, AFF_WORD, MODULE_ID, SOCKET, animationNumbers, cap, setting } from './util.mjs';
 import { Clocks } from './clocks.mjs';
 import { BattleUI } from './hud.mjs';
 import { loadBasicConsumables } from './points.mjs';
@@ -9,6 +9,7 @@ import { registerCheckDialog } from './check-dialog.mjs';
 import { registerBrowserStyle } from './browser-style.mjs';
 import { GLOW_DEFAULTS, TurnGlow, TurnGlowConfig } from './glow.mjs';
 import { registerOpportunityMenu } from './opportunity.mjs';
+import { registerConditionTips } from './conditions.mjs';
 
 const ui2 = new BattleUI();
 
@@ -31,7 +32,8 @@ const api = {
 
 function handleFloat(data) {
 	if (data.typed) ui2.noteTypedFloat(data.actorUuid);
-	ui2.float(data);
+	// Battle Animations draws damage numbers on the token itself; ours would land on top of them
+	if (!(data.typed && animationNumbers())) ui2.float(data);
 	if (data.reveal && game.users.activeGM?.isSelf && setting('autoRevealAffinities')) revealAffinity(data.reveal);
 }
 
@@ -76,6 +78,8 @@ function registerSettings() {
 	reg('checkDialog', { name: 'Battle UI check dialog', hint: 'Show Project FU’s check prompt (Attribute, Open, Opposed, Group, Ritual) in the Battle UI look.', scope: 'client', type: Boolean, default: true });
 	reg('browserStyle', { name: 'Battle UI compendium browser', hint: 'Show Project FU’s compendium browser in the Battle UI look.', scope: 'client', type: Boolean, default: true });
 	reg('opportunityMenu', { name: 'Opportunity menu', hint: 'When one of your Checks crits, open a menu with the Opportunities you can pick: the item’s own, then the world’s opportunity table (Project FU homebrew setting) or the Core Rulebook list.', scope: 'client', type: String, choices: { auto: 'Open as soon as I crit', click: 'Only from the chat card button', off: 'Off (Project FU’s own dialog)' }, default: 'auto' });
+	reg('conditionTips', { name: 'Condition cards on tokens', hint: 'Hover a token on the map to see what each of its conditions does and how long it lasts.', scope: 'client', type: Boolean, default: true });
+	reg('clearTargetsOnTurn', { name: 'Clear targets when the turn changes', hint: 'Your targets are dropped whenever a turn starts or ends, so the next action starts fresh.', scope: 'client', type: Boolean, default: true });
 	reg('banners', { name: 'Action banners', hint: 'Show a banner across the screen when someone acts.', scope: 'client', type: Boolean, default: true });
 	reg('floatingNumbers', { name: 'Floating damage numbers', scope: 'client', type: Boolean, default: true });
 }
@@ -86,6 +90,7 @@ function registerSettings() {
 
 registerCheckDialog();
 registerBrowserStyle();
+registerConditionTips();
 
 Hooks.once('init', () => {
 	registerSettings();
@@ -123,22 +128,35 @@ Hooks.once('ready', async () => {
 	ui2.mount();
 	TurnGlow.init();
 	registerOpportunityMenu();
-	for (const c of game.combats ?? []) ui2.lastRound.set(c.id, c.round);
+	for (const c of game.combats ?? []) {
+		ui2.lastRound.set(c.id, c.round);
+		lastActor.set(c.id, c.combatant?.id ?? null);
+	}
 	if (game.combat?.started && setting('autoOpen')) ui2.open();
 });
 
+/**
+ * Project FU announces applied damage (with its type and the Affinity that applied) as a hook. Current versions
+ * fire it through Foundry's Hooks; older ones had their own AsyncHooks module. Listen on both.
+ */
 async function hookDamageEvents() {
+	const name = game.projectfu?.hooks?.DAMAGE_EVENT ?? CONFIG.FU?.hooks?.DAMAGE_EVENT ?? 'projectfu.events.damage';
+	Hooks.on(name, onDamage);
 	try {
 		const path = foundry.utils.getRoute('systems/projectfu/module/helpers/async-hooks.mjs');
 		const { AsyncHooks } = await import(path);
-		AsyncHooks.on(game.projectfu?.hooks?.DAMAGE_EVENT ?? 'projectfu.events.damage', onDamage);
-	} catch (err) {
-		console.warn(`${MODULE_ID} | damage events unavailable, falling back to HP changes`, err);
+		AsyncHooks?.on?.(name, onDamage);
+	} catch {
+		/* current Project FU: the plain hook above covers it */
 	}
 }
 
+const seenDamage = new WeakSet();
+
 function onDamage(ev) {
 	try {
+		if (!ev || typeof ev !== 'object' || seenDamage.has(ev)) return;
+		seenDamage.add(ev);
 		const actor = ev?.actor;
 		if (!actor || !game.combat?.started) return;
 		const amount = Math.abs(Number(ev.amount) || 0);
@@ -207,7 +225,27 @@ Hooks.on('combatStart', () => {
 	if (setting('autoOpen')) ui2.open();
 });
 
+/** Each client drops its own targets when the acting combatant changes, so the last turn's targets don't carry over */
+function clearTargets() {
+	if (!game.user.targets?.size) return;
+	try {
+		if (canvas?.tokens?.setTargets) canvas.tokens.setTargets([]);
+		else for (const t of [...game.user.targets]) t.setTarget(false, { releaseOthers: false, groupSelection: true });
+	} catch (err) {
+		console.warn(`${MODULE_ID} | could not clear targets`, err);
+	}
+}
+
+const lastActor = new Map();
 Hooks.on('updateCombat', (combat, changed) => {
+	const turnChanged = foundry.utils.hasProperty(changed, 'system.activeCombatant') || 'turn' in changed || 'round' in changed;
+	if (turnChanged && combat === game.combat) {
+		const now = combat.combatant?.id ?? null;
+		if (lastActor.get(combat.id) !== now) {
+			lastActor.set(combat.id, now);
+			if (setting('clearTargetsOnTurn') !== false) clearTargets();
+		}
+	}
 	if ('round' in changed) {
 		const prev = ui2.lastRound.get(combat.id) ?? 0;
 		const round = changed.round;
@@ -246,8 +284,11 @@ Hooks.on('createChatMessage', (msg) => {
 	const img = '';
 	ui2.banner({ side: c.faction === FRIENDLY ? 'hero' : 'foe', who: c.name, what, tgt, img });
 	const def = check.type === 'magic' ? 'M.DEF' : 'DEF';
-	for (const t of targets) {
-		if (t.result === 'miss') ui2.float({ actorUuid: t.uuid, text: 'MISS', sub: t.difficulty ? `vs ${def} ${t.difficulty}` : '', kind: 'miss' });
+	// Battle Animations shows MISS on the token as the target dodges
+	if (!animationNumbers()) {
+		for (const t of targets) {
+			if (t.result === 'miss') ui2.float({ actorUuid: t.uuid, text: 'MISS', sub: t.difficulty ? `vs ${def} ${t.difficulty}` : '', kind: 'miss' });
+		}
 	}
 	const ch = combat.getFlag(MODULE_ID, 'charge');
 	if (ch && ch.cid === c.id && ch.item === check.itemName && game.users.activeGM?.isSelf) combat.unsetFlag(MODULE_ID, 'charge');

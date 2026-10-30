@@ -1,5 +1,5 @@
 import { AFFINITY_TYPES, AFF_ABBR, AFF_COLOR, COMMANDS, MODULE_ID, STATUS_CHIPS, pct, setting } from './util.mjs';
-import { itemHelp } from './model.mjs';
+import { conditionTip, itemHelp, itemLine, signed } from './model.mjs';
 import { sfx } from './sfx.mjs';
 import { openLevelUp } from './levelup.mjs';
 import { openPointMenu } from './point-menu.mjs';
@@ -35,64 +35,6 @@ const BOND_PAIRS = [
 /* Sheet sounds: what a hover lands on, and which cue a click plays */
 const HOVER_SFX = '.fbs-lvbtn, .fbs-npcrow, .fbs-cmd .row, .fbs-tabbtn, .fbs-btn, .fbs-chip, .fbs-aff .cell, .fbs-attr .dia, .fbs-slot button, .fbs-eqrow button, .fbs-link, .fbs-fold, .fbs-foldtab, .fbs-fp, .fbs-ipbtn, .fbs-class .nm, .fbs-class .sk';
 const CLICK_CUE = { fbuiLevelUp: null, fbuiFp: 'cursor', fbuiIp: 'cursor', tab: 'cursor', fbuiCollapse: 'cursor', fbuiDelete: 'back', deleteBond: 'back', deleteItem: 'back', deleteEffect: 'back', fbuiEditImage: 'cursor' };
-
-const signed = (n) => (n > 0 ? `+${n}` : n < 0 ? `−${Math.abs(n)}` : '0');
-
-function itemLine(item) {
-	const s = item?.system ?? {};
-	const v = (x) => (x && typeof x === 'object' && 'value' in x ? x.value : x);
-	switch (item?.type) {
-		case 'basic':
-		case 'weapon':
-		case 'customWeapon': {
-			const attrs = [v(s.attributes?.primary), v(s.attributes?.secondary)].filter(Boolean).map((a) => a.toUpperCase());
-			const acc = num(v(s.accuracy));
-			const dmg = num(v(s.damage));
-			const type = v(s.damageType) ?? '';
-			const parts = [];
-			if (attrs.length) parts.push(`【${attrs.join(' + ')}】${acc ? ` ${signed(acc)}` : ''}`);
-			if (s.damage != null) parts.push(`HR ${signed(dmg)} ${type}`.trim());
-			const cat = v(s.category) ?? (item.type === 'basic' ? v(s.type) : null);
-			if (cat) parts.push(cat);
-			return parts.join(' · ');
-		}
-		case 'spell': {
-			const parts = [];
-			const amount = s.cost?.amount ?? v(s.mpCost);
-			if (amount) parts.push(`${amount} ${String(s.cost?.resource ?? 'mp').toUpperCase()}${s.cost?.perTarget ? ' × T' : ''}`);
-			if (v(s.isOffensive)) {
-				const ri = s.rollInfo ?? {};
-				const attrs = [v(ri.attributes?.primary), v(ri.attributes?.secondary)].filter(Boolean).map((a) => a.toUpperCase());
-				if (attrs.length) parts.push(`【${attrs.join(' + ')}】${num(v(ri.accuracy)) ? ` ${signed(num(v(ri.accuracy)))}` : ''}`);
-				if (ri.damage?.hasDamage?.value) parts.push(`HR ${signed(num(ri.damage.value))} ${v(ri.damage.type) ?? ''}`.trim());
-			}
-			const dur = v(s.duration);
-			if (dur) parts.push({ instantaneous: 'Instant', scene: 'Scene' }[dur] ?? dur);
-			return parts.join(' · ') || itemHelp(item).slice(0, 70);
-		}
-		case 'shield':
-		case 'armor':
-		case 'accessory': {
-			const parts = [];
-			const def = num(v(s.def));
-			const mdef = num(v(s.mdef));
-			const init = num(v(s.init));
-			if (item.type === 'armor') {
-				const pa = v(s.attributes?.primary);
-				const sa = v(s.attributes?.secondary);
-				parts.push(`DEF ${pa ? `${pa.toUpperCase()} ${def ? signed(def) : ''}`.trim() : def}`);
-				parts.push(`M.DEF ${sa ? `${sa.toUpperCase()} ${mdef ? signed(mdef) : ''}`.trim() : mdef}`);
-			} else {
-				if (def) parts.push(`DEF ${signed(def)}`);
-				if (mdef) parts.push(`M.DEF ${signed(mdef)}`);
-			}
-			if (init) parts.push(`INIT ${signed(init)}`);
-			return parts.join(' · ') || itemHelp(item).slice(0, 70);
-		}
-		default:
-			return itemHelp(item).slice(0, 70);
-	}
-}
 
 /** Everything the custom parts of the sheet show, from the live actor */
 export function sheetData(actor) {
@@ -200,7 +142,7 @@ export function sheetData(actor) {
 		const [label, color] = STATUS_CHIPS[id] ?? [id, '#9fd0ff'];
 		const on = actor.statuses?.has?.(id) ?? false;
 		const immune = !!s.immunities?.[id]?.base;
-		return { id, label, color, on, immune };
+		return { id, label, color, on, immune, tip: conditionTip(id) };
 	});
 
 	const affinities = AFFINITY_TYPES.map(([key, abbr, color]) => {

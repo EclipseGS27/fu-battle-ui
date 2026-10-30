@@ -3,7 +3,8 @@
 		<img src="{{actor.img}}" alt="" {{#if fbp.fbEditable}}data-action="fbuiEditImage" data-tooltip="Change party image"{{/if}}>
 		<div>
 			<small>PARTY MENU</small>
-			<input type="text" name="name" value="{{actor.name}}" aria-label="Party name">
+			{{!-- no name attribute: the Settings tab already has the form's name field, and two of them made the name repeat on every save --}}
+			<input type="text" data-fbui-name value="{{actor.name}}" aria-label="Party name" {{#unless fbp.fbEditable}}disabled{{/unless}}>
 		</div>
 	</div>
 	{{#if system.tracks.length}}

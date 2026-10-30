@@ -7,9 +7,9 @@
 			<article class="fbp-card character-option {{#if hp.inCrisis}}crisis{{/if}} {{#if ko}}ko{{/if}}" data-uuid="{{uuid}}" data-type="character">
 				<button type="button" class="pt" data-action="revealActor" data-actor="{{uuid}}" data-type="character" data-tooltip="Open {{name}}'s sheet">{{#if imgVideo}}<video src="{{img}}" autoplay muted loop playsinline></video>{{else}}<img src="{{img}}" alt="">{{/if}}</button>
 				{{#if canLevel}}<button type="button" class="lvup" data-action="fbuiLevelUp" data-actor="{{uuid}}" data-tooltip="Level up {{name}}"><i class="fa-solid fa-angles-up"></i> LEVEL UP</button>{{/if}}
-				{{#if statuses.length}}<div class="sts">{{#each statuses}}<span class="fbs-chip on" style="--c:{{color}}">{{label}}</span>{{/each}}</div>{{/if}}
+				{{#if statuses.length}}<div class="sts">{{#each statuses}}<span class="fbs-chip on" style="--c:{{color}}" data-tooltip="{{tip}}">{{label}}</span>{{/each}}</div>{{/if}}
 				<div class="info">
-					<small class="lv">Lv.{{level}}</small>
+					<small class="lv">Lv.{{level}}{{#if ko}}<em class="flag ko">KO</em>{{else if hp.inCrisis}}<em class="flag">CRISIS</em>{{/if}}</small>
 					<b class="nm">{{name}}</b>
 					<div class="ln"><span>Next Lv:</span><span><b>{{exp}}</b>/10 EXP</span></div>
 					<div class="ln hp"><span>HP</span><span><b>{{hp.value}}</b>/{{hp.max}}</span></div>
@@ -25,8 +25,9 @@
 					{{#if more}}<small class="more">{{more}}</small>{{/if}}
 					<div class="ln fp"><span>Fabula</span><span><b>{{fp}}</b> FP</span></div>
 				</div>
-				<button type="button" class="emb" data-action="inspectCharacter" data-actor="{{uuid}}" data-tooltip="Inspect{{#if role}} · {{role}}{{/if}}">
+				<button type="button" class="emb" data-action="inspectCharacter" data-actor="{{uuid}}" data-tooltip="Status{{#if role}} · {{role}}{{/if}}">
 					<span class="frame"></span>
+					<span class="cap">STATUS</span>
 					<span class="art {{#if token.mirror}}mir{{/if}}">{{#if token.video}}<video src="{{token.src}}" autoplay muted loop playsinline></video>{{else}}<img src="{{token.src}}" alt="">{{/if}}</span>
 				</button>
 			</article>

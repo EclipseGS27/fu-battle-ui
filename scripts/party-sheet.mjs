@@ -1,5 +1,6 @@
-import { MODULE_ID, setting } from './util.mjs';
+import { MODULE_ID, STATUS_CHIPS, setting } from './util.mjs';
 import { sheetData } from './sheet.mjs';
+import { conditionTip } from './model.mjs';
 import { sfx } from './sfx.mjs';
 import { openLevelUp } from './levelup.mjs';
 
@@ -53,6 +54,40 @@ export function cardFor(entry) {
 	};
 }
 
+/**
+ * The inspect page (the emblem at the foot of a card): a status screen for one character, with arrows to the
+ * other party members.
+ * @param {Actor} actor
+ * @param {Actor[]} members the party's characters, in roster order
+ */
+export function inspectData(actor, members = []) {
+	const d = sheetData(actor);
+	const s = actor.system ?? {};
+	const list = members.length ? members : [actor];
+	const n = list.length;
+	const i = Math.max(0, list.findIndex((a) => a.uuid === actor.uuid));
+	const active = [...(actor.statuses ?? [])].filter((id) => STATUS_CHIPS[id]).map((id) => ({ id, label: STATUS_CHIPS[id][0], color: STATUS_CHIPS[id][1], tip: conditionTip(id) }));
+	return {
+		...d,
+		uuid: actor.uuid,
+		name: actor.name,
+		img: actor.img,
+		imgVideo: isVideo(actor.img),
+		token: tokenArt(actor),
+		identity: s.resources?.identity?.name ?? '',
+		theme: s.resources?.theme?.name ?? '',
+		origin: s.resources?.origin?.name ?? '',
+		pronouns: s.resources?.pronouns?.name ?? '',
+		ko: d.hp.value <= 0,
+		activeStatuses: active,
+		many: n > 1,
+		index: i + 1,
+		count: n,
+		prev: list[(i - 1 + n) % n].uuid,
+		next: list[(i + 1) % n].uuid,
+	};
+}
+
 export function companionCard(entry) {
 	const actor = entry.actor;
 	const r = actor.system?.resources ?? {};
@@ -86,6 +121,7 @@ export function registerBattlePartySheet(Base) {
 	parts.widgets = { template: T('header') };
 	parts.tabs = { template: T('tabs') };
 	parts.overview = { template: T('roster'), scrollable: [''] };
+	parts.character = { template: T('inspect'), scrollable: [''] };
 
 	class FUBattlePartySheet extends Base {
 		static DEFAULT_OPTIONS = {
@@ -122,6 +158,35 @@ export function registerBattlePartySheet(Base) {
 				companions: (context.companions ?? []).map(companionCard),
 				fbEditable: this.isEditable,
 			};
+			return context;
+		}
+
+		/** Undo "Party,Party,Party": names the duplicate name field repeated before this was fixed */
+		#repairName() {
+			if (this.#repaired || !this.actor.isOwner) return;
+			this.#repaired = true;
+			const name = String(this.actor.name ?? '');
+			const parts = name.split(',');
+			if (parts.length > 1 && parts.every((p) => p === parts[0]) && parts[0].trim()) {
+				console.log(`${MODULE_ID} | repairing party name "${name}" -> "${parts[0]}"`);
+				this.actor.update({ name: parts[0] });
+			}
+		}
+
+		#repaired = false;
+
+		async _preparePartContext(partId, context, options) {
+			context = await super._preparePartContext(partId, context, options);
+			if (partId === 'character') {
+				const actor = this.inspectedCharacter?.actor ?? context.character?.actor ?? null;
+				const members = (context.characters ?? []).map((c) => c.actor).filter(Boolean);
+				try {
+					context.fbi = actor ? inspectData(actor, members) : null;
+				} catch (err) {
+					console.warn(`${MODULE_ID} | inspect`, err);
+					context.fbi = null;
+				}
+			}
 			return context;
 		}
 
@@ -166,8 +231,26 @@ export function registerBattlePartySheet(Base) {
 		async _onRender(context, options) {
 			await super._onRender(context, options);
 			this.#untheme();
+			this.#repairName();
+			// the header's name box saves on its own (it is not a form field, see header.hbs)
+			const nameBox = this.element.querySelector('input[data-fbui-name]');
+			if (nameBox && !nameBox.dataset.wired) {
+				nameBox.dataset.wired = '1';
+				nameBox.addEventListener('keydown', (ev) => {
+					if (ev.key === 'Enter') {
+						ev.preventDefault();
+						nameBox.blur();
+					}
+				});
+				nameBox.addEventListener('change', (ev) => {
+					ev.stopPropagation();
+					const name = nameBox.value.trim();
+					if (name && name !== this.actor.name && this.isEditable) this.actor.update({ name });
+					else nameBox.value = this.actor.name;
+				});
+			}
 			// Big art is the actor's portrait, the emblem is its token. Small (pixel) art is shown whole and crisp.
-			this.element.querySelectorAll('.fbp-card .pt img, .fbp-card .emb img').forEach((img) => {
+			this.element.querySelectorAll('.fbp-card .pt img, .fbp-card .emb img, .fbi-por > img').forEach((img) => {
 				const mark = () => {
 					const small = img.naturalWidth && img.naturalWidth <= 256 && img.naturalHeight <= 256;
 					img.parentElement.classList.toggle('px', !!small);
