@@ -1,4 +1,4 @@
-import { bundledAssets, MODULE_ID, setting } from './util.mjs';
+import { MODULE_ID, setting } from './util.mjs';
 
 /**
  * Sound cues. Each one is <folder>/<name>.ogg, so a different pack can be swapped in by
@@ -28,9 +28,8 @@ let lastAt = {};
 export function sfx(cue, { sheet = false } = {}) {
 	const def = CUES[cue];
 	if (!def) return;
-	const pack = setting('sfxPack') || (bundledAssets() ? 'ff13' : 'off');
+	const pack = setting('sfxPack') || 'ff13';
 	if (pack === 'off') return;
-	if (pack !== 'custom' && !bundledAssets()) return;
 	if (sheet && setting('sfxSheet') === false) return;
 	if (def.menu && setting('sfxMenu') === false) return;
 	const now = performance.now();
@@ -61,7 +60,7 @@ export function sfx(cue, { sheet = false } = {}) {
 }
 
 export function registerSfxSettings(reg) {
-	reg('sfxPack', { name: 'Sound effects', hint: 'Which sounds the battle UI and the Battle UI sheet use for you, or Off for none. Plays on the Interface volume channel.', scope: 'client', type: String, choices: bundledAssets() ? PACKS : { custom: PACKS.custom, off: PACKS.off }, default: bundledAssets() ? 'ff13' : 'off', onChange: () => sfx('confirm') });
+	reg('sfxPack', { name: 'Sound effects', hint: 'Which sounds the battle UI and the Battle UI sheet use for you, or Off for none. Plays on the Interface volume channel.', scope: 'client', type: String, choices: PACKS, default: 'ff13', onChange: () => sfx('confirm') });
 	reg('sfxVolume', { name: 'Sound effects volume', scope: 'client', type: Number, range: { min: 0, max: 1, step: 0.05 }, default: 0.6, onChange: () => sfx('confirm') });
 	reg('sfxMenu', { name: 'Menu sounds', hint: 'Cursor, confirm and back sounds while moving through menus. Battle cues (turns, rounds, banners, clocks) still play when this is off.', scope: 'client', type: Boolean, default: true });
 	reg('sfxSheet', { name: 'Sounds on the character sheet', hint: 'Cursor and confirm sounds on the Battle UI sheet, using the sound pack above.', scope: 'client', type: Boolean, default: true });

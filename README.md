@@ -70,7 +70,7 @@ Weapons, shields, armor and accessories can get pixel icons from the Premium Arm
 - The Premium Armory pack is a paid asset and is not distributed with this module.
 
 ## Sound effects
-Cues play on Foundry's Interface volume channel, each client for itself. Action banners are silent. Pick per player in settings (Sound effects): a custom folder, or Off (default). The same pack plays on the Battle UI character, NPC and party sheets: cursor on hover, confirm on choosing, back on closing or removing, a chime for party rests and awards, a fanfare on level up.
+Cues play on Foundry's Interface volume channel, each client for itself. Action banners are silent. Pick the pack per player in settings (Sound effects): FFXIII (default), FFVII, a custom folder, or Off. The same pack plays on the Battle UI character, NPC and party sheets: cursor on hover, confirm on choosing, back on closing or removing, a chime for party rests and awards, a fanfare on level up.
 
 | Cue | When | FFXIII file | FFVII file |
 |---|---|---|---|
@@ -84,7 +84,7 @@ Cues play on Foundry's Interface volume channel, each client for itself. Action 
 | error | not enough IP/FP, unavailable invoke, charged-attack warning | deck_ui_hide_modal | bumper_end |
 
 Files live in sounds/ff13 and sounds/ff7, named after the cue. A custom folder needs the same 8 .ogg names.
-No sound files are included. Set Sound effects to "Custom folder" and point "Custom sound folder" at a folder with the 8 .ogg files named after the cues above.
+The bundled sounds come from the free "FFVII Menu Sounds" and "Final Fantasy XIII Menu Sounds" packs.
 
 ## Settings
 World: turn glow (style per side and in Crisis), Battle UI sheet as default (characters, NPCs and parties separately), armory icons on/off, armory icon folder, custom sound folder, replace system HUD, hide unstudied stats, auto-reveal Affinities, players change clocks directly, tick round clocks, surrender prompt.
