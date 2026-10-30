@@ -1,0 +1,150 @@
+/* Generated from sheet.css by gen_crisis.py: the sheet turns red while its character is in Crisis. */
+.application.fbui-sheet.fbs-crisis {
+	--glass: rgba(46, 12, 18, 0.9);
+	--line: rgba(255, 168, 168, 0.45);
+	--line2: rgba(255, 168, 168, 0.28);
+	--line3: rgba(255, 168, 168, 0.16);
+	--sky: #ff5c66;
+	--pfu-color-control-border: rgba(255, 168, 168, 0.45);
+	--pfu-color-control-fill-1: rgba(255, 84, 96, 0.14);
+	--pfu-color-control-fill-2: rgba(255, 84, 96, 0.08);
+	--pfu-color-control-highlight-content: #1c0a0f;
+	--pfu-color-control-active-content: #1c0a0f;
+	--pfu-color-app-body-primary-fill-1: rgba(46, 12, 18, 0.9);
+	--pfu-color-app-body-primary-fill-2: rgba(46, 12, 18, 0.9);
+	--pfu-color-app-border: rgba(255, 168, 168, 0.35);
+	--pfu-color-app-control-border: rgba(255, 168, 168, 0.35);
+	--pfu-color-app-control-fill-1: rgba(255, 84, 96, 0.12);
+	--pfu-color-app-control-fill-2: rgba(255, 84, 96, 0.12);
+	--pfu-color-app-control-highlight-content: #1c0a0f;
+	--pfu-color-app-control-active-content: #1c0a0f;
+	--pfu-color-app-item-header-fill-1: rgba(255, 84, 96, 0.16);
+	--pfu-color-app-item-header-fill-2: rgba(255, 84, 96, 0.06);
+	--pfu-color-app-item-highlight-border: rgba(255, 168, 168, 0.45);
+	--pfu-color-app-item-highlight-fill-1: rgba(255, 84, 96, 0.3);
+	--pfu-color-app-item-highlight-fill-2: rgba(255, 84, 96, 0.04);
+	--pfu-color-app-clock-border: rgba(255, 168, 168, 0.5);
+	--pfu-color-app-clock-fill-1: #ff5c66;
+	--pfu-color-app-clock-fill-2: #ff5c66;
+	--pfu-color-app-image-fill-1: rgba(46, 12, 18, 0.9);
+	--pfu-color-app-image-fill-2: rgba(46, 12, 18, 0.9);
+	--pfu-color-app-section-divider: rgba(255, 168, 168, 0.22);
+	--pfu-color-app-section-border: rgba(255, 168, 168, 0.28);
+	--pfu-color-app-section-primary-fill-1: rgba(46, 12, 18, 0.9);
+	--pfu-color-app-section-primary-fill-2: rgba(46, 12, 18, 0.9);
+	--pfu-color-app-detail-section-primary-fill-1: rgba(46, 12, 18, 0.9);
+	--pfu-color-app-detail-section-primary-fill-2: rgba(46, 12, 18, 0.9);
+	--pfu-color-app-scrollbar: rgba(255, 168, 168, 0.35);
+	--pfu-color-app-header-fill: rgba(46, 12, 18, 0.98);
+	--pfu-color-app-name-section-fill: rgba(46, 12, 18, 0.9);
+	--background-card: rgba(46, 12, 18, 0.9);
+	--background-core: #1c0a0f;
+	--color-primary: #ffb3b3;
+	--color-quote-gradient: linear-gradient(90deg, rgba(255, 84, 96, 0.3), rgba(255, 84, 96, 0.04));
+	--color-scrollbar: rgba(255, 168, 168, 0.35);
+	background: #1c0a0f;
+}
+.application.fbui-sheet.fbs-crisis .window-header {
+	background: rgba(46, 12, 18, 0.98);
+}
+.application.fbui-sheet.fbs-crisis .window-content {
+	background:
+		radial-gradient(700px 380px at 12% -5%, rgba(255, 84, 96, 0.18), transparent 70%),
+		radial-gradient(600px 420px at 105% 20%, rgba(242, 196, 90, 0.08), transparent 70%),
+		#1c0a0f;
+}
+.application.fbui-sheet.fbs-crisis *::-webkit-scrollbar-thumb {
+	background: rgba(255, 168, 168, 0.3);
+}
+.application.fbui-sheet.fbs-crisis * {
+	scrollbar-color: rgba(255, 168, 168, 0.3) transparent;
+}
+.application.fbui-sheet.fbs-crisis .fbs-lv {
+	border: 2px solid #1c0a0f;
+}
+.application.fbui-sheet.fbs-crisis .fbs-lv b {
+	color: #1c0a0f;
+}
+.application.fbui-sheet.fbs-crisis .fbs-btn {
+	background: rgba(255, 84, 96, 0.12);
+}
+.application.fbui-sheet.fbs-crisis .fbs-strip {
+	background: rgba(46, 12, 18, 0.6);
+}
+.application.fbui-sheet.fbs-crisis .fbs-tabs {
+	border-bottom: 1px solid rgba(255, 168, 168, 0.22);
+}
+.application.fbui-sheet.fbs-crisis .fbs-link {
+	color: #ffb3b3;
+}
+.application.fbui-sheet.fbs-crisis .fbs-link:hover {
+	background: rgba(255, 84, 96, 0.15);
+}
+.application.fbui-sheet.fbs-crisis .fbs-empty {
+	border: 1px dashed rgba(255, 168, 168, 0.3);
+}
+.application.fbui-sheet.fbs-crisis .fbs-icobtn:hover {
+	background: rgba(255, 84, 96, 0.15);
+}
+.application.fbui-sheet.fbs-crisis .fbs-cmd .ph {
+	background: linear-gradient(90deg, rgba(255, 84, 96, 0.28), rgba(255, 84, 96, 0));
+	border-bottom: 1px solid rgba(255, 168, 168, 0.25);
+}
+.application.fbui-sheet.fbs-crisis .fbs-cmd .row .m {
+	color: rgba(255, 168, 168, 0.85);
+}
+.application.fbui-sheet.fbs-crisis .fbs-cmd .row:is(:hover, :focus-visible, .on) {
+	background: linear-gradient(90deg, rgba(255, 84, 96, 0.35), rgba(255, 84, 96, 0.05));
+}
+.application.fbui-sheet.fbs-crisis :is(.fbs-slot, .fbs-eqrow) .ic {
+	background: radial-gradient(circle at 50% 40%, rgba(255, 84, 96, 0.2), rgba(255, 255, 255, 0.03) 70%);
+}
+.application.fbui-sheet.fbs-crisis :is(.fbs-slot, .fbs-eqrow) .ic.none i {
+	border: 1px dashed rgba(255, 168, 168, 0.4);
+}
+.application.fbui-sheet.fbs-crisis .fbs-slot button.body:hover {
+	background: rgba(255, 84, 96, 0.12);
+}
+.application.fbui-sheet.fbs-crisis .fbs-aff .cell:hover {
+	background: rgba(255, 84, 96, 0.16);
+}
+.application.fbui-sheet.fbs-crisis .fbs-class .badge {
+	color: #1c0a0f;
+}
+.application.fbui-sheet.fbs-crisis .fbs-class li .sk:hover {
+	background: rgba(255, 84, 96, 0.16);
+}
+.application.fbui-sheet.fbs-crisis .fbs-eqrow:hover {
+	background: linear-gradient(90deg, rgba(255, 84, 96, 0.2), rgba(255, 84, 96, 0.02));
+}
+:is(#fbs-z, html) .application.fbui-sheet.fbs-crisis .items-main-header .effects-clear a {
+	color: #ffb3b3;
+}
+:is(#fbs-z, html) .application.fbui-sheet.fbs-crisis .items-main-header .effects-clear a:hover {
+	background: rgba(255, 84, 96, 0.15);
+}
+:is(#fbs-z, html) .application.fbui-sheet.fbs-crisis .tab[data-tab='settings'] fieldset > legend {
+	background: rgba(255, 84, 96, 0.14);
+}
+:is(#fbs-z, html) .application.fbui-sheet.fbs-crisis .tab[data-tab='settings'] :is(button, a.button) {
+	background: rgba(255, 84, 96, 0.12);
+}
+:is(#fbs-z, html) .application.fbui-sheet.fbs-crisis .tab[data-tab='settings'] i[class*='fu-icon'] {
+	color: #ffb3b3;
+}
+.application.fbui-sheet.fbs-crisis .fbs-npcrow:hover {
+	background: linear-gradient(90deg, rgba(255, 84, 96, 0.22), rgba(255, 84, 96, 0.02));
+}
+.application.fbui-sheet.fbs-crisis .fbs-npcrow .ic {
+	background: radial-gradient(circle at 50% 40%, rgba(255, 84, 96, 0.2), rgba(255, 255, 255, 0.03) 70%);
+}
+.application.fbui-sheet.fbs-crisis .fbs-npcrow .body span.q {
+	color: #ffb3b3;
+}
+.application.fbui-sheet.fbs-crisis .fbs-pop {
+	background: rgba(36, 9, 14, 0.98);
+}
+
+.application.fbui-sheet { transition: background-color 0.4s ease, border-color 0.4s ease; }
+.application.fbui-sheet.fbs-crisis { box-shadow: 0 0 0 1px rgba(255, 84, 96, 0.35), 0 0 28px rgba(255, 60, 80, 0.25), 0 20px 50px rgba(0, 0, 0, 0.6); }
+.application.fbui-sheet.fbs-crisis .window-header { border-bottom-color: rgba(255, 110, 120, 0.45); }

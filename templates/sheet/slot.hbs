@@ -1,0 +1,11 @@
+<div class="fbs-slot {{#unless item}}empty{{/unless}}" {{#if item}}data-item-id="{{item.id}}" data-uuid="{{item.uuid}}"{{/if}}>
+	{{#if item}}
+		<button type="button" class="ic" data-action="{{#if item.armory}}fbuiIcon{{else}}editItem{{/if}}" data-tooltip="{{#if item.armory}}Change icon{{else}}Edit{{/if}}"><img src="{{item.img}}" alt=""></button>
+		<button type="button" class="body" data-action="{{#if item.rollable}}roll{{else}}editItem{{/if}}" data-tooltip="{{#if item.rollable}}Attack with {{item.name}}{{else}}Open {{item.name}}{{/if}}">
+			<small>{{label}}</small><b>{{item.name}}</b><span>{{item.line}}</span>
+		</button>
+	{{else}}
+		<span class="ic none" aria-hidden="true"><i></i></span>
+		<span class="body"><small>{{label}}</small><b>{{empty}}</b></span>
+	{{/if}}
+</div>

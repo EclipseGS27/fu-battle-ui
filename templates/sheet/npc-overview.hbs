@@ -1,0 +1,62 @@
+<div class="tab fbs-tab fbs-overview {{tab.cssClass}}" data-group="primary" data-tab="overview">
+	<div class="fbs-cols">
+		<div class="fbs-panel fbs-cmd">
+			<div class="ph"><b>Actions</b><small>Its turn, from the sheet</small></div>
+			<div class="list">
+				{{#each fb.commands}}
+					<button type="button" class="row" data-action="action" data-type="{{id}}" data-help="{{help}}">
+						<span class="cur"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 1 12 7 2 13Z" fill="currentColor"/></svg></span>
+						<span class="l">{{label}}</span>
+						<span class="m">{{#if sub}}›{{/if}}</span>
+					</button>
+				{{/each}}
+			</div>
+			<div class="help" data-fbui-help>Hover an action to see what it does.</div>
+		</div>
+
+		<div class="fbs-main">
+			<div class="fbs-sec">
+				<div class="fbs-h"><h2>Attacks</h2><span class="sp"></span>{{pfuCompendium "abilities" actorId=actor.uuid}}</div>
+				{{#if fb.attacks.length}}
+					<div class="fbs-panel fbs-npclist">{{#each fb.attacks}}{{> "modules/fu-battle-ui/templates/sheet/npc-row.hbs"}}{{/each}}</div>
+				{{else}}
+					<p class="fbs-empty">No attacks yet. Add a basic attack from the Abilities tab or the compendium.</p>
+				{{/if}}
+			</div>
+
+			{{#if fb.spells.length}}
+				<div class="fbs-sec">
+					<div class="fbs-h"><h2>Spells</h2></div>
+					<div class="fbs-panel fbs-npclist">{{#each fb.spells}}{{> "modules/fu-battle-ui/templates/sheet/npc-row.hbs"}}{{/each}}</div>
+				</div>
+			{{/if}}
+
+			{{#if fb.skills.length}}
+				<div class="fbs-sec">
+					<div class="fbs-h"><h2>Skills and rules</h2></div>
+					<div class="fbs-panel fbs-npclist">{{#each fb.skills}}{{> "modules/fu-battle-ui/templates/sheet/npc-row.hbs"}}{{/each}}</div>
+				</div>
+			{{/if}}
+
+			{{#if fb.sp}}
+				<div class="fbs-sec">
+					<div class="fbs-h"><h2>Skill points</h2><span class="fbs-note {{#if fb.sp.over}}warn{{/if}}">{{fb.sp.used}} of {{fb.sp.available}} used{{#if fb.sp.over}} · over budget{{/if}}</span></div>
+					<div class="fbs-panel fbs-spp">
+						<div class="fbs-bar sp {{#if fb.sp.over}}over{{/if}}"><span style="width:{{fb.sp.pct}}%"></span></div>
+						<div class="cols">
+							<div><small class="cap">Available</small>{{#each fb.sp.have}}<span class="sp-i"><b>{{value}}</b> {{label}}</span>{{/each}}</div>
+							<div><small class="cap">Spent</small>{{#each fb.sp.spent}}<span class="sp-i" {{#if tooltip}}data-tooltip="{{tooltip}}"{{/if}}><b>{{value}}</b> {{label}}</span>{{else}}<span class="sp-i dim">Nothing yet</span>{{/each}}</div>
+						</div>
+					</div>
+				</div>
+			{{/if}}
+
+			{{#if hasFavorites}}
+				<div class="fbs-sec fbs-favs">
+					<div class="fbs-h"><h2>Favorites</h2></div>
+					{{{favoritesTable}}}
+				</div>
+			{{/if}}
+		</div>
+	</div>
+</div>

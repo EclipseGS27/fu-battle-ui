@@ -1,0 +1,48 @@
+<div class="tab fbs-tab fbs-gear {{tab.cssClass}}" data-group="primary" data-tab="gear">
+	<div class="fbs-two wide">
+		<div class="fbs-sec">
+			<div class="fbs-h"><h2>Equipped</h2><button type="button" class="fbs-link" data-action="action" data-type="equipment">Swap equipment</button></div>
+			<div class="fbs-panel fbs-eqlist">
+				{{#each fb.equipped}}
+					<div class="fbs-eqrow {{#unless item}}empty{{/unless}}" {{#if item}}data-item-id="{{item.id}}" data-uuid="{{item.uuid}}"{{/if}}>
+						{{#if item}}
+							<button type="button" class="ic" data-action="{{#if item.armory}}fbuiIcon{{else}}editItem{{/if}}" data-tooltip="{{#if item.armory}}Change icon{{else}}Edit{{/if}}"><img src="{{item.img}}" alt=""></button>
+						{{else}}
+							<span class="ic none" aria-hidden="true"><i></i></span>
+						{{/if}}
+						<span class="body"><small>{{label}}</small>{{#if item}}<b>{{item.name}}</b><span>{{item.line}}</span>{{else}}<b class="dim">{{empty}}</b>{{/if}}</span>
+						{{#if item}}<button type="button" class="fbs-icobtn" data-action="editItem" data-tooltip="Edit" aria-label="Edit {{item.name}}"><i class="fa-solid fa-pen"></i></button>{{/if}}
+					</div>
+				{{/each}}
+			</div>
+		</div>
+		<div class="fbs-sec">
+			<div class="fbs-h"><h2>How your defenses add up</h2></div>
+			<div class="fbs-panel fbs-def">
+				{{#each fb.defenses}}
+					<div class="r"><small>{{k}}</small><b>{{total}}</b><span>{{parts}}</span></div>
+				{{/each}}
+			</div>
+			<div class="fbs-panel fbs-ippanel">
+				<div><small>INVENTORY POINTS</small><b>{{fb.ip.value}}<em>/ {{fb.ip.max}}</em></b></div>
+				<button type="button" class="fbs-btn" data-action="fbuiIp">Use an item</button>
+			</div>
+			<div class="fbs-panel fbs-zen">
+				<div><small>{{fb.zenitName}}</small><b>{{fb.zenit}}</b></div>
+				<button type="button" class="fbs-icobtn" data-action="zenitTransfer" data-zenit-action="deposit" data-tooltip="Deposit to party" aria-label="Deposit"><i class="fa fa-paper-plane"></i></button>
+				<button type="button" class="fbs-icobtn" data-action="zenitTransfer" data-zenit-action="withdraw" data-tooltip="Withdraw from party" aria-label="Withdraw"><i class="fa fa-university"></i></button>
+			</div>
+		</div>
+	</div>
+
+	<div class="fbs-h"><h2>Items</h2><span class="fbs-note">Click an item's icon to roll it. Weapons and armor get armory icons on their own.</span><span class="sp"></span>{{pfuCompendium "equipment" actorId=actor.uuid}}</div>
+	{{{weaponsTable}}}
+	{{{shieldsTable}}}
+	{{{armorsTable}}}
+	{{{accessoriesTable}}}
+	{{{technospheresTable}}}
+	{{{consumablesTable}}}
+	{{{treasuresTable}}}
+	{{{otherItemsTable}}}
+	{{> "systems/projectfu/templates/actor/partials/actor-vehicle.hbs"}}
+</div>

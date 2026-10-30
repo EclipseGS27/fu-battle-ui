@@ -1,0 +1,18 @@
+<nav class="fbp-menu tabs" aria-label="Party menu" data-group="primary">
+	{{#each tabs as |tab|}}
+		{{#unless (eq tab.id "character")}}
+			<a class="fbp-mi {{tab.cssClass}}" data-action="tab" data-group="{{tab.group}}" data-tab="{{tab.id}}">{{#if (eq tab.id 'overview')}}Party{{else}}{{localize tab.label}}{{/if}}</a>
+		{{/unless}}
+	{{/each}}
+	<span class="fbp-sep"></span>
+	{{#if isGM}}
+		<button type="button" class="fbp-mi act" data-action="restParty"><i class="fas fa-bed"></i>Rest</button>
+		<button type="button" class="fbp-mi act" data-action="rewardResource"><i class="fas fa-feather"></i>Award</button>
+		<button type="button" class="fbp-mi act" data-action="addTrack"><i class="fas fa-clock"></i>Add clock</button>
+	{{/if}}
+	<button type="button" class="fbp-mi act" data-action="revealMetaCurrency"><i class="fa-solid fa-chart-line"></i>Fabula &amp; Ultima</button>
+	{{#each actionHooks}}
+		<button type="button" class="fbp-mi act" data-action="callHook" data-option="{{this.hook}}"><i class="{{this.icon}}"></i>{{localize this.name}}</button>
+	{{/each}}
+	<button type="button" class="fbp-mi act" data-action="refreshSheet"><i class="fa fa-refresh"></i>Refresh</button>
+</nav>

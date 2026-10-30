@@ -1,0 +1,56 @@
+<div class="tab fbs-tab fbs-abilities {{tab.cssClass}}" data-group="primary" data-tab="abilities">
+	<div class="fbs-h">
+		<h2>Classes</h2>
+		<span class="fbs-note">{{fb.totalSkill.value}} / {{fb.totalSkill.max}} skill levels</span>
+		<span class="sp"></span>
+		{{pfuCompendium "classes" type='class'}}
+		{{#if fb.canLevel}}<button type="button" class="fbs-btn gold sm" data-action="fbuiLevelUp">Level up</button>{{/if}}
+	</div>
+	{{#if fb.classes.length}}
+		<div class="fbs-classes">
+			{{#each fb.classes}}
+				<article class="fbs-class {{#if mastered}}mastered{{/if}}" data-item-id="{{id}}" data-uuid="{{uuid}}">
+					<header>
+						<button type="button" class="nm" data-action="editItem">{{name}}</button>
+						<span class="lv">LV {{level}}<small>/{{max}}</small></span>
+					</header>
+					<div class="pips gold">{{#each pips}}<i class="{{#if this}}on{{/if}}"></i>{{/each}}</div>
+					{{#if mastered}}<div class="badge">MASTERED</div>{{/if}}
+					<ul>
+						{{#each skills}}
+							<li data-item-id="{{id}}" data-uuid="{{uuid}}">
+								<button type="button" class="sk" data-action="roll">{{name}}</button>
+								<span class="pips sky">{{#each pips}}<i class="{{#if this}}on{{/if}}"></i>{{/each}}</span>
+								<small>SL {{level}}</small>
+							</li>
+						{{else}}
+							<li class="none">No skills taken yet.</li>
+						{{/each}}
+					</ul>
+				</article>
+			{{/each}}
+		</div>
+	{{else}}
+		<p class="fbs-empty">No classes yet. Open the compendium to add one.</p>
+	{{/if}}
+
+	<div class="fbs-h"><h2>Skills</h2><span class="sp"></span>{{pfuCompendium "classes" type='skill' actorId=actor.uuid}}</div>
+	{{{skillsTable}}}
+
+	<div class="fbs-h"><h2>Heroic Skills</h2><span class="fbs-note">{{tlTracker.totalHeroic.value}} / {{tlTracker.totalHeroic.max}}</span><span class="sp"></span>{{pfuCompendium "classes" type='heroic' actorId=actor.uuid}}</div>
+	{{{heroicsTable}}}
+
+	<div class="fbs-h"><h2>Spells</h2><span class="sp"></span>{{pfuCompendium "spells" actorId=actor.uuid}}</div>
+	{{{spellsTable}}}
+
+	<div class="fbs-h"><h2>Rituals</h2></div>
+	{{{ritualsTable}}}
+
+	<div class="fbs-h"><h2>Features</h2><span class="sp"></span>{{pfuCompendium "classes" type='classFeature' actorId=actor.uuid}}<button type="button" class="fbs-link" data-action="createClassFeature">Add</button></div>
+	{{{classFeatureTables}}}
+	{{{optionalFeatureTables}}}
+	{{{abilitiesTable}}}
+	{{{projectsTable}}}
+	{{{rulesTable}}}
+	{{> "systems/projectfu/templates/actor/partials/actor-garden.hbs"}}
+</div>

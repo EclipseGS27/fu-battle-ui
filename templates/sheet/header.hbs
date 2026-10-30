@@ -1,0 +1,131 @@
+<div class="fbs-head">
+	{{!-- Collapsed: one slim line with the numbers that matter mid-session --}}
+	<div class="fbs-compact">
+		<img src="{{actor.img}}" alt="">
+		<span class="nm">{{actor.name}}</span>
+		<span class="lv">LV {{fb.level}}</span>
+		<span class="res hp {{#if fb.hp.inCrisis}}crisis{{/if}}"><small>HP</small><b>{{fb.hp.value}}</b><em>/ {{fb.hp.max}}</em></span>
+		<span class="res mp"><small>MP</small><b>{{fb.mp.value}}</b><em>/ {{fb.mp.max}}</em></span>
+		<span class="res ip"><small>IP</small><b>{{fb.ip.value}}</b><em>/ {{fb.ip.max}}</em></span>
+		{{#if fb.canLevel}}<button type="button" class="fbs-lvbtn sm" data-action="fbuiLevelUp"><i class="fa-solid fa-angles-up"></i> LEVEL UP</button>{{/if}}
+		<span class="sp"></span>
+		<span class="fbs-chips">
+			{{#each fb.statuses}}{{#if on}}<span class="fbs-chip on" style="--c:{{color}}">{{label}}</span>{{/if}}{{/each}}
+		</span>
+	</div>
+
+	<div class="fbs-full">
+		<header class="fbs-header">
+			<div class="fbs-portrait">
+				<img src="{{actor.img}}" alt="{{actor.name}}" {{#if fbEditable}}data-action="fbuiEditImage" data-tooltip="Change portrait"{{/if}}>
+				<span class="fbs-lv" data-tooltip="Level"><b>{{fb.level}}</b></span>
+				{{#if fb.canLevel}}<button type="button" class="fbs-lvbtn" data-action="fbuiLevelUp" data-tooltip="Spend 10 EXP to reach level {{fb.nextLevel}}"><i class="fa-solid fa-angles-up"></i> LEVEL UP</button>{{/if}}
+			</div>
+			<div class="fbs-id">
+				<div class="fbs-kicker">
+					<label>LEVEL <input type="number" name="system.level.value" value="{{system.level.value}}" min="1" max="60" class="fbs-inline w2" aria-label="Level"></label>
+					<span>·</span>
+					<input type="text" name="system.resources.pronouns.name" value="{{system.resources.pronouns.name}}" placeholder="pronouns" class="fbs-inline w6" aria-label="Pronouns">
+					<span>·</span>
+					<label><input type="number" name="system.resources.exp.value" value="{{system.resources.exp.value}}" min="0" class="fbs-inline w2" aria-label="Experience"> / 10 EXP</label>
+					<span class="fbs-exp {{#if fb.canLevel}}full{{/if}}" data-tooltip="EXP: {{fb.exp}} of 10">{{#each fb.expPips}}<i class="{{#if this}}on{{/if}}"></i>{{/each}}</span>
+				</div>
+				<input type="text" name="name" value="{{actor.name}}" class="fbs-name" aria-label="Name" placeholder="Name">
+				<div class="fbs-traitline">
+					<label data-tooltip="Identity"><input type="text" name="system.resources.identity.name" value="{{system.resources.identity.name}}" placeholder="Identity" aria-label="Identity"></label>
+					<i>·</i>
+					<label data-tooltip="Theme"><input type="text" name="system.resources.theme.name" value="{{system.resources.theme.name}}" placeholder="Theme" aria-label="Theme"></label>
+					<i>·</i>
+					<label data-tooltip="Origin"><input type="text" name="system.resources.origin.name" value="{{system.resources.origin.name}}" placeholder="Origin" aria-label="Origin"></label>
+					<span class="fbs-classline">{{fb.classLine}}</span>
+				</div>
+
+				<div class="fbs-res2">
+					<div class="fbs-resbox">
+				<div class="fbs-meter hp {{#if fb.hp.inCrisis}}crisis{{/if}}">
+					<span class="k">HP</span>
+					<span class="v"><input type="number" name="system.resources.hp.value" value="{{fb.hp.value}}" min="0" aria-label="Current HP"><small>/ {{fb.hp.max}}</small></span>
+				</div>
+				<div class="fbs-bar hp {{#if fb.hp.inCrisis}}crisis{{/if}}" data-tooltip="Crisis at {{fb.hp.crisis}} HP"><span style="width:{{fb.hp.pct}}%"></span><i style="left:{{fb.hp.crisisPct}}%"></i></div>
+					</div>
+					<div class="fbs-resbox">
+				<div class="fbs-meter mp">
+					<span class="k">MP</span>
+					<span class="v"><input type="number" name="system.resources.mp.value" value="{{fb.mp.value}}" min="0" aria-label="Current MP"><small>/ {{fb.mp.max}}</small></span>
+				</div>
+				<div class="fbs-bar mp thin"><span style="width:{{fb.mp.pct}}%"></span></div>
+					</div>
+				</div>
+
+				<div class="fbs-points">
+					<span class="fbs-ip">
+						<button type="button" class="fbs-ipbtn" data-action="fbuiIp" data-tooltip="Spend Inventory Points">
+							<span class="k">IP</span>
+							{{#if fb.ip.pips}}{{#each fb.ip.pips}}<i class="{{#if this}}on{{/if}}"></i>{{/each}}{{/if}}
+						</button>
+						<input type="number" name="system.resources.ip.value" value="{{fb.ip.value}}" min="0" class="fbs-inline w2" aria-label="Current IP"><small>/ {{fb.ip.max}}</small>
+					</span>
+					<span class="fbs-cur">
+						<button type="button" class="fbs-fp" data-action="fbuiFp" data-tooltip="Spend Fabula Points">
+							<small>FABULA</small>
+							<b>{{#if fb.fpPips}}{{#each fb.fpPips}}◆{{else}}0{{/each}}{{else}}◆ × {{fb.fp}}{{/if}}</b>
+						</button>
+						<input type="number" name="system.resources.fp.value" value="{{fb.fp}}" min="0" class="fbs-inline w2" aria-label="Fabula Points">
+						<label class="fbs-zenit"><small>{{fb.zenitName}}</small><input type="number" name="system.resources.zenit.value" value="{{fb.zenit}}" min="0" class="fbs-inline w5" aria-label="{{fb.zenitName}}"></label>
+					</span>
+				</div>
+			</div>
+			<div class="fbs-stats n{{fb.headStats.length}}">
+				{{#each fb.headStats}}
+					<div class="fbs-tile {{#if crisis}}crisis{{/if}}"><small>{{k}}</small><b>{{v}}</b></div>
+				{{/each}}
+				<button type="button" class="fbs-btn gold wide" data-action="rest" data-tooltip="Rest: recover HP, MP and IP. Right-click to rest without recovering IP.">Rest</button>
+			</div>
+		</header>
+
+		<div class="fbs-strip">
+			<div class="fbs-strip-sec">
+				<small class="cap">Status</small>
+				<div class="fbs-chips">
+					{{#each fb.statuses}}
+						<button type="button" class="fbs-chip {{#if on}}on{{/if}} {{#if immune}}immune{{/if}}" style="--c:{{color}}" data-action="toggleStatusEffect" data-status-id="{{id}}" aria-pressed="{{#if on}}true{{else}}false{{/if}}" {{#if immune}}data-tooltip="Immune"{{/if}}>{{label}}</button>
+					{{/each}}
+				</div>
+			</div>
+			<div class="fbs-strip-sec">
+				<small class="cap">Affinities</small>
+				<div class="fbs-aff">
+					{{#each fb.affinities}}
+						<button type="button" class="cell" data-action="roll" data-roll-type="affinity-type" data-affinity="{{key}}" data-tooltip="{{tooltip}}"><small style="color:{{color}}">{{abbr}}</small><b style="color:{{wordColor}}">{{word}}</b></button>
+					{{/each}}
+				</div>
+			</div>
+		</div>
+
+		<div class="fbs-attrrow">
+			{{#each fb.attrs}}
+				<div class="fbs-attr">
+					<button type="button" class="dia" style="--c:{{color}}" data-action="roll" data-roll-type="attribute-check" aria-label="Roll a check, {{name}} d{{current}}" data-tooltip="{{name}}{{#if changed}}: d{{base}} {{#if up}}raised{{else}}lowered{{/if}} to d{{current}}{{/if}}">
+						<span class="{{#if changed}}{{#if up}}up{{else}}down{{/if}}{{/if}}">d{{current}}</span>
+					</button>
+					<span class="lbl"><b>{{abbr}}</b>
+						<select name="system.attributes.{{key}}.base" aria-label="{{name}} base die" data-dtype="Number">
+							{{#each options}}<option value="{{d}}" {{#if on}}selected{{/if}}>d{{d}}</option>{{/each}}
+						</select>
+					</span>
+				</div>
+			{{/each}}
+			<span class="sp"></span>
+			<div class="fbs-rollbox inline">
+				<small class="cap">Roll</small>
+				<div class="fbs-checks">
+					<button type="button" class="fbs-btn" data-action="roll" data-roll-type="attribute-check">Attribute</button>
+					<button type="button" class="fbs-btn" data-action="roll" data-roll-type="open-check">Open</button>
+					<button type="button" class="fbs-btn" data-action="roll" data-roll-type="opposed-check">Opposed</button>
+					<button type="button" class="fbs-btn" data-action="roll" data-roll-type="group-check" data-tooltip="Group Check. Shift-click for initiative.">Group</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>

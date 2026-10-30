@@ -1,0 +1,142 @@
+<div class="fbs-head">
+	{{!-- Collapsed: one slim line with what matters mid-fight --}}
+	<div class="fbs-compact">
+		<img src="{{actor.img}}" alt="">
+		<span class="nm">{{actor.name}}</span>
+		<span class="lv">LV {{fb.level}} · {{fb.rankLabel}}</span>
+		<span class="res hp {{#if fb.hp.inCrisis}}crisis{{/if}}"><small>HP</small><b>{{fb.hp.value}}</b><em>/ {{fb.hp.max}}</em></span>
+		<span class="res mp"><small>MP</small><b>{{fb.mp.value}}</b><em>/ {{fb.mp.max}}</em></span>
+		{{#if fb.showUltima}}<span class="res ip"><small>UP</small><b>{{fb.ultima}}</b></span>{{/if}}
+		<span class="sp"></span>
+		<span class="fbs-chips">
+			{{#each fb.statuses}}{{#if on}}<span class="fbs-chip on" style="--c:{{color}}">{{label}}</span>{{/if}}{{/each}}
+		</span>
+	</div>
+
+	<div class="fbs-full">
+		<header class="fbs-header">
+			<div class="fbs-portrait">
+				<img src="{{actor.img}}" alt="{{actor.name}}" {{#if fbEditable}}data-action="fbuiEditImage" data-tooltip="Change portrait"{{/if}}>
+				<span class="fbs-lv {{#if fb.villain}}villain{{/if}}" data-tooltip="Level"><b>{{fb.level}}</b></span>
+				{{#if fb.villain}}<span class="fbs-vtag">{{fb.villainLabel}}</span>{{/if}}
+			</div>
+			<div class="fbs-id">
+				<div class="fbs-kicker">
+					<label>LEVEL <input type="number" name="system.level.value" value="{{system.level.value}}" min="5" max="60" step="5" class="fbs-inline w2" aria-label="Level"></label>
+					<span>·</span>
+					<select name="system.rank.value" class="fbs-inline sel" aria-label="Rank">{{selectOptions FU.rank selected=system.rank.value localize=true}}</select>
+					{{#if fb.isChampion}}<label data-tooltip="Soldiers this Champion replaces">×<input type="number" name="system.rank.replacedSoldiers" value="{{system.rank.replacedSoldiers}}" min="1" max="6" class="fbs-inline w2" aria-label="Replaced soldiers"></label>{{/if}}
+					<span>·</span>
+					<select name="system.species.value" class="fbs-inline sel" aria-label="Species">
+						{{#if fb.isCompanion}}{{selectOptions FU.companionSpecies selected=system.species.value localize=true}}{{else}}{{selectOptions FU.species selected=system.species.value localize=true}}{{/if}}
+					</select>
+				</div>
+				<input type="text" name="name" value="{{actor.name}}" class="fbs-name" aria-label="Name" placeholder="Name">
+				<div class="fbs-traitline">
+					<label data-tooltip="Traits, separated by commas" class="wide"><input type="text" name="system.traits.value" value="{{system.traits.value}}" placeholder="Traits" aria-label="Traits"></label>
+				</div>
+				<div class="fbs-npcline">
+					<label><small>ROLE</small><select name="system.role.value" class="fbs-inline sel" aria-label="Role">{{selectOptions FU.role selected=system.role.value localize=true}}</select></label>
+					{{#unless fb.isCompanion}}
+						<label><small>VILLAIN</small><select name="system.villain.value" class="fbs-inline sel" aria-label="Villain">{{selectOptions FU.villainTypes selected=system.villain.value blank='FU.VillainNone' localize=true}}</select></label>
+						{{#if fb.villain}}<label><small>PHASES</small><input type="number" name="system.phases.value" value="{{system.phases.value}}" min="1" class="fbs-inline w2" aria-label="Phases"></label>{{/if}}
+					{{/unless}}
+				</div>
+
+				<div class="fbs-res2">
+					<div class="fbs-resbox">
+				<div class="fbs-meter hp {{#if fb.hp.inCrisis}}crisis{{/if}}">
+					<span class="k">HP</span>
+					<span class="v"><input type="number" name="system.resources.hp.value" value="{{fb.hp.value}}" min="0" aria-label="Current HP"><small>/ {{fb.hp.max}}</small></span>
+				</div>
+				<div class="fbs-bar hp {{#if fb.hp.inCrisis}}crisis{{/if}}" data-tooltip="Crisis at {{fb.hp.crisis}} HP"><span style="width:{{fb.hp.pct}}%"></span><i style="left:{{fb.hp.crisisPct}}%"></i></div>
+					</div>
+					<div class="fbs-resbox">
+				<div class="fbs-meter mp">
+					<span class="k">MP</span>
+					<span class="v"><input type="number" name="system.resources.mp.value" value="{{fb.mp.value}}" min="0" aria-label="Current MP"><small>/ {{fb.mp.max}}</small></span>
+				</div>
+				<div class="fbs-bar mp thin"><span style="width:{{fb.mp.pct}}%"></span></div>
+					</div>
+				</div>
+
+				<div class="fbs-points">
+					<span class="fbs-study" data-tooltip="How far the party has Studied this NPC">
+						<button type="button" class="fbs-btn sm" data-action="studyAction"><i class="fa-solid fa-magnifying-glass"></i> Study</button>
+						<select name="system.study.value" class="fbs-inline sel" data-dtype="Number" aria-label="Study result">
+							{{#each fb.studyOptions}}<option value="{{value}}" {{#if on}}selected{{/if}}>{{label}}</option>{{/each}}
+						</select>
+					</span>
+					{{#if fb.sp}}
+						<span class="fbs-sp {{#if fb.sp.over}}over{{/if}}" data-tooltip="Skill points used / available for its level, rank and species">
+							<small>SKILLS</small><b>{{fb.sp.used}}<em>/ {{fb.sp.available}}</em></b>
+						</span>
+					{{/if}}
+					{{#if fb.showUltima}}
+						<span class="fbs-cur">
+							<button type="button" class="fbs-fp up" data-action="fbuiFp" data-tooltip="Spend Ultima Points">
+								<small>ULTIMA</small>
+								<b>{{#if fb.ultimaPips}}{{#each fb.ultimaPips}}◆{{else}}0{{/each}}{{else}}◆ × {{fb.ultima}}{{/if}}</b>
+							</button>
+							<input type="number" name="system.resources.fp.value" value="{{fb.ultima}}" min="0" class="fbs-inline w2" aria-label="Ultima Points">
+						</span>
+					{{/if}}
+				</div>
+			</div>
+			<div class="fbs-stats n{{fb.headStats.length}}">
+				{{#each fb.headStats}}
+					<div class="fbs-tile {{#if crisis}}crisis{{/if}}"><small>{{k}}</small><b>{{v}}</b></div>
+				{{/each}}
+				{{#if fb.behavior}}
+					<button type="button" class="fbs-btn gold wide" data-action="roll" data-roll-type="behavior" data-tooltip="Roll which behavior it follows this turn">Behavior</button>
+				{{else}}
+					<button type="button" class="fbs-btn gold wide" data-action="roll" data-roll-type="open-check">Open check</button>
+				{{/if}}
+			</div>
+		</header>
+
+		<div class="fbs-strip">
+			<div class="fbs-strip-sec">
+				<small class="cap">Status</small>
+				<div class="fbs-chips">
+					{{#each fb.statuses}}
+						<button type="button" class="fbs-chip {{#if on}}on{{/if}} {{#if immune}}immune{{/if}}" style="--c:{{color}}" data-action="toggleStatusEffect" data-status-id="{{id}}" aria-pressed="{{#if on}}true{{else}}false{{/if}}" {{#if immune}}data-tooltip="Immune"{{/if}}>{{label}}</button>
+					{{/each}}
+				</div>
+			</div>
+			<div class="fbs-strip-sec">
+				<small class="cap">Affinities</small>
+				<div class="fbs-aff">
+					{{#each fb.affinities}}
+						<button type="button" class="cell" data-action="roll" data-roll-type="affinity-type" data-affinity="{{key}}" data-tooltip="{{tooltip}}"><small style="color:{{color}}">{{abbr}}</small><b style="color:{{wordColor}}">{{word}}</b></button>
+					{{/each}}
+				</div>
+			</div>
+		</div>
+
+		<div class="fbs-attrrow">
+			{{#each fb.attrs}}
+				<div class="fbs-attr">
+					<button type="button" class="dia" style="--c:{{color}}" data-action="roll" data-roll-type="attribute-check" aria-label="Roll a check, {{name}} d{{current}}" data-tooltip="{{name}}{{#if changed}}: d{{base}} {{#if up}}raised{{else}}lowered{{/if}} to d{{current}}{{/if}}">
+						<span class="{{#if changed}}{{#if up}}up{{else}}down{{/if}}{{/if}}">d{{current}}</span>
+					</button>
+					<span class="lbl"><b>{{abbr}}</b>
+						<select name="system.attributes.{{key}}.base" aria-label="{{name}} base die" data-dtype="Number">
+							{{#each options}}<option value="{{d}}" {{#if on}}selected{{/if}}>d{{d}}</option>{{/each}}
+						</select>
+					</span>
+				</div>
+			{{/each}}
+			<span class="sp"></span>
+			<div class="fbs-rollbox inline">
+				<small class="cap">Roll</small>
+				<div class="fbs-checks three">
+					<button type="button" class="fbs-btn" data-action="roll" data-roll-type="attribute-check">Attribute</button>
+					<button type="button" class="fbs-btn" data-action="roll" data-roll-type="open-check">Open</button>
+					<button type="button" class="fbs-btn" data-action="roll" data-roll-type="opposed-check">Opposed</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>

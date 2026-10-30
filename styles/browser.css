@@ -1,0 +1,64 @@
+/* Battle UI look for Project FU's compendium browser. Colors come from the shared variable block in sheet.css.
+   #fbs-z only raises specificity over the system's theme. */
+
+:is(#fbs-z, html) .application.fbui-browser { background: #0b1220; color: var(--ink); border: 1px solid var(--line2); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); font-family: var(--body); }
+:is(#fbs-z, html) .application.fbui-browser .window-header { background: rgba(12, 20, 44, 0.98); color: var(--ink); border-bottom: 1px solid var(--line3); font-family: var(--disp); letter-spacing: 0.06em; text-transform: uppercase; }
+:is(#fbs-z, html) .application.fbui-browser .window-content.fu-application__browser {
+	padding: 0;
+	gap: 0;
+	color: var(--ink);
+	background:
+		radial-gradient(700px 360px at 10% -10%, rgba(90, 169, 255, 0.16), transparent 70%),
+		radial-gradient(500px 360px at 110% 20%, rgba(242, 196, 90, 0.07), transparent 70%),
+		#0b1220;
+}
+
+/* tabs: the sheet's tab bar */
+:is(#fbs-z, html) .application.fbui-browser .fu-application__tabs { padding: 12px 18px 0; border-bottom: 1px solid rgba(159, 208, 255, 0.22); background: none; }
+:is(#fbs-z, html) .application.fbui-browser .fu-application__tabs nav { display: flex; flex-wrap: wrap; gap: 4px 22px; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; }
+:is(#fbs-z, html) .application.fbui-browser .fu-application__tabs nav a {
+	display: inline-flex; align-items: center; gap: 7px; margin: 0 0 -1px; padding: 4px 0 8px;
+	border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: none; box-shadow: none; text-shadow: none;
+	font-family: var(--disp); font-size: 17px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3);
+}
+:is(#fbs-z, html) .application.fbui-browser .fu-application__tabs nav a i { font-size: 15px; opacity: 0.8; }
+:is(#fbs-z, html) .application.fbui-browser .fu-application__tabs nav a:hover { color: var(--ink); }
+:is(#fbs-z, html) .application.fbui-browser .fu-application__tabs nav a.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+/* sidebar: search and filters */
+:is(#fbs-z, html) .application.fbui-browser .fu-application__sidebar { padding: 14px 12px 14px 18px; gap: 10px; border-right: 1px solid var(--line3); background: rgba(12, 20, 44, 0.45); }
+:is(#fbs-z, html) .application.fbui-browser .fu-application__sidebar input[type='search'] {
+	width: 100%; height: 34px; padding: 0 10px 0 32px; border-radius: 6px; border: 1px solid var(--line2); box-shadow: none;
+	color: var(--ink); font-size: 14px;
+	background: rgba(255, 255, 255, 0.05) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239fd0ff' stroke-width='2.5'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E") no-repeat 10px center;
+}
+:is(#fbs-z, html) .application.fbui-browser .fu-application__sidebar input[type='search']:focus { border-color: var(--gold); outline: none; }
+:is(#fbs-z, html) .application.fbui-browser .fu-application__sidebar fieldset {
+	display: block !important; margin: 0; padding: 22px 10px 10px; position: relative;
+	border: 1px solid var(--line2); border-radius: 6px; background: var(--glass); background-image: none; box-shadow: none; color: var(--ink);
+}
+:is(#fbs-z, html) .application.fbui-browser .fu-application__sidebar fieldset > legend {
+	position: absolute; top: 6px; left: 10px; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; filter: none; width: auto;
+}
+:is(#fbs-z, html) .application.fbui-browser .fu-application__sidebar fieldset > legend :is(label, i) { font-family: var(--disp); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink3); text-shadow: none; background: none; border: 0; }
+:is(#fbs-z, html) .application.fbui-browser .fu-application__sidebar__filter { display: flex; flex-wrap: wrap; gap: 5px; }
+:is(#fbs-z, html) .application.fbui-browser .fu-filter-option {
+	display: inline-flex; align-items: center; gap: 0; padding: 2px 10px; border-radius: 999px; cursor: pointer;
+	border: 1px solid rgba(238, 243, 255, 0.2); color: var(--ink3); font-size: 12px; line-height: 1.5; text-shadow: none; background: none;
+}
+:is(#fbs-z, html) .application.fbui-browser .fu-filter-option input { position: absolute; opacity: 0; width: 0; height: 0; margin: 0; pointer-events: none; }
+:is(#fbs-z, html) .application.fbui-browser .fu-filter-option:hover { color: var(--ink); border-color: var(--line); }
+:is(#fbs-z, html) .application.fbui-browser .fu-filter-option:has(input:checked) { color: var(--gold); border-color: var(--gold); background: rgba(242, 196, 90, 0.14); }
+:is(#fbs-z, html) .application.fbui-browser .fu-filter-option:has(input:focus-visible) { outline: 2px solid var(--gold); outline-offset: 1px; }
+
+/* results */
+:is(#fbs-z, html) .application.fbui-browser .fu-application__content { padding: 12px 18px 14px 14px; background: none; background-image: none; border: 0; box-shadow: none; color: var(--ink); }
+:is(#fbs-z, html) .application.fbui-browser .fu-application__content .fu-table { margin-bottom: 10px; }
+:is(#fbs-z, html) .application.fbui-browser .fu-table .fu-table__row-container { cursor: grab; }
+:is(#fbs-z, html) .application.fbui-browser .fu-table .fu-table__row-container:active { cursor: grabbing; }
+:is(#fbs-z, html) .application.fbui-browser .fu-table .fu-table__row-expand-content { padding: 6px 10px; border-left: 2px solid rgba(159, 208, 255, 0.35); margin: 2px 0 6px 8px; }
+:is(#fbs-z, html) .application.fbui-browser :is(h1, h2, h3, h4) { color: var(--ink); font-family: var(--disp); font-weight: 400; letter-spacing: 0.04em; }
+:is(#fbs-z, html) .application.fbui-browser .pfu-tags .fu-tag, :is(#fbs-z, html) .application.fbui-browser .fu-tag { background: rgba(90, 169, 255, 0.14); color: var(--ink2); border: 1px solid var(--line2); }
+:is(#fbs-z, html) .application.fbui-browser *::-webkit-scrollbar { width: 6px; height: 6px; }
+:is(#fbs-z, html) .application.fbui-browser *::-webkit-scrollbar-thumb { background: rgba(159, 208, 255, 0.3); border-radius: 3px; }
+:is(#fbs-z, html) .application.fbui-browser * { scrollbar-width: thin; scrollbar-color: rgba(159, 208, 255, 0.3) transparent; }

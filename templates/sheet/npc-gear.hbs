@@ -1,0 +1,32 @@
+<div class="tab fbs-tab fbs-gear {{tab.cssClass}}" data-group="primary" data-tab="gear">
+	<div class="fbs-two wide">
+		<div class="fbs-sec">
+			<div class="fbs-h"><h2>Equipped</h2></div>
+			<div class="fbs-panel fbs-eqlist">
+				{{#each fb.equipped}}
+					<div class="fbs-eqrow {{#unless item}}empty{{/unless}}" {{#if item}}data-item-id="{{item.id}}" data-uuid="{{item.uuid}}"{{/if}}>
+						{{#if item}}
+							<button type="button" class="ic" data-action="{{#if item.armory}}fbuiIcon{{else}}editItem{{/if}}" data-tooltip="{{#if item.armory}}Change icon{{else}}Edit{{/if}}"><img src="{{item.img}}" alt=""></button>
+						{{else}}
+							<span class="ic none" aria-hidden="true"><i></i></span>
+						{{/if}}
+						<span class="body"><small>{{label}}</small>{{#if item}}<b>{{item.name}}</b><span>{{item.line}}</span>{{else}}<b class="dim">{{empty}}</b>{{/if}}</span>
+					</div>
+				{{/each}}
+			</div>
+		</div>
+		<div class="fbs-sec">
+			<div class="fbs-h"><h2>How its defenses add up</h2></div>
+			<div class="fbs-panel fbs-def">
+				{{#each fb.defenses}}
+					<div class="r"><small>{{k}}</small><b>{{total}}</b><span>{{parts}}</span></div>
+				{{/each}}
+			</div>
+		</div>
+	</div>
+	<div class="fbs-h"><h2>Equipment</h2><span class="sp"></span>{{pfuCompendium "equipment" actorId=actor.uuid}}</div>
+	{{{weaponsTable}}}
+	{{{shieldsTable}}}
+	{{{armorsTable}}}
+	{{{accessoriesTable}}}
+</div>

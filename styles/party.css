@@ -1,0 +1,189 @@
+/* Battle UI party sheet, laid out like a JRPG main menu: a menu column on the left, the party as tall
+   arched cards on the right. Shares the character sheet's variables (sheet.css). The system's themed
+   grid is replaced; its own tabs (inventory, adversaries, codex, bonds, settings) open on the right. */
+
+:is(#fbs-z, html) .application.fbui-party .window-content {
+	display: grid;
+	grid-template-columns: 220px minmax(0, 1fr);
+	grid-template-rows: auto auto minmax(0, 1fr) auto;
+	grid-template-areas: none;
+	gap: 12px 18px;
+	padding: 16px 18px 14px 26px;
+	background:
+		radial-gradient(900px 500px at 75% 10%, rgba(120, 170, 230, 0.16), transparent 70%),
+		radial-gradient(600px 400px at 0% 100%, rgba(90, 169, 255, 0.12), transparent 70%),
+		linear-gradient(180deg, #0d1830, #0a1222 60%, #0b1220);
+}
+:is(#fbs-z, html) .application.fbui-party .window-content > * { grid-area: auto; height: auto; min-height: 0; }
+:is(#fbs-z, html) .application.fbui-party .window-content > section.fbp-head { display: contents; }
+:is(#fbs-z, html) .application.fbui-party .fbp-title { grid-column: 1; grid-row: 1; }
+:is(#fbs-z, html) .application.fbui-party .window-content > nav.fbp-menu { grid-column: 1; grid-row: 2; }
+:is(#fbs-z, html) .application.fbui-party .fbp-clocks { grid-column: 1; grid-row: 3; align-self: start; max-height: 100%; overflow-y: auto; }
+:is(#fbs-z, html) .application.fbui-party .fbp-res { grid-column: 1; grid-row: 4; }
+:is(#fbs-z, html) .application.fbui-party .window-content > .tab { grid-column: 2; grid-row: 1 / -1; overflow-y: auto; overflow-x: hidden; padding: 0 4px 6px 0; }
+:is(#fbs-z, html) .application.fbui-party .window-content > .tab:not(.active) { display: none; }
+:is(#fbs-z, html) .application.fbui-party .window-content > .tab.fbp-roster.active { overflow: hidden; display: flex; flex-direction: column; }
+:is(#fbs-z, html) .application.fbui-party .window-content > .tab.fbp-roster:not(.active) { display: none; }
+
+/* left column */
+.application.fbui-party .fbp-title { display: flex; align-items: center; gap: 10px; margin-left: -8px; }
+.application.fbui-party .fbp-title img { width: 46px; height: 46px; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); flex: none; }
+.application.fbui-party .fbp-title img[data-action] { cursor: pointer; }
+.application.fbui-party .fbp-title > div { display: flex; flex-direction: column; min-width: 0; }
+.application.fbui-party .fbp-title small { font-family: var(--disp); font-size: 12px; letter-spacing: 0.22em; color: var(--ink3); }
+:is(#fbs-z, html) .application.fbui-party .fbp-title input { font-family: var(--disp); font-size: 24px; line-height: 1.1; height: auto; padding: 0 3px; margin-left: -4px; width: 100%; background: transparent; border: 1px solid transparent; color: var(--ink); box-shadow: none; }
+:is(#fbs-z, html) .application.fbui-party .fbp-title input:is(:hover, :focus) { border-color: var(--line2); background: rgba(255, 255, 255, 0.05); outline: none; }
+
+:is(#fbs-z, html) .application.fbui-party .fbp-menu { display: flex; flex-direction: column; gap: 5px; border: 0; padding: 0; margin: 0; background: none; }
+:is(#fbs-z, html) .application.fbui-party .fbp-mi {
+	all: unset;
+	box-sizing: border-box;
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	justify-content: flex-start;
+	text-align: left;
+	width: 100%;
+	height: 30px;
+	padding: 0 14px;
+	border-radius: 4px;
+	cursor: pointer;
+	font-family: var(--body);
+	font-size: 16px;
+	color: var(--ink);
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+	background: linear-gradient(90deg, rgba(150, 190, 240, 0.32), rgba(110, 150, 210, 0.16) 55%, rgba(90, 130, 190, 0.06));
+	border: 1px solid rgba(200, 225, 255, 0.28);
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+	transition: background 0.12s, box-shadow 0.12s;
+}
+:is(#fbs-z, html) .application.fbui-party .fbp-mi i { width: 16px; text-align: center; font-size: 13px; color: rgba(220, 235, 255, 0.8); }
+:is(#fbs-z, html) .application.fbui-party .fbp-mi:hover { background: linear-gradient(90deg, rgba(170, 210, 255, 0.45), rgba(120, 165, 225, 0.22) 60%, rgba(90, 130, 190, 0.08)); }
+:is(#fbs-z, html) .application.fbui-party .fbp-mi.active {
+	background: linear-gradient(90deg, rgba(120, 200, 255, 0.85), rgba(70, 150, 230, 0.55) 55%, rgba(60, 120, 200, 0.12));
+	border-color: rgba(220, 240, 255, 0.85);
+	box-shadow: 0 0 14px rgba(110, 190, 255, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+/* the cursor: a small diamond pointer left of the hovered or chosen item */
+:is(#fbs-z, html) .application.fbui-party .fbp-mi::before {
+	content: '';
+	position: absolute;
+	left: -20px;
+	top: 50%;
+	width: 10px;
+	height: 10px;
+	margin-top: -6px;
+	transform: rotate(45deg);
+	border: 2px solid #e8f4ff;
+	box-shadow: 0 0 8px rgba(140, 200, 255, 0.9);
+	opacity: 0;
+	transition: opacity 0.1s, left 0.1s;
+}
+:is(#fbs-z, html) .application.fbui-party .fbp-mi:is(:hover, .active, :focus-visible)::before { opacity: 1; }
+:is(#fbs-z, html) .application.fbui-party .fbp-mi:hover::before { left: -17px; }
+:is(#fbs-z, html) .application.fbui-party .fbp-mi:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+:is(#fbs-z, html) .application.fbui-party .fbp-mi.act { height: 26px; font-size: 14px; background: linear-gradient(90deg, rgba(150, 190, 240, 0.16), rgba(90, 130, 190, 0.04)); border-color: rgba(200, 225, 255, 0.16); }
+:is(#fbs-z, html) .application.fbui-party .fbp-mi.act:hover { background: linear-gradient(90deg, rgba(170, 210, 255, 0.3), rgba(90, 130, 190, 0.06)); }
+.application.fbui-party .fbp-sep { height: 1px; margin: 6px 0 3px; background: linear-gradient(90deg, rgba(200, 225, 255, 0.35), transparent); }
+
+:is(#fbs-z, html) .application.fbui-party .fbp-clocks { display: flex; flex-direction: column; gap: 6px; padding: 8px 10px; border-radius: 6px; background: rgba(12, 20, 44, 0.6); border: 1px solid var(--line3); }
+:is(#fbs-z, html) .application.fbui-party .fbp-clocks .pfu-progress__collection { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; background: none; color: var(--ink); }
+
+.application.fbui-party .fbp-res { display: flex; flex-direction: column; gap: 2px; padding: 8px 12px; border-radius: 6px; background: rgba(12, 20, 44, 0.75); border: 1px solid var(--line2); }
+.application.fbui-party .fbp-res .r { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.application.fbui-party .fbp-res small { font-family: var(--disp); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink3); }
+.application.fbui-party .fbp-res b { font-family: var(--disp); font-weight: 400; font-size: 18px; }
+.application.fbui-party .fbp-res .r.gold small, .application.fbui-party .fbp-res .r.gold b { color: var(--gold); }
+
+/* roster: arched cards side by side */
+.application.fbui-party .fbp-row { flex: 1; min-height: 0; display: flex; gap: 12px; overflow-x: auto; overflow-y: hidden; padding: 4px 2px 8px; align-items: stretch; scroll-snap-type: x proximity; }
+.application.fbui-party .fbp-card {
+	position: relative;
+	flex: 1 1 0;
+	min-width: 168px;
+	max-width: 230px;
+	scroll-snap-align: start;
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	border-radius: 98px 98px 10px 10px / 70px 70px 10px 10px;
+	background: linear-gradient(180deg, rgba(60, 90, 130, 0.45), rgba(16, 28, 54, 0.92) 42%, rgba(12, 20, 40, 0.96));
+	border: 1px solid rgba(200, 225, 255, 0.35);
+	box-shadow: inset 0 0 0 3px rgba(10, 18, 36, 0.7), inset 0 0 0 4px rgba(200, 225, 255, 0.12), 0 14px 30px rgba(0, 0, 0, 0.45);
+	overflow: hidden;
+	transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+.application.fbui-party .fbp-card:hover { border-color: rgba(220, 240, 255, 0.75); box-shadow: inset 0 0 0 3px rgba(10, 18, 36, 0.7), inset 0 0 0 4px rgba(200, 225, 255, 0.2), 0 0 22px rgba(110, 190, 255, 0.35), 0 14px 30px rgba(0, 0, 0, 0.45); transform: translateY(-2px); }
+.application.fbui-party .fbp-card.crisis { border-color: rgba(255, 154, 107, 0.6); }
+.application.fbui-party .fbp-card.ko { filter: grayscale(0.75) brightness(0.8); }
+.application.fbui-party .fbp-card .pt { flex: 1 1 176px; display: block; min-height: 176px; overflow: hidden; border-radius: inherit; border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin: 4px 4px 0; }
+.application.fbui-party .fbp-card .pt img { width: 100%; height: 100%; object-fit: cover; object-position: top; border: 0; transition: transform 0.25s; -webkit-mask-image: linear-gradient(180deg, #000 70%, transparent); mask-image: linear-gradient(180deg, #000 70%, transparent); }
+.application.fbui-party .fbp-card:hover .pt img { transform: scale(1.04); }
+.application.fbui-party .fbp-card .lvup { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); font-family: var(--disp); font-size: 11px; letter-spacing: 0.16em; padding: 1px 8px; border-radius: 3px; background: var(--gold); color: #0b1220; box-shadow: 0 0 12px rgba(242, 196, 90, 0.6); }
+.application.fbui-party .fbp-card .sts { position: absolute; top: 46px; left: 8px; right: 8px; display: flex; flex-wrap: wrap; gap: 3px; justify-content: center; }
+.application.fbui-party .fbp-card .sts .fbs-chip { font-size: 10px; padding: 0 6px; background: rgba(11, 18, 32, 0.85); }
+
+.application.fbui-party .fbp-card .info, .application.fbui-party .fbp-card .rank { padding: 0 12px; display: flex; flex-direction: column; gap: 2px; }
+.application.fbui-party .fbp-card .info { margin-top: -14px; position: relative; }
+.application.fbui-party .fbp-card .lv { font-size: 13px; color: var(--ink2); line-height: 1; }
+.application.fbui-party .fbp-card .nm { font-size: 18px; font-weight: 700; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); }
+.application.fbui-party .fbp-card .ln { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; font-size: 13px; color: var(--ink2); line-height: 1.25; }
+.application.fbui-party .fbp-card .ln b { font-weight: 400; color: var(--ink); font-size: 14px; }
+.application.fbui-party .fbp-card .ln.hp > span:first-child { color: #6fe3a0; font-weight: 700; }
+.application.fbui-party .fbp-card.crisis .ln.hp > span:first-child, .application.fbui-party .fbp-card.crisis .ln.hp b { color: var(--crisis); }
+.application.fbui-party .fbp-card .ln.mp > span:first-child { color: #7cb8ff; font-weight: 700; }
+.application.fbui-party .fbp-card .ln.ip > span:first-child { color: var(--gold); font-weight: 700; }
+.application.fbui-party .fbp-card .fbs-bar { height: 5px; margin: 1px 0 3px; }
+.application.fbui-party .fbp-card .fbs-bar.thin { height: 5px; }
+.application.fbui-party .fbp-card .defs { display: flex; justify-content: space-between; margin-top: 3px; font-family: var(--disp); font-size: 14px; }
+.application.fbui-party .fbp-card .defs small { font-size: 10px; letter-spacing: 0.1em; color: var(--ink3); }
+
+.application.fbui-party .fbp-card .rank { margin-top: 8px; padding-top: 7px; border-top: 1px solid rgba(200, 225, 255, 0.2); }
+.application.fbui-party .fbp-card .rank .ln:first-child > span:first-child { color: var(--ink); font-weight: 700; }
+.application.fbui-party .fbp-card .rank .who { font-size: 13px; font-weight: 400; font-style: italic; color: var(--ink2); line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.application.fbui-party .fbp-card .rank .more { font-size: 11px; color: var(--ink3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.application.fbui-party .fbp-card .rank .ln.fp b { color: var(--gold); }
+
+/* the emblem: token art in a framed diamond at the foot of the card */
+.application.fbui-party .fbp-card .emb { position: relative; flex: 0 0 128px; display: grid; place-items: center; margin-top: 4px; cursor: pointer; }
+.application.fbui-party .fbp-card .emb.static { cursor: default; }
+.application.fbui-party .fbp-card .emb .frame { position: absolute; width: 74px; height: 74px; transform: rotate(45deg); border: 1px solid rgba(200, 225, 255, 0.45); background: radial-gradient(circle, rgba(90, 169, 255, 0.22), rgba(12, 20, 40, 0.2) 70%); box-shadow: 0 0 0 5px rgba(12, 20, 40, 0.5), 0 0 0 6px rgba(200, 225, 255, 0.15); }
+.application.fbui-party .fbp-card .emb::before, .application.fbui-party .fbp-card .emb::after { content: ''; position: absolute; left: 50%; top: 50%; width: 132px; height: 1px; background: linear-gradient(90deg, transparent, rgba(200, 225, 255, 0.3), transparent); transform: translate(-50%, -50%) rotate(45deg); }
+.application.fbui-party .fbp-card .emb::after { transform: translate(-50%, -50%) rotate(-45deg); }
+.application.fbui-party .fbp-card .emb .art { position: relative; z-index: 1; width: 88px; height: 88px; display: grid; place-items: center; }
+.application.fbui-party .fbp-card .emb .art.mir { transform: scaleX(-1); }
+.application.fbui-party .fbp-card .emb .art :is(img, video) { max-width: 100%; max-height: 100%; object-fit: contain; border: 0; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.6)); }
+.application.fbui-party .fbp-card .emb:hover .frame { border-color: var(--gold); box-shadow: 0 0 0 5px rgba(12, 20, 40, 0.5), 0 0 0 6px rgba(242, 196, 90, 0.35), 0 0 18px rgba(242, 196, 90, 0.35); }
+.application.fbui-party .fbp-card.comp { min-width: 150px; max-width: 190px; }
+/* our card buttons carry no system button chrome */
+:is(#fbs-z, html) .application.fbui-party .fbp-card :is(.pt, .emb) { background: none; border: 0; box-shadow: none; padding: 0; outline-offset: 2px; color: inherit; }
+:is(#fbs-z, html) .application.fbui-party .fbp-card .emb { display: grid; place-items: center; }
+:is(#fbs-z, html) .application.fbui-party .fbp-card .pt { display: block; width: auto; border-radius: 94px 94px 0 0 / 66px 66px 0 0; }
+.application.fbui-party .fbp-card.comp .pt { flex-basis: 140px; min-height: 140px; }
+
+/* the system's tabs (inventory, adversaries, codex, bonds, settings, inspect) on the dark theme */
+:is(#fbs-z, html) .application.fbui-party .tab:not(.fbp-roster) :is(.desc, .section-container, fieldset, .fu-application__sidebar) {
+	background: var(--glass);
+	background-image: none;
+	border: 1px solid var(--line2);
+	border-radius: 6px;
+	color: var(--ink);
+	box-shadow: none;
+	text-shadow: none;
+}
+:is(#fbs-z, html) .application.fbui-party .tab:not(.fbp-roster) :is(legend, .resource-label-m, .resource-label-full, .resource-text-m, label, .name, .blurb) { color: var(--ink2); text-shadow: none; }
+:is(#fbs-z, html) .application.fbui-party .tab:not(.fbp-roster) fieldset > legend { background: rgba(90, 169, 255, 0.14); border: 1px solid var(--line2); border-radius: 4px; padding: 1px 10px; font-family: var(--disp); letter-spacing: 0.12em; text-transform: uppercase; filter: none; }
+:is(#fbs-z, html) .application.fbui-party .tab:not(.fbp-roster) :is(input:not([type='checkbox'], [type='radio']), select, textarea) { background: rgba(255, 255, 255, 0.05); color: var(--ink); border: 1px solid var(--line2); border-radius: 4px; box-shadow: none; }
+:is(#fbs-z, html) .application.fbui-party .tab:not(.fbp-roster) input[type='checkbox'] { accent-color: var(--gold); }
+:is(#fbs-z, html) .application.fbui-party .tab:not(.fbp-roster) .entry:hover { border-color: var(--line); }
+:is(#fbs-z, html) .application.fbui-party .tab:not(.fbp-roster) .centered-message { color: var(--ink2); }
+:is(#fbs-z, html) .application.fbui-party .tab:not(.fbp-roster) .fu-tag { background: rgba(90, 169, 255, 0.16); color: var(--ink); border-color: var(--line2); }
+:is(#fbs-z, html) .application.fbui-party .fbp-card .lvup { cursor: pointer; display: inline-flex; align-items: center; gap: 5px; z-index: 2; border: 1px solid #fff3d1; background: linear-gradient(180deg, #ffe19a, #f2c45a 55%, #c9952e); color: #2a1a00; padding: 2px 10px; animation: fbs-lvpulse 1.6s ease-in-out infinite; }
+:is(#fbs-z, html) .application.fbui-party .fbp-card .lvup:hover { filter: brightness(1.12); }
+
+/* small or pixel-art portraits: show whole and crisp instead of cropped and blurred */
+.application.fbui-party .fbp-card .pt.px { background: radial-gradient(circle at 50% 60%, rgba(90, 169, 255, 0.22), rgba(12, 20, 40, 0) 70%); display: grid; place-items: center; }
+.application.fbui-party .fbp-card .pt.px :is(img, video) { width: 86%; height: 86%; object-fit: contain; object-position: center; image-rendering: pixelated; -webkit-mask-image: none; mask-image: none; }
+.application.fbui-party .fbp-card .pt video { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.application.fbui-party .fbp-card .emb .art.px :is(img, video) { image-rendering: pixelated; }

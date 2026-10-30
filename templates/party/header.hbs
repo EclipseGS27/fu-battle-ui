@@ -1,0 +1,25 @@
+<section class="widgets fbp-head">
+	<div class="fbp-title">
+		<img src="{{actor.img}}" alt="" {{#if fbp.fbEditable}}data-action="fbuiEditImage" data-tooltip="Change party image"{{/if}}>
+		<div>
+			<small>PARTY MENU</small>
+			<input type="text" name="name" value="{{actor.name}}" aria-label="Party name">
+		</div>
+	</div>
+	{{#if system.tracks.length}}
+		<div class="fbp-clocks">
+			<small class="cap">Clocks</small>
+			<div class="pfu-progress__collection">
+				{{#each system.tracks}}
+					{{pfuProgressCollection ../document 'system.tracks' @index displayName=true compact=true prompt=true controls=../isGM classes="--stack"}}
+				{{/each}}
+			</div>
+		</div>
+	{{/if}}
+	<div class="fbp-res">
+		<div class="r gold"><small>{{localize currency}}</small><b>{{stats.zenit}}</b></div>
+		<div class="r"><small>EXP earned</small><b>{{stats.xp}}</b></div>
+		<div class="r"><small>Fabula spent</small><b>{{stats.fp}}</b></div>
+		<div class="r"><small>Ultima spent</small><b>{{stats.up}}</b></div>
+	</div>
+</section>

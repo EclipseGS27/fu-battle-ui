@@ -1,0 +1,37 @@
+<div class="tab fbs-tab fbs-story {{tab.cssClass}}" data-group="primary" data-tab="story">
+	<div class="fbs-h">
+		<h2>Bonds · {{fb.bonds.length}} of {{fb.bondMax}}</h2>
+		<span class="sp"></span>
+		{{#if fb.canAddBond}}<button type="button" class="fbs-btn gold sm" data-action="addBond">Add bond</button>{{/if}}
+	</div>
+	{{#if fb.bonds.length}}
+		<div class="fbs-bonds">
+			{{#each fb.bonds as |b|}}
+				<div class="fbs-bond">
+					<input type="text" name="system.bonds.{{b.index}}.name" value="{{b.name}}" placeholder="Who" list="fbs-bond-names-{{@root.actor.id}}" aria-label="Bond with">
+					<span class="feel">
+						{{#each b.feelings as |f|}}
+							<input type="hidden" name="system.bonds.{{b.index}}.{{f.field}}" value="{{f.value}}">
+							{{#each f.options as |o|}}
+								<button type="button" class="fbs-chip {{#if o.on}}on{{/if}}" style="--c:#f2c45a" data-action="fbuiFeeling" data-bond="{{b.index}}" data-field="{{f.field}}" data-value="{{o.p}}" aria-pressed="{{#if o.on}}true{{else}}false{{/if}}">{{o.p}}</button>
+							{{/each}}
+						{{/each}}
+					</span>
+					<span class="str" data-tooltip="Strength {{b.strength}}">{{#each b.pips}}<i class="{{#if this}}on{{/if}}"></i>{{/each}}</span>
+					<label class="bonus" data-tooltip="Bonus strength"><small>+</small><input type="number" name="system.bonds.{{b.index}}.bonus" value="{{b.bonus}}" placeholder="0" aria-label="Bonus strength"></label>
+					<button type="button" class="fbs-icobtn" data-action="deleteBond" data-bond-index="{{b.index}}" data-tooltip="Remove bond" aria-label="Remove bond"><i class="fa-solid fa-trash"></i></button>
+				</div>
+			{{/each}}
+			<datalist id="fbs-bond-names-{{actor.id}}">{{#each fbBondOptions}}<option value="{{this}}"></option>{{/each}}</datalist>
+		</div>
+	{{else}}
+		<p class="fbs-empty">{{actor.name}} has no Bonds yet. A Bond holds up to three feelings toward someone, one from each pair: Admiration or Inferiority, Loyalty or Mistrust, Affection or Hatred. Its strength is how many it holds, and invoking it adds that strength to a Check.</p>
+	{{/if}}
+
+	<div class="fbs-h"><h2>Notes</h2></div>
+	<div class="fbs-panel fbs-notes">
+		<prose-mirror name="system.description" value="{{system.description}}" toggled>
+			{{{enrichedHtml.description}}}
+		</prose-mirror>
+	</div>
+</div>

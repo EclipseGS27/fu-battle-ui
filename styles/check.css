@@ -1,0 +1,80 @@
+/* Battle UI look for Project FU's check prompt. Colors and fonts come from the shared variable block in sheet.css.
+   #fbs-z only raises specificity over the system's dialog styles. */
+
+:is(#fbs-z, html) .application.fbui-check { background: #0b1220; color: var(--ink); border: 1px solid var(--line2); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); font-family: var(--body); }
+:is(#fbs-z, html) .application.fbui-check .window-header { background: rgba(12, 20, 44, 0.98); color: var(--ink); border-bottom: 1px solid var(--line3); font-family: var(--disp); letter-spacing: 0.06em; text-transform: uppercase; }
+:is(#fbs-z, html) .application.fbui-check .window-content {
+	padding: 14px 16px 12px;
+	gap: 10px;
+	color: var(--ink);
+	background: radial-gradient(500px 260px at 10% -10%, rgba(90, 169, 255, 0.18), transparent 70%), radial-gradient(400px 300px at 110% 30%, rgba(242, 196, 90, 0.08), transparent 70%), #0b1220;
+}
+:is(#fbs-z, html) .application.fbui-check .fbc-hidden { display: none !important; }
+:is(#fbs-z, html) .application.fbui-check .dialog-content { display: flex; flex-direction: column; gap: 10px; background: none; border: 0; box-shadow: none; padding: 0; }
+:is(#fbs-z, html) .application.fbui-check :where(.fbc) button { all: unset; box-sizing: border-box; cursor: pointer; font: inherit; color: inherit; }
+:is(#fbs-z, html) .application.fbui-check .fbc button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+:is(#fbs-z, html) .application.fbui-check .cap { font-family: var(--disp); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink3); line-height: 1; }
+
+:is(#fbs-z, html) .application.fbui-check .fbc { display: flex; flex-direction: column; gap: 12px; }
+
+/* who + live formula */
+:is(#fbs-z, html) .application.fbui-check .fbc-head { display: flex; align-items: center; gap: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--line3); }
+:is(#fbs-z, html) .application.fbui-check .fbc-head img { width: 54px; height: 54px; object-fit: cover; object-position: top; border-radius: 6px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.04); flex: none; }
+:is(#fbs-z, html) .application.fbui-check .fbc-who { display: flex; flex-direction: column; min-width: 0; flex: 1; line-height: 1.1; }
+:is(#fbs-z, html) .application.fbui-check .fbc-who small { font-family: var(--disp); font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); }
+:is(#fbs-z, html) .application.fbui-check .fbc-who b { font-family: var(--disp); font-weight: 400; font-size: 24px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:is(#fbs-z, html) .application.fbui-check .fbc-formula { display: flex; flex-direction: column; align-items: flex-end; text-align: right; line-height: 1.15; }
+:is(#fbs-z, html) .application.fbui-check .fbc-formula small { font-family: var(--disp); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink3); }
+:is(#fbs-z, html) .application.fbui-check .fbc-formula b { font-family: var(--disp); font-weight: 400; font-size: 20px; white-space: nowrap; }
+:is(#fbs-z, html) .application.fbui-check .fbc-formula b em { font-style: normal; color: var(--gold); }
+:is(#fbs-z, html) .application.fbui-check .fbc-formula span { font-size: 12px; color: var(--ink2); }
+
+/* attribute diamonds */
+:is(#fbs-z, html) .application.fbui-check .fbc-attrs { display: flex; flex-direction: column; gap: 8px; }
+:is(#fbs-z, html) .application.fbui-check .fbc-row { display: grid; grid-template-columns: 82px 1fr; align-items: center; gap: 8px; }
+:is(#fbs-z, html) .application.fbui-check .fbc-dias { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+:is(#fbs-z, html) .application.fbui-check .fbc-dia { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 6px; border: 1px solid transparent; }
+:is(#fbs-z, html) .application.fbui-check .fbc-dia:hover { background: rgba(90, 169, 255, 0.1); }
+:is(#fbs-z, html) .application.fbui-check .fbc-dia .d { width: 32px; height: 32px; flex: none; transform: rotate(45deg); display: grid; place-items: center; border: 2px solid color-mix(in srgb, var(--c) 55%, transparent); background: color-mix(in srgb, var(--c) 8%, transparent); transition: box-shadow 0.15s, background 0.15s; }
+:is(#fbs-z, html) .application.fbui-check .fbc-dia .d span { transform: rotate(-45deg); font-family: var(--disp); font-weight: 700; font-size: 13px; color: var(--ink2); }
+:is(#fbs-z, html) .application.fbui-check .fbc-dia b { font-family: var(--disp); font-weight: 400; font-size: 16px; color: var(--ink3); }
+:is(#fbs-z, html) .application.fbui-check .fbc-dia.on { border-color: color-mix(in srgb, var(--c) 45%, transparent); background: color-mix(in srgb, var(--c) 10%, transparent); }
+:is(#fbs-z, html) .application.fbui-check .fbc-dia.on .d { border-color: var(--c); background: color-mix(in srgb, var(--c) 30%, transparent); box-shadow: 0 0 14px color-mix(in srgb, var(--c) 55%, transparent); }
+:is(#fbs-z, html) .application.fbui-check .fbc-dia.on .d span, .application.fbui-check .fbc-dia.on b { color: var(--ink); }
+
+/* modifier / difficulty */
+:is(#fbs-z, html) .application.fbui-check .fbc-grid { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 10px; }
+:is(#fbs-z, html) .application.fbui-check .fbc-grid.one { grid-template-columns: 1fr; }
+:is(#fbs-z, html) .application.fbui-check .fbc-box { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border-radius: 6px; background: var(--glass); border: 1px solid var(--line2); }
+:is(#fbs-z, html) .application.fbui-check .fbc-step { display: flex; align-items: center; gap: 6px; }
+:is(#fbs-z, html) .application.fbui-check .fbc-step button { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 4px; border: 1px solid var(--line); background: rgba(90, 169, 255, 0.12); font-weight: 700; font-size: 18px; line-height: 1; }
+:is(#fbs-z, html) .application.fbui-check .fbc-step button:hover { filter: brightness(1.3); }
+:is(#fbs-z, html) .application.fbui-check input.fbc-num { width: 3.2em; height: 34px; margin: 0; padding: 0 4px; text-align: center; font-family: var(--disp); font-size: 22px; color: var(--ink); background: rgba(255, 255, 255, 0.05); border: 1px solid var(--line2); border-radius: 4px; box-shadow: none; -moz-appearance: textfield; }
+:is(#fbs-z, html) .application.fbui-check input.fbc-num:focus { border-color: var(--gold); outline: none; }
+:is(#fbs-z, html) .application.fbui-check input.fbc-num::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+:is(#fbs-z, html) .application.fbui-check .fbc-bonus { font-size: 12px; color: var(--gold); }
+:is(#fbs-z, html) .application.fbui-check .fbc-dl { display: flex; align-items: center; gap: 6px; }
+:is(#fbs-z, html) .application.fbui-check .fbc-dl i { font-style: normal; color: var(--ink4); }
+:is(#fbs-z, html) .application.fbui-check .fbc-lvs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+:is(#fbs-z, html) .application.fbui-check .fbc-lv { display: flex; flex-direction: column; align-items: center; padding: 4px 2px; border-radius: 4px; border: 1px solid rgba(238, 243, 255, 0.16); line-height: 1.1; }
+:is(#fbs-z, html) .application.fbui-check .fbc-lv b { font-family: var(--disp); font-weight: 400; font-size: 17px; color: var(--c); }
+:is(#fbs-z, html) .application.fbui-check .fbc-lv small { font-size: 10px; color: var(--ink3); white-space: nowrap; }
+:is(#fbs-z, html) .application.fbui-check .fbc-lv:hover { border-color: var(--c); }
+:is(#fbs-z, html) .application.fbui-check .fbc-lv.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 16%, transparent); }
+
+/* whatever the panel doesn't rebuild (label, increment, group members, ritual tables) */
+:is(#fbs-z, html) .application.fbui-check fieldset.fbc-extra { margin: 0; padding: 8px 12px 10px; border: 1px solid var(--line2); border-radius: 6px; background: var(--glass); background-image: none; color: var(--ink); box-shadow: none; }
+:is(#fbs-z, html) .application.fbui-check fieldset.fbc-extra > legend { margin: 0; padding: 0 6px; border: 0; background: none; font-family: var(--disp); font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink3); text-shadow: none; filter: none; }
+:is(#fbs-z, html) .application.fbui-check fieldset.fbc-extra :is(label, th, td, span) { color: var(--ink2); text-shadow: none; }
+:is(#fbs-z, html) .application.fbui-check fieldset.fbc-extra input:not([type='checkbox'], [type='radio']) { background: rgba(255, 255, 255, 0.05); color: var(--ink); border: 1px solid var(--line2); border-radius: 4px; box-shadow: none; }
+:is(#fbs-z, html) .application.fbui-check fieldset.fbc-extra :is(input[type='checkbox'], input[type='radio']) { accent-color: var(--gold); }
+:is(#fbs-z, html) .application.fbui-check fieldset.fbc-extra table { background: none; border: 0; color: var(--ink2); }
+:is(#fbs-z, html) .application.fbui-check fieldset.fbc-extra :is(thead, tr) { background: none; }
+:is(#fbs-z, html) .application.fbui-check fieldset.fbc-extra tr.selected, :is(#fbs-z, html) .application.fbui-check fieldset.fbc-extra tr:has(input:checked) { background: rgba(242, 196, 90, 0.12); }
+:is(#fbs-z, html) .application.fbui-check .fu-dialog__output { font-family: var(--disp); font-size: 24px; color: var(--gold); }
+
+/* footer: one gold Roll button */
+:is(#fbs-z, html) .application.fbui-check .form-footer { display: flex; gap: 8px; margin-top: 2px; padding: 0; border: 0; }
+:is(#fbs-z, html) .application.fbui-check .form-footer button { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; height: 40px; border-radius: 6px; border: 1px solid var(--line); background: rgba(90, 169, 255, 0.12); color: var(--ink); font-family: var(--disp); font-size: 16px; letter-spacing: 0.12em; text-transform: uppercase; box-shadow: none; text-shadow: none; }
+:is(#fbs-z, html) .application.fbui-check .form-footer button.fbc-roll { border-color: var(--gold); background: rgba(242, 196, 90, 0.18); color: #fff3d1; }
+:is(#fbs-z, html) .application.fbui-check .form-footer button:hover { filter: brightness(1.25); box-shadow: 0 0 18px rgba(242, 196, 90, 0.25); }

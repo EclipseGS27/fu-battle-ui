@@ -1,0 +1,50 @@
+<section class="tab fbs-tab fbp-roster overview {{tab.cssClass}}" data-tab="overview" data-group="primary">
+	{{#unless characterCount}}
+		<p class="fbs-empty">No one in this party yet. Drag Player Characters onto this sheet to add them.</p>
+	{{/unless}}
+	<div class="fbp-row">
+		{{#each fbp.characters}}
+			<article class="fbp-card character-option {{#if hp.inCrisis}}crisis{{/if}} {{#if ko}}ko{{/if}}" data-uuid="{{uuid}}" data-type="character">
+				<button type="button" class="pt" data-action="revealActor" data-actor="{{uuid}}" data-type="character" data-tooltip="Open {{name}}'s sheet">{{#if imgVideo}}<video src="{{img}}" autoplay muted loop playsinline></video>{{else}}<img src="{{img}}" alt="">{{/if}}</button>
+				{{#if canLevel}}<button type="button" class="lvup" data-action="fbuiLevelUp" data-actor="{{uuid}}" data-tooltip="Level up {{name}}"><i class="fa-solid fa-angles-up"></i> LEVEL UP</button>{{/if}}
+				{{#if statuses.length}}<div class="sts">{{#each statuses}}<span class="fbs-chip on" style="--c:{{color}}">{{label}}</span>{{/each}}</div>{{/if}}
+				<div class="info">
+					<small class="lv">Lv.{{level}}</small>
+					<b class="nm">{{name}}</b>
+					<div class="ln"><span>Next Lv:</span><span><b>{{exp}}</b>/10 EXP</span></div>
+					<div class="ln hp"><span>HP</span><span><b>{{hp.value}}</b>/{{hp.max}}</span></div>
+					<div class="fbs-bar hp {{#if hp.inCrisis}}crisis{{/if}}" data-tooltip="Crisis at {{hp.crisis}}"><span style="width:{{hp.pct}}%"></span><i style="left:{{hp.crisisPct}}%"></i></div>
+					<div class="ln mp"><span>MP</span><span><b>{{mp.value}}</b>/{{mp.max}}</span></div>
+					<div class="fbs-bar mp thin"><span style="width:{{mp.pct}}%"></span></div>
+					<div class="ln ip"><span>IP</span><span><b>{{ip.value}}</b>/{{ip.max}}</span></div>
+					<div class="defs">{{#each stats}}<span><small>{{k}}</small> {{v}}</span>{{/each}}</div>
+				</div>
+				<div class="rank">
+					<div class="ln"><span>{{#if main}}{{main.name}}{{else}}No class{{/if}}</span>{{#if main}}<span>CL {{main.level}}</span>{{/if}}</div>
+					<b class="who">{{identity}}</b>
+					{{#if more}}<small class="more">{{more}}</small>{{/if}}
+					<div class="ln fp"><span>Fabula</span><span><b>{{fp}}</b> FP</span></div>
+				</div>
+				<button type="button" class="emb" data-action="inspectCharacter" data-actor="{{uuid}}" data-tooltip="Inspect{{#if role}} · {{role}}{{/if}}">
+					<span class="frame"></span>
+					<span class="art {{#if token.mirror}}mir{{/if}}">{{#if token.video}}<video src="{{token.src}}" autoplay muted loop playsinline></video>{{else}}<img src="{{token.src}}" alt="">{{/if}}</span>
+				</button>
+			</article>
+		{{/each}}
+		{{#each fbp.companions}}
+			<article class="fbp-card comp character-option {{#if hp.inCrisis}}crisis{{/if}}" data-uuid="{{uuid}}" data-type="companion">
+				<button type="button" class="pt" data-action="revealActor" data-actor="{{uuid}}" data-type="companion" data-tooltip="Open {{name}}'s sheet">{{#if imgVideo}}<video src="{{img}}" autoplay muted loop playsinline></video>{{else}}<img src="{{img}}" alt="">{{/if}}</button>
+				<div class="info">
+					<small class="lv">Lv.{{level}} · Companion</small>
+					<b class="nm">{{name}}</b>
+					<div class="ln hp"><span>HP</span><span><b>{{hp.value}}</b>/{{hp.max}}</span></div>
+					<div class="fbs-bar hp {{#if hp.inCrisis}}crisis{{/if}}"><span style="width:{{hp.pct}}%"></span><i style="left:{{hp.crisisPct}}%"></i></div>
+					<div class="ln mp"><span>MP</span><span><b>{{mp.value}}</b>/{{mp.max}}</span></div>
+					<div class="fbs-bar mp thin"><span style="width:{{mp.pct}}%"></span></div>
+				</div>
+				<div class="rank"><b class="who">{{identity}}</b></div>
+				<span class="emb static"><span class="frame"></span><span class="art {{#if token.mirror}}mir{{/if}}">{{#if token.video}}<video src="{{token.src}}" autoplay muted loop playsinline></video>{{else}}<img src="{{token.src}}" alt="">{{/if}}</span></span>
+			</article>
+		{{/each}}
+	</div>
+</section>

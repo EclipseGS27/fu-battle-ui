@@ -1,0 +1,37 @@
+<div class="tab fbs-tab fbs-overview {{tab.cssClass}}" data-group="primary" data-tab="overview">
+	<div class="fbs-cols">
+		<div class="fbs-panel fbs-cmd">
+			<div class="ph"><b>Actions</b><small>Roll straight from the sheet</small></div>
+			<div class="list">
+				{{#each fb.commands}}
+					<button type="button" class="row" data-action="{{#if (eq id 'inventory')}}fbuiIp{{else}}action{{/if}}" data-type="{{id}}" data-help="{{help}}">
+						<span class="cur"><svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 1 12 7 2 13Z" fill="currentColor"/></svg></span>
+						<span class="l">{{label}}</span>
+						<span class="m">{{#if sub}}›{{/if}}</span>
+					</button>
+				{{/each}}
+			</div>
+			<div class="help" data-fbui-help>Hover an action to see what it does.</div>
+		</div>
+
+		<div class="fbs-main">
+			<div class="fbs-sec">
+				<div class="fbs-h"><h2>Equipped</h2><button type="button" class="fbs-link" data-action="action" data-type="equipment">Swap equipment</button></div>
+				<div class="fbs-slots">
+					{{#each fb.equipped}}
+						{{> "modules/fu-battle-ui/templates/sheet/slot.hbs"}}
+					{{/each}}
+				</div>
+			</div>
+
+			<div class="fbs-sec fbs-favs">
+				<div class="fbs-h"><h2>Favorites</h2><button type="button" class="fbs-link" data-action="createFavorite">Add</button></div>
+				{{#if hasFavorites}}
+					{{{favoritesTable}}}
+				{{else}}
+					<p class="fbs-empty">Star a skill, spell or item on the other tabs to pin it here.</p>
+				{{/if}}
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,6 @@
+<nav class="fbs-tabs tabs" aria-label="Sheet sections" data-group="primary">
+	{{#each fbTabs}}
+		<a class="fbs-tabbtn {{cssClass}} {{#if (eq id 'effects')}}minor first-minor{{/if}}{{#if (eq id 'settings')}}minor{{/if}}" data-action="tab" data-group="primary" data-tab="{{id}}">{{localize label}}</a>
+	{{/each}}
+	<button type="button" class="fbs-foldtab" data-action="fbuiCollapse" aria-label="Collapse or expand the header" data-tooltip="Collapse or expand the header"><i class="fa-solid fa-chevron-up when-open"></i><i class="fa-solid fa-chevron-down when-closed"></i></button>
+</nav>
