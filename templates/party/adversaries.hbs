@@ -1,0 +1,86 @@
+{{!-- Adversaries: Project FU's list (its search and filters still work on these entries) plus what the party has learned about the one picked --}}
+<section class="tab fbs-tab fbp-adv {{tab.cssClass}}" data-tab="adversaries" data-group="primary">
+	<div class="adversaries content">
+		<aside class="fbp-adv-side">
+			<label class="search"><input type="text" name="adversarySearch" id="adversarySearch" value="{{adversarySearch}}" placeholder="Search adversaries..." aria-label="Search adversaries"></label>
+			<div class="fbp-adv-filters">
+				{{#each adversaryMiscFilters as |filter|}}<label class="fu-filter-option"><input type="checkbox" data-category="misc" data-option="{{filter.value}}" {{checked filter.checked}}>{{localize filter.label}}</label>{{/each}}
+				{{#each adversaryRanks as |rank|}}<label class="fu-filter-option"><input type="checkbox" data-category="rank" data-option="{{rank.value}}" {{checked rank.checked}}>{{localize rank.label}}</label>{{/each}}
+				{{#each adversarySpecies as |species|}}<label class="fu-filter-option"><input type="checkbox" data-category="species" data-option="{{species.value}}" {{checked species.checked}}>{{localize species.label}}</label>{{/each}}
+			</div>
+			<div class="entry-list">
+				{{#unless adversaries.length}}<p class="fbs-empty">No adversaries yet. Study an enemy, or drag an NPC onto this sheet.</p>{{/unless}}
+				{{#each fba.list}}
+					<button type="button" class="section-container entry character-option {{#if sel}}sel{{/if}}" data-uuid="{{uuid}}" data-type="npc" data-action="fbuiAdversary">
+						<img src="{{img}}" alt="">
+						<span class="d">
+							<b>{{name}}</b>
+							<small>{{#if known}}{{species}} {{rank}}{{else}}Unknown{{/if}}</small>
+							<span class="st t{{tier}}"><i style="width:{{pct}}%"></i></span>
+						</span>
+						<em class="t{{tier}}">{{tierWord}}</em>
+					</button>
+				{{/each}}
+			</div>
+		</aside>
+
+		<div class="fbp-adv-main">
+			{{#with fba.detail}}
+				<header class="hd">
+					<img src="{{img}}" alt="">
+					<div>
+						<small>{{#if villain}}VILLAIN · {{villain}}{{else}}ADVERSARY{{/if}}</small>
+						<b>{{name}}</b>
+						<span class="tags">{{#each tags}}<span>{{this}}</span>{{/each}}</span>
+					</div>
+					<span class="lv">{{#if (gt tier 0)}}Lv {{level}}{{else}}Lv ?{{/if}}</span>
+				</header>
+				<div class="study t{{tier}}">
+					<div class="ln"><span>Study</span><b>{{studyLine}}</b></div>
+					<div class="bar"><i style="width:{{pct}}%"></i></div>
+					<p>{{tierText}}</p>
+					{{#if gmNote}}<p class="gm">{{gmNote}}</p>{{/if}}
+				</div>
+
+				{{#if (gt tier 0)}}
+					<div class="res">
+						<div class="r hp {{#if crisis}}crisis{{/if}}"><span><small>HP</small><b>{{hp}}<em>/ {{hpMax}}</em></b></span><div class="fbs-bar hp {{#if crisis}}crisis{{/if}}"><span style="width:{{hpPct}}%"></span></div></div>
+						<div class="r mp"><span><small>MP</small><b>{{mp}}<em>/ {{mpMax}}</em></b></span><div class="fbs-bar mp"><span style="width:{{mpPct}}%"></span></div></div>
+					</div>
+				{{/if}}
+
+				{{#if (gt tier 1)}}
+					<div class="row2">
+						<div class="attrs">{{#each attrs}}<span class="a"><span class="dia" style="--c:{{color}}"><span>d{{die}}</span></span><b>{{abbr}}</b></span>{{/each}}</div>
+						<div class="defs"><span><small>DEF</small><b>{{def}}</b></span><span><small>M.DEF</small><b>{{mdef}}</b></span></div>
+					</div>
+					{{#if traits}}<p class="traits"><small>Traits</small> {{traits}}</p>{{/if}}
+				{{/if}}
+
+				<div class="aff">
+					<small class="cap">Affinities</small>
+					<div class="fbs-aff">{{#each aff}}<span class="cell" data-tooltip="{{tip}}"><small style="color:{{color}}">{{abbr}}</small><b style="color:{{wordColor}}">{{word}}</b></span>{{/each}}</div>
+				</div>
+
+				{{#if (gt tier 2)}}
+					{{#if abilities.length}}
+						<div class="abil">
+							<small class="cap">Attacks, spells, skills and special rules</small>
+							{{#each abilities}}
+								{{#if head}}<h4>{{head}}</h4>{{/if}}
+								<details><summary><b>{{label}}</b><span>{{meta}}</span></summary><p>{{help}}</p></details>
+							{{/each}}
+						</div>
+					{{/if}}
+				{{/if}}
+
+				<footer>
+					<button type="button" class="fbs-btn" data-action="revealNpc" data-actor="{{uuid}}"><i class="fa-solid fa-book-open"></i> Project FU profile</button>
+					{{#if canOpen}}<button type="button" class="fbs-btn" data-action="fbuiOpenActor" data-uuid="{{uuid}}"><i class="fa-solid fa-id-card"></i> Open sheet</button>{{/if}}
+				</footer>
+			{{else}}
+				<p class="fbs-empty">Pick an adversary to see what the party knows about it.</p>
+			{{/with}}
+		</div>
+	</div>
+</section>
