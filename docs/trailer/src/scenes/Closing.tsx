@@ -33,9 +33,9 @@ export const Closing: React.FC = () => {
 		<AbsoluteFill className="trailer-root">
 			<div style={{ position: 'absolute', inset: 0, transform: `scale(${1.12 - 0.06 * ramp(f, 0, CLOSING_LEN)})`, transformOrigin: '50% 70%' }}>
 				<Scenery kind="aurora" />
-				<ArtSprite n="hero-2" x={760} y={980} k={0.78} p={poseAt(t, 'battle', 1, 1, [], 0.4)} t={t} />
-				<ArtSprite n="hero-1" x={960} y={1030} k={0.8} flip p={poseAt(t, 'battle', 1, 1)} t={t} />
-				<ArtSprite n="hero-3" x={1160} y={990} k={0.8} flip p={poseAt(t, 'battle', 1, 1, [], 0.8)} t={t} />
+				<ArtSprite n="hero-2" x={760} y={980} k={0.78} flip p={poseAt(t, 'battle', 1, -1, [], 0.4)} t={t} />
+				<ArtSprite n="hero-1" x={960} y={1030} k={0.8} flip p={poseAt(t, 'battle', 1, -1)} t={t} />
+				<ArtSprite n="hero-3" x={1160} y={990} k={0.8} flip p={poseAt(t, 'battle', 1, -1, [], 0.8)} t={t} />
 			</div>
 			<div style={{ position: 'absolute', left: 0, top: 0 }}>
 				<PixelLayer stage={stage} step={f} layer="back" scale={4} />
