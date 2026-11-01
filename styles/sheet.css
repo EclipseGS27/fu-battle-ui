@@ -854,3 +854,30 @@ img[src*='/icons/armory/'] { image-rendering: pixelated; image-rendering: crisp-
 .fbui-armory-body.sfx .btn.sm { padding: 4px 9px; }
 .fbui-armory-body.sfx .foot { gap: 8px; }
 .fbui-armory-body.sfx .foot .sp { flex: 1; }
+
+/* The "⋮" header menu: the system draws it see-through, which left light text over whatever showed behind.
+   Solid and dark on every Battle UI window. */
+:is(#fbs-z, html) .application[class*='fbui-'] > menu.controls-dropdown {
+	color: #eef3ff;
+	background: rgba(12, 20, 44, 0.98);
+	border: 1px solid rgba(159, 208, 255, 0.35);
+	border-radius: 6px;
+	box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
+	-webkit-backdrop-filter: none;
+	backdrop-filter: none;
+	padding: 4px;
+}
+:is(#fbs-z, html) .application[class*='fbui-'] > menu.controls-dropdown li.header-control > button.control {
+	color: #eef3ff;
+	text-shadow: none;
+	background: transparent;
+	border: 1px solid transparent;
+	border-radius: 4px;
+}
+:is(#fbs-z, html) .application[class*='fbui-'] > menu.controls-dropdown li.header-control > button.control:hover,
+:is(#fbs-z, html) .application[class*='fbui-'] > menu.controls-dropdown li.header-control > button.control:focus-visible {
+	color: #fff3d1;
+	background: rgba(242, 196, 90, 0.16);
+	border-color: rgba(242, 196, 90, 0.6);
+}
+:is(#fbs-z, html) .application[class*='fbui-'] > menu.controls-dropdown li.header-control > button.control i { color: inherit; }

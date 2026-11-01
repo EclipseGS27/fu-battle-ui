@@ -297,6 +297,22 @@ Hooks.on('createChatMessage', (msg) => {
 	if (ch && ch.cid === c.id && ch.item === check.itemName && game.users.activeGM?.isSelf) combat.unsetFlag(MODULE_ID, 'charge');
 });
 
+/* In combat the Battle UI floats its own MISS (unless Battle Animations draws one), so the system's "Miss" text
+   over the token would make two: let only ours show */
+Hooks.on('canvasReady', () => {
+	const iface = canvas?.interface;
+	if (!iface?.createScrollingText || iface.createScrollingText.fbuiWrapped) return;
+	const orig = iface.createScrollingText;
+	const miss = (game.i18n?.localize?.('FU.Miss') || 'Miss').trim().toLowerCase();
+	const wrapped = function (origin, text, options) {
+		const t = typeof text === 'string' ? text.trim().toLowerCase() : '';
+		if ((t === miss || t === 'miss') && game.combat?.started && !animationNumbers()) return Promise.resolve();
+		return orig.call(this, origin, text, options);
+	};
+	wrapped.fbuiWrapped = true;
+	iface.createScrollingText = wrapped;
+});
+
 /* Owners clear their Surrender/Sacrifice choice once the character is back on their feet */
 Hooks.on('updateActor', (actor) => {
 	const fallen = actor.getFlag?.(MODULE_ID, 'fallen');
