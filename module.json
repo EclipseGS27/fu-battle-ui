@@ -3,7 +3,7 @@
   "name": "fu-battle-ui",
   "title": "Fabula Ultima Battle UI",
   "description": "JRPG-style battle UI for Project FU: turn track, command menus, scene clocks, Study-gated target panel with the enemy's attacks, spells, skills and special rules, a Battle UI NPC profile window, Fabula, Inventory, Ultima and Opportunity menus, a customizable turn glow, condition tooltips and hover cards on tokens, Battle UI character, NPC and party sheets (with a JRPG status screen per character) that turn red in Crisis, a re-themed compendium browser with drag and add-to-sheet, and FFXIII/FFVII menu sounds with a per-cue sound editor.",
-  "version": "1.16.1",
+  "version": "1.17.0",
   "authors": [
     {
       "name": "George Sowidan"
@@ -39,6 +39,6 @@
   "socket": true,
   "url": "https://github.com/EclipseGS27/fu-battle-ui",
   "manifest": "https://raw.githubusercontent.com/EclipseGS27/fu-battle-ui/main/module.json",
-  "download": "https://github.com/EclipseGS27/fu-battle-ui/releases/download/v1.16.1/fu-battle-ui.zip",
+  "download": "https://github.com/EclipseGS27/fu-battle-ui/releases/download/v1.17.0/fu-battle-ui.zip",
   "bugs": "https://github.com/EclipseGS27/fu-battle-ui/issues"
 }
