@@ -1,0 +1,38 @@
+/* Video-only rules on top of the modules' own stylesheets */
+
+/* CSS animations and transitions run on wall-clock time, which a frame-by-frame render can't follow:
+   everything that moves here is driven by the frame number instead. */
+.trailer-root *, .trailer-root *::before, .trailer-root *::after {
+	animation: none !important;
+	transition: none !important;
+}
+.trailer-root {
+	position: absolute;
+	inset: 0;
+	overflow: hidden;
+	background: #070b14;
+	font-family: 'FBUI PT Sans', 'PT Sans', system-ui, sans-serif;
+	-webkit-font-smoothing: antialiased;
+}
+.trailer-root canvas.px {
+	image-rendering: pixelated;
+	display: block;
+}
+/* The Battle UI root is hidden until opened, and fixed to the window in Foundry */
+.trailer-root #fbui {
+	display: block;
+	position: absolute;
+	inset: 0;
+}
+.trailer-root #fbui .fbui-dia img { image-rendering: pixelated; }
+
+/* The bits of Foundry's window chrome the modules' sheets sit in */
+.trailer-root .application { position: relative; display: flex; flex-direction: column; border-radius: 8px; overflow: hidden; text-align: left; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.65), 0 0 50px rgba(90, 169, 255, 0.22); }
+.trailer-root .application .window-header { flex: none; display: flex; align-items: center; height: 34px; padding: 0 12px; }
+.trailer-root .application .window-title { font-size: 15px; font-weight: 400; margin: 0; }
+.trailer-root .application .window-content { flex: 1; min-height: 0; }
+.trailer-root .application.fucc { font-family: 'FBUI PT Sans', 'PT Sans', system-ui, sans-serif; font-size: 14px; border: 1px solid #3a4158; }
+.trailer-root .application.fucc .window-header { background: #151824; color: #e9ebf3; border-bottom: 1px solid #3a4158; }
+.trailer-root .fucc input[type='search'] { background: #2a3044; color: #e9ebf3; border: 1px solid #3a4158; border-radius: 4px; height: 30px; padding: 0 10px; }
+.trailer-root .fucc select { color: #e9ebf3; }
+.trailer-root .application.fbui-party input { color: #eef3ff; }

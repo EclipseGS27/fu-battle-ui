@@ -382,7 +382,8 @@ export class BattleUI {
 		const all = Clocks.list();
 		const list = this.isGM ? all : all.filter((c) => !c.hidden);
 		const gm = this.isGM;
-		if (!list.length && !gm && !this.pending.length) return '';
+		// Clocks are added from the clock button in the top-right tools, so an empty strip shows nothing.
+		if (!list.length && !(gm && this.pending.length)) return '';
 		const cards = list
 			.map((c) => {
 				const kind = CLOCK_KINDS[c.kind] ?? CLOCK_KINDS.env;
@@ -411,8 +412,7 @@ export class BattleUI {
 					})
 					.join('')
 			: '';
-		const empty = !list.length && gm ? `<button type="button" class="fbui-clock-add" data-action="clockAdd"><i class="fa-solid fa-plus"></i> Add a clock</button>` : '';
-		return `<div class="fbui-clocks">${phase === 'none' ? '' : '<div class="hd"><span>SCENE CLOCKS</span></div>'}${pending}<div class="row">${cards}${empty}</div></div>`;
+		return `<div class="fbui-clocks">${phase === 'none' ? '' : '<div class="hd"><span>SCENE CLOCKS</span></div>'}${pending}<div class="row">${cards}</div></div>`;
 	}
 
 	#charge({ combat }) {
