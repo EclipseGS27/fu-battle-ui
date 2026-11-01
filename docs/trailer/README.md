@@ -1,6 +1,6 @@
 # Fabula Ultima modules trailer
 
-A 90-second, 1920 × 1080, 60 fps trailer for the Fabula Ultima Foundry VTT modules (Battle UI, Battle Animations, Character Creator, Living Sprites), made with [Remotion](https://www.remotion.dev).
+A 3-minute, 1920 × 1080, 60 fps trailer for the Fabula Ultima Foundry VTT modules (Battle UI, Battle Animations, Character Creator, Living Sprites), made with [Remotion](https://www.remotion.dev).
 
 It lives in `docs/`, which the Battle UI's release workflow leaves out of the module zip, and it changes nothing in any module. The modules' own code runs inside the video:
 
@@ -59,7 +59,7 @@ node scripts/stills.mjs Combat 300 600 900
 
 | Path | What |
 |---|---|
-| `src/Trailer.tsx` | The five acts on one timeline |
+| `src/Trailer.tsx`, `src/timeline.ts` | The five acts on one timeline, and how long each runs |
 | `src/scenes/` | Opening, Combat (crystal cave), Features, Showcase (flower field, aurora, effect wall), Closing |
 | `src/scenes/battle.tsx` | The shared battle world: backdrop, effects, fighters, numbers, camera |
 | `src/fx/pixel-runner.js` | Runs Battle Animations' effects outside Foundry, frame by frame |

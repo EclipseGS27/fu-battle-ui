@@ -8,9 +8,10 @@ import { ArtSprite, Scenery } from '../art/art';
 import { poseAt } from '../sprites/motion';
 import { Kicker, TitleLockup } from '../ui/Type';
 import { C, DISP, TEXT } from '../theme';
+import { ACT_LEN } from '../timeline';
 
-export const CLOSING_LEN = 810;
-export const CT = { cards: 290, install: 560 };
+export const CLOSING_LEN = ACT_LEN.closing;
+export const CT = { cards: 480, install: 960 };
 
 const MODULES = [
 	{ name: 'Battle UI', repo: 'fu-battle-ui', line: 'JRPG battle screen, sheets, party menu' },
@@ -27,7 +28,7 @@ export const Closing: React.FC = () => {
 	const stage = useStage(480, 270, [ambient('fireflies', { at: 0, area: { x: -20, y: 20, w: 520, h: 250 }, density: 0.8 })]);
 	const titleOut = ramp(f, CT.cards - 30, CT.cards, Easing.in(Easing.cubic));
 	const bgDim = 0.45 + 0.35 * ramp(f, CT.cards - 30, CT.cards);
-	const end = ramp(f, CLOSING_LEN - 40, CLOSING_LEN);
+	const end = ramp(f, CLOSING_LEN - 60, CLOSING_LEN);
 	return (
 		<AbsoluteFill className="trailer-root">
 			<div style={{ position: 'absolute', inset: 0, transform: `scale(${1.12 - 0.06 * ramp(f, 0, CLOSING_LEN)})`, transformOrigin: '50% 70%' }}>
@@ -53,7 +54,7 @@ export const Closing: React.FC = () => {
 					</div>
 					<div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 760px)', gap: 26 }}>
 						{MODULES.map((m, i) => {
-							const k = ramp(f, CT.cards + 10 + i * 10, CT.cards + 34 + i * 10, outE);
+							const k = ramp(f, CT.cards + 20 + i * 24, CT.cards + 50 + i * 24, outE);
 							return (
 								<div key={m.repo} style={{ padding: '26px 32px', borderRadius: 10, background: 'rgba(12, 20, 44, 0.9)', border: '1px solid rgba(159, 208, 255, 0.4)', boxShadow: '0 20px 50px rgba(0,0,0,0.5)', opacity: k, transform: `translateY(${(1 - k) * 40}px)` }}>
 									<div style={{ fontFamily: DISP, fontSize: 30, letterSpacing: '0.24em', color: C.gold, textTransform: 'uppercase' }}>Fabula Ultima</div>
@@ -76,13 +77,13 @@ export const Closing: React.FC = () => {
 						{['Add-on Modules', 'Install Module', 'paste the Manifest URL'].map((s, i) => (
 							<React.Fragment key={s}>
 								{i ? <span style={{ color: C.gold }}>›</span> : null}
-								<span style={{ padding: '10px 22px', borderRadius: 6, border: '1px solid rgba(159,208,255,0.45)', background: 'rgba(12,20,44,0.85)', opacity: ramp(f, CT.install + 14 + i * 10, CT.install + 28 + i * 10) }}>{s}</span>
+								<span style={{ padding: '10px 22px', borderRadius: 6, border: '1px solid rgba(159,208,255,0.45)', background: 'rgba(12,20,44,0.85)', opacity: ramp(f, CT.install + 30 + i * 30, CT.install + 50 + i * 30) }}>{s}</span>
 							</React.Fragment>
 						))}
 					</div>
-					<div style={{ fontFamily: TEXT, fontSize: 38, color: C.ink2, opacity: ramp(f, CT.install + 50, CT.install + 70) }}>Manifest URLs are in each repository’s README.</div>
-					<div style={{ fontFamily: TEXT, fontSize: 38, color: C.ink2, opacity: ramp(f, CT.install + 60, CT.install + 80) }}>Foundry VTT v13 · Project FU 4.14 or later (Living Sprites works with any system)</div>
-					<div style={{ marginTop: 30, fontFamily: DISP, fontWeight: 700, fontSize: 72, color: C.gold, opacity: ramp(f, CT.install + 80, CT.install + 100), letterSpacing: '0.04em' }}>
+					<div style={{ fontFamily: TEXT, fontSize: 38, color: C.ink2, opacity: ramp(f, CT.install + 130, CT.install + 160) }}>Manifest URLs are in each repository’s README.</div>
+					<div style={{ fontFamily: TEXT, fontSize: 38, color: C.ink2, opacity: ramp(f, CT.install + 170, CT.install + 200) }}>Foundry VTT v13 · Project FU 4.14 or later (Living Sprites works with any system)</div>
+					<div style={{ marginTop: 30, fontFamily: DISP, fontWeight: 700, fontSize: 72, color: C.gold, opacity: ramp(f, CT.install + 220, CT.install + 250), letterSpacing: '0.04em' }}>
 						<i className="fa-brands fa-github" style={{ marginRight: 24 }} />
 						github.com/EclipseGS27
 					</div>

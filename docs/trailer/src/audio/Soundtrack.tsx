@@ -8,13 +8,14 @@ import { B } from '../scenes/Combat';
 import { CZ, PV, SLIDES } from '../scenes/Features';
 import { AB, FB, FIELD_LEN, AURORA_LEN } from '../scenes/Showcase';
 import { CT } from '../scenes/Closing';
+import { ACT_AT } from '../timeline';
 
 type Sfx = 'boom' | 'hit' | 'impact' | 'whoosh' | 'slash' | 'explosion' | 'ice' | 'magic' | 'charge' | 'fire' | 'heal' | 'bite' | 'arrow' | 'drain' | 'poison' | 'riser' | 'crash' | 'meteor' | 'holy';
 type Ui = 'cursor' | 'confirm' | 'back' | 'activate' | 'turn' | 'chime' | 'fanfare';
 type Cue = [frame: number, sound: Sfx | `ui:${Ui}`, volume: number];
 
-// where each act starts in the trailer (Trailer.tsx)
-const AT = { opening: 0, combat: 600, features: 1800, showcase: 3420, closing: 4590 };
+// where each act starts in the trailer
+const AT = ACT_AT;
 const SLIDE_AT = (() => {
 	let at = AT.features;
 	const out: Record<string, number> = {};
@@ -34,24 +35,24 @@ const CUES: Cue[] = [
 		[OP.spell + 30, 'holy', 0.45],
 		[OP.strike + 2, 'slash', 0.9],
 		[OP.strike + 10, 'impact', 0.8],
-		...[0, 1, 2, 3].map((i): Cue => [OP.foe + 18 + i * 14, 'boom', 0.5]),
+		...[0, 1, 2, 3].map((i): Cue => [OP.foe + 30 + i * 34, 'boom', 0.5]),
 		[OP.title, 'impact', 0.55],
 	]),
 	// Combat
 	...C(AT.combat, [
-		[30, 'ui:fanfare', 0.5],
-		...[0, 1, 2, 3, 4, 5, 6].map((i): Cue => [B.studyCursor + i * 6, 'ui:cursor', 0.4]),
+		[40, 'ui:fanfare', 0.5],
+		...[0, 1, 2, 3, 4, 5, 6].map((i): Cue => [B.studyCursor + i * 12, 'ui:cursor', 0.4]),
 		[B.studyGo, 'ui:confirm', 0.5],
 		[B.studyGo + 4, 'magic', 0.35],
 		[B.studyReveal, 'ui:chime', 0.5],
 		[B.foeTurn, 'ui:turn', 0.45],
-		[B.foeTurn + 20, 'ui:cursor', 0.35],
+		[B.foeTurn + 40, 'ui:cursor', 0.35],
 		[B.breathGo, 'ui:confirm', 0.45],
 		[B.breath, 'whoosh', 0.7],
 		[B.breathHit, 'ice', 0.8],
 		[B.breathHit, 'hit', 0.5],
 		[B.renTurn, 'ui:turn', 0.45],
-		...[0, 1, 2, 3, 4, 5].map((i): Cue => [B.renTurn + 4 + i * 6, 'ui:cursor', 0.38]),
+		...[0, 1, 2, 3, 4, 5].map((i): Cue => [B.renTurn + 4 + i * 12, 'ui:cursor', 0.38]),
 		[B.invOpen, 'ui:confirm', 0.45],
 		[B.shardGo, 'ui:confirm', 0.45],
 		[B.bolt, 'arrow', 0.6],
@@ -64,7 +65,7 @@ const CUES: Cue[] = [
 		[B.slashHit - 6, 'slash', 0.9],
 		[B.slashHit, 'impact', 0.95],
 		[B.slashHit, 'crash', 0.25],
-		[B.slashHit + 12, 'ui:chime', 0.45],
+		[B.slashHit + 30, 'ui:chime', 0.45],
 		[B.clawTurn, 'ui:turn', 0.45],
 		[B.claw - 6, 'whoosh', 0.6],
 		[B.clawHit, 'slash', 0.6],
@@ -79,7 +80,7 @@ const CUES: Cue[] = [
 	]),
 	// Features: a whoosh into each slide, and the clicks
 	...SLIDES.map((s): Cue => [SLIDE_AT[s.id], 'whoosh', 0.3]),
-	[SLIDE_AT.sheets + 92, 'whoosh', 0.35],
+	[SLIDE_AT.sheets + 150, 'whoosh', 0.35],
 	...C(SLIDE_AT.preview, [
 		[PV.eye, 'ui:confirm', 0.55],
 		[PV.plus1, 'ui:cursor', 0.55],
@@ -87,11 +88,11 @@ const CUES: Cue[] = [
 		[PV.minus, 'ui:back', 0.5],
 	]),
 	...C(SLIDE_AT.party, [
-		[90, 'ui:cursor', 0.4],
-		[110, 'ui:cursor', 0.4],
-		[128, 'ui:cursor', 0.4],
+		[150, 'ui:cursor', 0.4],
+		[190, 'ui:cursor', 0.4],
+		[230, 'ui:cursor', 0.4],
 	]),
-	...C(SLIDE_AT.creator, [[104, 'ui:confirm', 0.4]]),
+	...C(SLIDE_AT.creator, [[200, 'ui:confirm', 0.4]]),
 	...C(SLIDE_AT.customize, [
 		[CZ.pick, 'ui:confirm', 0.5],
 		[CZ.hoverX, 'ui:cursor', 0.4],
@@ -139,16 +140,16 @@ const CUES: Cue[] = [
 	]),
 	// Showcase: the wall of effects
 	...C(AT.showcase + FIELD_LEN + AURORA_LEN, [
-		...Array.from({ length: 12 }, (_, i): Cue => [6 + i * 5, 'ui:cursor', 0.22]),
-		[76, 'hit', 0.4],
-		[96, 'hit', 0.4],
-		[116, 'hit', 0.4],
+		...Array.from({ length: 12 }, (_, i): Cue => [10 + i * 12, 'ui:cursor', 0.22]),
+		[210, 'hit', 0.4],
+		[250, 'hit', 0.4],
+		[290, 'hit', 0.4],
 	]),
 	// Closing
 	...C(AT.closing, [
-		...[0, 1, 2, 3].map((i): Cue => [CT.cards + 10 + i * 10, 'ui:cursor', 0.4]),
+		...[0, 1, 2, 3].map((i): Cue => [CT.cards + 20 + i * 24, 'ui:cursor', 0.4]),
 		[CT.install, 'ui:confirm', 0.4],
-		...[0, 1, 2].map((i): Cue => [CT.install + 14 + i * 10, 'ui:cursor', 0.35]),
+		...[0, 1, 2].map((i): Cue => [CT.install + 30 + i * 30, 'ui:cursor', 0.35]),
 	]),
 ];
 

@@ -2,29 +2,22 @@
 import React from 'react';
 import { AbsoluteFill, interpolate, Sequence, useCurrentFrame } from 'remotion';
 import { Opening } from './scenes/Opening';
-import { Combat, COMBAT_LEN } from './scenes/Combat';
-import { Features, FEATURES_LEN } from './scenes/Features';
-import { Showcase, SHOWCASE_LEN } from './scenes/Showcase';
-import { Closing, CLOSING_LEN } from './scenes/Closing';
+import { Combat } from './scenes/Combat';
+import { Features } from './scenes/Features';
+import { Showcase } from './scenes/Showcase';
+import { Closing } from './scenes/Closing';
+import { ACT_AT, ACT_LEN } from './timeline';
 import { Soundtrack } from './audio/Soundtrack';
 
 export const XFADE = 16;
-export const ACTS = (() => {
-	const list: { name: string; len: number; C: React.FC }[] = [
-		{ name: 'Opening', len: 600, C: Opening },
-		{ name: 'Combat', len: COMBAT_LEN, C: Combat },
-		{ name: 'Features', len: FEATURES_LEN, C: Features },
-		{ name: 'Showcase', len: SHOWCASE_LEN, C: Showcase },
-		{ name: 'Closing', len: CLOSING_LEN, C: Closing },
-	];
-	let at = 0;
-	return list.map((a) => {
-		const from = at;
-		at += a.len;
-		return { ...a, from };
-	});
-})();
-export const TRAILER_LEN = ACTS[ACTS.length - 1].from + ACTS[ACTS.length - 1].len;
+export const ACTS = [
+	{ name: 'Opening', from: ACT_AT.opening, len: ACT_LEN.opening, C: Opening },
+	{ name: 'Combat', from: ACT_AT.combat, len: ACT_LEN.combat, C: Combat },
+	{ name: 'Features', from: ACT_AT.features, len: ACT_LEN.features, C: Features },
+	{ name: 'Showcase', from: ACT_AT.showcase, len: ACT_LEN.showcase, C: Showcase },
+	{ name: 'Closing', from: ACT_AT.closing, len: ACT_LEN.closing, C: Closing },
+];
+export const TRAILER_LEN = ACT_AT.closing + ACT_LEN.closing;
 
 const FadeIn: React.FC<{ children: React.ReactNode; first: boolean }> = ({ children, first }) => {
 	const f = useCurrentFrame();

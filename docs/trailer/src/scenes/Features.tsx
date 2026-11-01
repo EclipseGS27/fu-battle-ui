@@ -16,14 +16,14 @@ import { GOLEM_ABILITIES, GOLEM_AFF, people } from './cast';
 import { C, DISP, TEXT } from '../theme';
 
 export const SLIDES = [
-	{ id: 'sheets', len: 180 },
-	{ id: 'npc', len: 150 },
-	{ id: 'preview', len: 250 },
-	{ id: 'party', len: 180 },
-	{ id: 'creator', len: 180 },
-	{ id: 'menus', len: 150 },
-	{ id: 'customize', len: 290 },
-	{ id: 'sprites', len: 240 },
+	{ id: 'sheets', len: 330 },
+	{ id: 'npc', len: 300 },
+	{ id: 'preview', len: 480 },
+	{ id: 'party', len: 330 },
+	{ id: 'creator', len: 390 },
+	{ id: 'menus', len: 300 },
+	{ id: 'customize', len: 540 },
+	{ id: 'sprites', len: 480 },
 ];
 export const FEATURES_LEN = SLIDES.reduce((s, x) => s + x.len, 0);
 
@@ -62,7 +62,7 @@ const Visual: React.FC<{ f: number; len: number; children: React.ReactNode; top?
 };
 
 const Sheets: React.FC<{ f: number; len: number }> = ({ f, len }) => {
-	const wipe = ramp(f, 92, 122, Easing.inOut(Easing.cubic));
+	const wipe = ramp(f, 150, 195, Easing.inOut(Easing.cubic));
 	return (
 		<>
 			<Copy f={f} len={len} kicker="Fabula Ultima Battle UI" title={['Character', 'sheets']} body="The battle screen’s look on every hero. The whole sheet turns red in Crisis." />
@@ -98,7 +98,7 @@ const MEMBERS: PartyMember[] = [
 ];
 
 const Party: React.FC<{ f: number; len: number }> = ({ f, len }) => {
-	const cursor = f < 90 ? 0 : f < 110 ? 1 : f < 128 ? 2 : 0;
+	const cursor = f < 150 ? 0 : f < 190 ? 1 : f < 230 ? 2 : 0;
 	return (
 		<>
 			<Copy f={f} len={len} kicker="Fabula Ultima Battle UI" title={['A JRPG', 'party menu']} body="Laid out like a JRPG main menu, with a tall card for every hero." />
@@ -112,8 +112,8 @@ const Party: React.FC<{ f: number; len: number }> = ({ f, len }) => {
 };
 
 const CreatorSlide: React.FC<{ f: number; len: number }> = ({ f, len }) => {
-	const step = f < 104 ? 1 : 3;
-	const k = step === 1 ? ramp(f, 26, 92, Easing.linear) : ramp(f, 112, 186, Easing.linear);
+	const step = f < 200 ? 1 : 3;
+	const k = step === 1 ? ramp(f, 40, 180, Easing.linear) : ramp(f, 220, 340, Easing.linear);
 	return (
 		<>
 			<Copy f={f} len={len} kicker="Character Creator" title={['A hero', 'in six steps']} body="A step-by-step wizard. Classes, Skills, spells and gear come straight from your compendiums." />
@@ -153,7 +153,7 @@ const toolAt = (which: 'eye' | 'minus' | 'plus', size: number) => {
 	const f = fitAt(size);
 	return { x: 1920 - ({ eye: 101, minus: 67, plus: 33 } as const)[which] * f, y: 31 * f };
 };
-export const PV = { eye: 64, plus1: 118, plus2: 142, minus: 196 };
+export const PV = { eye: 110, plus1: 250, plus2: 300, minus: 390 };
 
 const Preview: React.FC<{ f: number; len: number }> = ({ f, len }) => {
 	const P = people();
@@ -191,10 +191,10 @@ const Preview: React.FC<{ f: number; len: number }> = ({ f, len }) => {
 			<div style={{ position: 'absolute', inset: 0, transform: 'scale(1.06)', transformOrigin: '50% 60%' }}>
 				<Scenery kind="cave" />
 			</div>
-			<ArtSprite n="hero-2" x={575} y={712} k={0.72} p={poseAt(t, 'battle', 1, 1, [], 0.4)} glow={GLOWS.hero} t={t} />
-			<ArtSprite n="hero-1" x={700} y={838} k={0.74} flip p={poseAt(t, 'battle', 1, 1)} t={t} />
-			<ArtSprite n="hero-3" x={880} y={768} k={0.74} flip p={poseAt(t, 'battle', 1, 1, [], 0.8)} t={t} />
-			<ArtSprite n="golem" x={1240} y={800} k={1.1} flip p={poseAt(t, 'breathe', 1.6, -1)} glow={GLOWS.boss} t={t} shadowW={0.7} />
+			<ArtSprite n="hero-2" x={1300} y={712} k={0.72} flip p={poseAt(t, 'battle', 1, -1, [], 0.4)} glow={GLOWS.hero} t={t} />
+			<ArtSprite n="hero-1" x={1210} y={838} k={0.74} p={poseAt(t, 'battle', 1, -1)} t={t} />
+			<ArtSprite n="hero-3" x={1035} y={768} k={0.74} p={poseAt(t, 'battle', 1, -1, [], 0.8)} t={t} />
+			<ArtSprite n="golem" x={690} y={800} k={1.1} p={poseAt(t, 'breathe', 1.6, 1)} glow={GLOWS.boss} t={t} shadowW={0.7} />
 			<Hud
 				size={size}
 				tools={{ eye, hot }}
@@ -227,7 +227,7 @@ const Preview: React.FC<{ f: number; len: number }> = ({ f, len }) => {
 
 /* ---------------- Battle Animations: make an ability yours ---------------- */
 
-export const CZ = { pick: 40, open: 58, hoverX: 92, choose: 112, close: 126, color: 160, colorSet: 172, sound: 202, soundSet: 212, play: 226, save: 254, saved: 262 };
+export const CZ = { pick: 70, open: 90, hoverX: 150, choose: 190, close: 210, color: 270, colorSet: 290, sound: 340, soundSet: 360, play: 385, save: 455, saved: 465 };
 
 const Customize: React.FC<{ f: number; len: number }> = ({ f, len }) => {
 	const chosen = f >= CZ.choose;
@@ -312,7 +312,7 @@ const MOVES: [ArtName, string, string][] = [
 const FACES_RIGHT: Record<ArtName, boolean> = { 'hero-1': false, 'hero-2': true, 'hero-3': false, golem: true, dragon: true, 'phantom-wolf': true, wraith: true };
 
 const Sprites: React.FC<{ f: number; len: number }> = ({ f, len }) => {
-	const moving = f >= 120;
+	const moving = f >= 240;
 	const t = f / 60;
 	const list = moving ? MOVES : IDLES;
 	return (
@@ -331,12 +331,12 @@ const Sprites: React.FC<{ f: number; len: number }> = ({ f, len }) => {
 						const a = ART[n];
 						const k = Math.min(230 / (a.feetY - a.headY), (cw - 30) / a.w);
 						// heroes face right, foes face left; walkers pace from side to side with the move preset on top
-						const home = n.startsWith('hero') ? 1 : -1;
+						const home = n.startsWith('hero') ? -1 : 1;
 						const pace = moving ? Math.sin(t * 1.4 + i) * 40 : 0;
 						const facing = moving ? (Math.cos(t * 1.4 + i) >= 0 ? 1 : -1) : home;
 						const flip = (facing === 1) !== FACES_RIGHT[n];
 						const mp = moving ? movePose(preset, t + i * 0.3, facing, 1.4) : poseAt(t, preset, 1.5, facing, [], i * 0.37);
-						const show = ramp(f, moving ? 120 : 20 + i * 3, moving ? 134 : 34 + i * 3);
+						const show = ramp(f, moving ? 240 : 30 + i * 6, moving ? 256 : 46 + i * 6);
 						return (
 							<React.Fragment key={`${moving}-${i}`}>
 								<div style={{ opacity: show }}>

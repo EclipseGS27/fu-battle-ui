@@ -1,7 +1,7 @@
 """Synthesizes the trailer's score and sound effects (nothing sampled, nothing downloaded).
 
-  public/audio/score.wav      90 s, 120 BPM, D minor, in five sections that follow the acts:
-                              0-10 intro, 10-30 battle, 30-57 features, 57-76.5 showcase, 76.5-90 finale
+  public/audio/score.mp3      180 s, 120 BPM, D minor, in five sections that follow the acts:
+                              0-18 intro, 18-68 battle, 68-120.5 features, 120.5-156 showcase, 156-180 finale
   public/audio/sfx/*.wav      impacts, whooshes, slashes, magic, ice, fire, heals, risers...
 
 The Battle UI's own menu sounds (public/sounds/ui/ff13, synced from the module) cover the UI cues.
@@ -258,78 +258,96 @@ def chord_notes(c, octave=3):
     return out
 
 
+# Section boundaries in seconds, as in src/timeline.ts (acts of 18, 50, 52.5, 35.5 and 24 s)
+INTRO, BATTLE, FEATURES, SHOWCASE, FINALE, END = 0.0, 18.0, 68.0, 120.5, 156.0, 180.0
+TITLE = 15.0  # the title hit (Opening frame 900)
+LINES = (3.0, 7.0, 11.0)  # "Every spell", "Every strike", "Every foe"
+
+
+def bars(start, stop):
+    """Bar start times from start, while a whole bar fits before stop"""
+    bar = 4 * BEAT
+    t = start
+    while t + bar <= stop + 1e-6:
+        yield t
+        t += bar
+
+
 def score():
-    T = Track(90.0)
+    T = Track(END)
     bar = 4 * BEAT
 
-    # ---- intro 0-10: drone, swelling pad, taiko on the three lines, riser, title hit at 8.0
-    tt = t_(8.4)
-    drone = (np.sin(2 * np.pi * midi(n('D', 1)) * tt) * 0.7 + lp(saw(midi(n('D', 2)), tt), 300) * 0.4) * np.minimum(1, tt / 2.5)
-    T.add(0, drone * env(len(tt), 2.0, 0.1, 1, 0.4), 0.3)
-    for i, c in enumerate(['Dm', 'Dm', 'Bb', 'Bb']):
+    # ---- intro: drone, swelling pad, a taiko and a bell motif under each line, riser, the title hit
+    tt = t_(TITLE + 0.4)
+    drone = (np.sin(2 * np.pi * midi(n('D', 1)) * tt) * 0.7 + lp(saw(midi(n('D', 2)), tt), 300) * 0.4) * np.minimum(1, tt / 3.5)
+    T.add(0, drone * env(len(tt), 3.0, 0.1, 1, 0.4), 0.3)
+    for i, c in enumerate(['Dm', 'Dm', 'Bb', 'Bb', 'Gm']):
         for m in chord_notes(c, 3):
-            T.add(i * 2.0, supersaw(midi(m), 2.3, bright=900 + 400 * i, a=0.8), 0.055, pan=0.25 * ((m % 3) - 1))
-    for at, p in [(2.0, 1.0), (4.0, 1.2), (4.17, 1.0), (6.0, 1.3)]:
-        T.add(at, taiko(p), 0.7)
-    motif = [(2.05, 'D', 5), (2.55, 'A', 4), (3.05, 'F', 5), (3.55, 'E', 5), (4.2, 'D', 5), (4.7, 'C', 5), (5.2, 'A', 4), (6.05, 'Bb', 4), (6.55, 'A', 4), (7.05, 'C#', 5)]
-    for at, nm, o in motif:
-        T.add(at, bell(midi(n(nm, o)), 2.2), 0.18, pan=0.3)
-    T.add(6.3, riser(1.7), 0.35)
-    # title hit
-    T.add(8.0, taiko(1.8), 1.0)
-    T.add(8.0, kick(1.5), 0.6)
-    T.add(8.0, crash(3.0), 0.45)
+            T.add(i * 3.0, supersaw(midi(m), 3.4, bright=800 + 300 * i, a=1.0, r=0.8), 0.055, pan=0.25 * ((m % 3) - 1))
+    motifs = [
+        [('D', 5), ('A', 4), ('F', 5), ('E', 5)],
+        [('D', 5), ('C', 5), ('A', 4), ('E', 5)],
+        [('Bb', 4), ('A', 4), ('G', 4), ('C#', 5)],
+    ]
+    for at, motif in zip(LINES, motifs):
+        T.add(at, taiko(1.1), 0.7)
+        for j, (nm, o) in enumerate(motif):
+            T.add(at + 0.1 + j * 0.6, bell(midi(n(nm, o)), 2.4), 0.18, pan=0.3)
+    T.add(LINES[1] + 0.17, taiko(1.0), 0.6)
+    for j in range(4):
+        T.add(LINES[2] + 0.5 + j * 0.57, taiko(0.8), 0.35)
+    T.add(TITLE - 2.2, riser(2.2), 0.35)
+    T.add(TITLE, taiko(1.8), 1.0)
+    T.add(TITLE, kick(1.5), 0.6)
+    T.add(TITLE, crash(3.0), 0.45)
     for m in chord_notes('Dm', 3) + [n('D', 4), n('A', 4)]:
-        T.add(8.0, brass(midi(m), 1.9, 3600), 0.12)
-    for m in [n('D', 2)]:
-        T.add(8.0, bass(midi(m), 2.0), 0.4)
-    # pickup arps 8-10
-    for i in range(16):
+        T.add(TITLE, brass(midi(m), 2.6, 3600), 0.12)
+    T.add(TITLE, bass(midi(n('D', 2)), 2.8), 0.4)
+    for i in range(24):
         m = chord_notes('Dm', 4)[i % 3] + (12 if i % 6 >= 3 else 0)
-        T.add(8.0 + i * BEAT / 2, pluck(midi(m), 0.4), 0.16 * (0.4 + i / 16), pan=-0.3)
+        T.add(TITLE + 0.5 + i * BEAT / 2, pluck(midi(m), 0.4), 0.16 * (0.4 + i / 24), pan=-0.3)
 
-    # ---- battle 10-30: i-VI-III-VII, driving
+    # ---- battle: i-VI-III-VII, building in, a melody in two passes
     prog = ['Dm', 'Bb', 'F', 'C']
-    for b in range(10):
-        t0 = 10 + b * bar
+    for b, t0 in enumerate(bars(BATTLE, FEATURES)):
         c = prog[b % 4]
         cn = chord_notes(c, 3)
+        full = b >= 2
         for m in cn:
             T.add(t0, supersaw(midi(m), bar + 0.2, bright=1600, a=0.15, r=0.3), 0.06)
-        # string ostinato, 16ths
         arp = [cn[0] + 12, cn[1] + 12, cn[2] + 12, cn[1] + 12]
-        for i in range(16):
-            T.add(t0 + i * BEAT / 4, string_note(midi(arp[i % 4]), BEAT / 4), 0.07, pan=0.35)
-        # bass 8ths
+        for i in range(16 if full else 8):
+            step = BEAT / 4 if full else BEAT / 2
+            T.add(t0 + i * step, string_note(midi(arp[i % 4]), step), 0.07, pan=0.35)
         for i in range(8):
             T.add(t0 + i * BEAT / 2, bass(midi(cn[0] - 12), BEAT / 2 * 0.9), 0.28)
-        # drums
         for i in range(4):
-            T.add(t0 + i * BEAT, kick(), 0.55)
-            if i % 2 == 1:
+            T.add(t0 + i * BEAT, kick(), 0.55 if full else 0.35)
+            if full and i % 2 == 1:
                 T.add(t0 + i * BEAT, snare(), 0.32)
-        for i in range(8):
-            T.add(t0 + i * BEAT / 2, hat(i % 2 == 1), 0.08, pan=0.4)
+        if full:
+            for i in range(8):
+                T.add(t0 + i * BEAT / 2, hat(i % 2 == 1), 0.08, pan=0.4)
         T.add(t0, taiko(1.0), 0.35)
-        T.add(t0 + 3.5 * BEAT, taiko(0.8), 0.25)
-        # brass stabs on the chord change
-        for m in cn:
-            T.add(t0, brass(midi(m + 12), 0.45), 0.07)
+        if full:
+            T.add(t0 + 3.5 * BEAT, taiko(0.8), 0.25)
+            for m in cn:
+                T.add(t0, brass(midi(m + 12), 0.45), 0.07)
     melody = [(0, 1, 'D', 5), (1, 0.5, 'F', 5), (1.5, 0.5, 'E', 5), (2, 1, 'D', 5), (3, 1, 'A', 4),
               (4, 1, 'Bb', 4), (5, 1, 'D', 5), (6, 1.5, 'F', 5), (7.5, 0.5, 'E', 5),
               (8, 1, 'F', 5), (9, 1, 'A', 5), (10, 1, 'G', 5), (11, 1, 'F', 5),
               (12, 1.5, 'E', 5), (13.5, 0.5, 'D', 5), (14, 1, 'C', 5), (15, 1, 'E', 5)]
-    for rep in range(2):
-        for b0, d, nm, o in melody:
-            T.add(18 + rep * 8 + b0 * BEAT, brass(midi(n(nm, o)), d * BEAT * 0.95, 2800), 0.13, pan=-0.15)
-    T.add(28.0, riser(2.0), 0.25)
+    for start in (BATTLE + 8 * bar / 2, BATTLE + 14 * bar, BATTLE + 18 * bar):
+        for rep in range(2):
+            for b0, d, nm, o in melody:
+                at = start + rep * 8 + b0 * BEAT
+                if at < FEATURES - 2:
+                    T.add(at, brass(midi(n(nm, o)), d * BEAT * 0.95, 2800), 0.13, pan=-0.15)
+    T.add(FEATURES - 2, riser(2.0), 0.25)
 
-    # ---- features 30-57: lighter, bells and plucks, steady pulse
+    # ---- features: lighter, bells and plucks, a steady pulse
     prog2 = ['Bb', 'F', 'Dm', 'C']
-    for b in range(int(27 / bar) + 1):
-        t0 = 30 + b * bar
-        if t0 >= 57:
-            break
+    for b, t0 in enumerate(bars(FEATURES, SHOWCASE)):
         c = prog2[b % 4]
         cn = chord_notes(c, 3)
         for m in cn:
@@ -346,14 +364,11 @@ def score():
             T.add(t0 + i * BEAT / 2, hat(), 0.114, pan=-0.4)
         if b % 2 == 0:
             T.add(t0, bell(midi(cn[2] + 24), 2.5, 2.0), 0.152, pan=0.4)
-    T.add(55.0, riser(2.0), 0.608)
+    T.add(SHOWCASE - 2, riser(2.0), 0.608)
 
-    # ---- showcase 57-76.5: everything, double-time
+    # ---- showcase: everything, double time, the heroic melody
     prog3 = ['Dm', 'Bb', 'Gm', 'A', 'Dm', 'Bb', 'C', 'A']
-    for b in range(10):
-        t0 = 57 + b * bar
-        if t0 >= 76.5:
-            break
+    for b, t0 in enumerate(bars(SHOWCASE, FINALE)):
         c = prog3[b % len(prog3)]
         cn = chord_notes(c, 3)
         for m in cn:
@@ -377,28 +392,32 @@ def score():
             T.add(t0 + 1.5 * BEAT, brass(midi(m + 12), 0.3), 0.05)
     hero = [(0, 2, 'A', 5), (2, 1, 'G', 5), (3, 1, 'F', 5), (4, 2, 'D', 6), (6, 1, 'C', 6), (7, 1, 'Bb', 5),
             (8, 1.5, 'Bb', 5), (9.5, 0.5, 'A', 5), (10, 1, 'G', 5), (11, 1, 'Bb', 5), (12, 3, 'A', 5), (15, 1, 'C#', 6)]
-    for rep in range(2):
+    for rep in range(4):
         for b0, d, nm, o in hero:
-            at = 61 + rep * 8 + b0 * BEAT
-            if at < 76.3:
+            at = SHOWCASE + 4 + rep * 8 + b0 * BEAT
+            if at < FINALE - 0.3:
                 T.add(at, brass(midi(n(nm, o)), d * BEAT * 0.95, 3600), 0.13, pan=-0.15)
                 T.add(at, string_note(midi(n(nm, o) - 12), d * BEAT * 0.95, 2500) * env(int(d * BEAT * 0.95 * SR), 0.05, 0.1, 1, 0.1), 0.06)
-    T.add(74.5, riser(2.0), 0.4)
+    T.add(FINALE - 2, riser(2.0), 0.4)
 
-    # ---- finale 76.5-90: the hit, then the anthem and a long tail
-    T.add(76.5, taiko(2.0), 1.0)
-    T.add(76.5, kick(1.6), 0.6)
-    T.add(76.5, crash(3.5), 0.5)
-    fin = [('Bb', 76.5, 2.0), ('C', 78.5, 2.0), ('Dm', 80.5, 2.0), ('F', 82.5, 2.0), ('Bb', 84.5, 1.5), ('C', 86.0, 1.0), ('D', 87.0, 3.0)]
-    for c, at, d in fin:
+    # ---- finale: the hit, then the anthem slowly, and a long tail
+    T.add(FINALE, taiko(2.0), 1.0)
+    T.add(FINALE, kick(1.6), 0.6)
+    T.add(FINALE, crash(3.5), 0.5)
+    fin = [('Bb', 0, 3), ('C', 3, 3), ('Dm', 6, 3), ('F', 9, 3), ('Bb', 12, 3), ('C', 15, 3), ('D', 18, 6)]
+    for c, off, d in fin:
+        at = FINALE + off
         for m in chord_notes(c, 3):
-            T.add(at, supersaw(midi(m), d + 0.6, bright=2200, a=0.2, r=1.2 if c == 'D' else 0.5), 0.09)
-            T.add(at, brass(midi(m + 12), d * 0.95, 3000), 0.07)
+            T.add(at, supersaw(midi(m), d + 0.6, bright=2200, a=0.3, r=2.0 if c == 'D' else 0.6), 0.09)
+            T.add(at, brass(midi(m + 12), d * 0.95, 3000), 0.06)
         T.add(at, bass(midi(chord_notes(c, 2)[0]), d), 0.3)
         T.add(at, taiko(1.0 if c != 'D' else 2.0), 0.4 if c != 'D' else 0.8)
-    for i, (nm, o) in enumerate([('D', 5), ('F', 5), ('A', 5), ('D', 6)]):
-        T.add(87.0 + i * 0.12, bell(midi(n(nm, o)), 3.0), 0.14)
-    T.add(87.0, crash(3.0), 0.35)
+        for j in range(int(d / BEAT)):
+            m = chord_notes(c, 4)[j % 3] + (12 if j % 6 >= 3 else 0)
+            T.add(at + j * BEAT, pluck(midi(m), 0.6, 0.5), 0.1, pan=0.3 * (1 if j % 2 else -1))
+    for i, (nm, o) in enumerate([('D', 5), ('F#', 5), ('A', 5), ('D', 6)]):
+        T.add(FINALE + 18 + i * 0.15, bell(midi(n(nm, o)), 3.5), 0.14)
+    T.add(FINALE + 18, crash(3.0), 0.35)
 
     mix = reverb(T.stereo(), 2.6, 0.28)
     # glue: a gentle compressor and a soft limiter
@@ -409,7 +428,7 @@ def score():
     mix = mix * gain
     mix = np.tanh(mix / np.abs(mix).max() * 1.6) / np.tanh(1.6)
     fade = np.ones(mix.shape[1])
-    fl = int(1.5 * SR)
+    fl = int(2.5 * SR)
     fade[-fl:] = np.linspace(1, 0, fl)
     return mix * fade
 
@@ -525,5 +544,9 @@ def sfx():
 
 if __name__ == '__main__':
     sfx()
-    write(os.path.join(OUT, 'score.wav'), score(), 0.84)
+    wav = os.path.join(OUT, 'score.wav')
+    write(wav, score(), 0.84)
+    import subprocess
+    subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', wav, '-c:a', 'libmp3lame', '-b:a', '224k', os.path.join(OUT, 'score.mp3')], check=True)
+    os.remove(wav)
     print('score written')

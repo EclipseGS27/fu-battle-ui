@@ -11,12 +11,13 @@ import { ArtName, ArtSprite, GLOWS, Scenery, targetFor } from '../art/art';
 import { poseAt } from '../sprites/motion';
 import { Kicker, Letters, TitleLockup } from '../ui/Type';
 import { C, DISP } from '../theme';
+import { ACT_LEN } from '../timeline';
 
-export const OPENING_LEN = 620;
+export const OPENING_LEN = ACT_LEN.opening;
 const S = 4;
 const W = 480;
 const H = 270;
-export const T = { spell: 120, strike: 240, foe: 360, title: 480 };
+export const T = { spell: 180, strike: 420, foe: 660, title: 900 };
 
 const hero = targetFor('hero-1', 0.5);
 const dummy = { w: hero.w, h: hero.h };
@@ -37,8 +38,8 @@ const titleCues: Cue[] = [ambient('fireflies', { at: 0, area: { x: -20, y: 20, w
 const FOES: { n: ArtName; x: number; y: number; k: number; flip: boolean; glow: string; idle: string }[] = [
 	{ n: 'phantom-wolf', x: 470, y: 1015, k: 0.72, flip: false, glow: '#5fe0ff', idle: 'battle' },
 	{ n: 'wraith', x: 820, y: 985, k: 0.8, flip: false, glow: '#a6ecff', idle: 'ghostly' },
-	{ n: 'golem', x: 1130, y: 1020, k: 0.82, flip: true, glow: '#b072ff', idle: 'breathe' },
-	{ n: 'dragon', x: 1560, y: 1025, k: 0.86, flip: true, glow: '#62e26a', idle: 'breathe' },
+	{ n: 'golem', x: 1130, y: 1020, k: 0.82, flip: false, glow: '#b072ff', idle: 'breathe' },
+	{ n: 'dragon', x: 1560, y: 1025, k: 0.86, flip: false, glow: '#62e26a', idle: 'breathe' },
 ];
 const shakes: Shake[] = [{ at: T.strike + 10, power: 1.6, len: 26 }];
 
@@ -88,8 +89,8 @@ export const Opening: React.FC = () => {
 				</div>
 				{f >= T.foe - 10 && f < T.title + 10
 					? FOES.map((F, i) => {
-							const at = T.foe + 18 + i * 14;
-							const lit = ramp(f, at, at + 26, Easing.out(Easing.cubic));
+							const at = T.foe + 30 + i * 34;
+							const lit = ramp(f, at, at + 44, Easing.out(Easing.cubic));
 							const rise = 60 * (1 - ramp(f, at - 10, at + 20, Easing.out(Easing.cubic)));
 							return (
 								<ArtSprite
@@ -100,7 +101,7 @@ export const Opening: React.FC = () => {
 									k={F.k}
 									flip={F.flip}
 									p={{ ...poseAt(t, F.idle, 1.4, F.flip ? -1 : 1, [], i * 0.7), tint: 0x05070f, tintAmt: 1 - lit * 0.85 }}
-									alpha={ramp(f, at - 12, at + 4)}
+									alpha={ramp(f, at - 20, at + 6)}
 									glow={{ style: 'energy', color: F.glow, strength: 1.4 * lit, size: 1.6, speed: 1 }}
 									t={t}
 									shadow={false}
@@ -118,10 +119,10 @@ export const Opening: React.FC = () => {
 					<div style={{ position: 'absolute', left: 0, top: 0, width: 1920, height: 1080, transformOrigin: '50% 80%', transform: `translateY(${110 - 40 * drift}px) scale(${1.14 - 0.05 * drift})` }}>
 						<Scenery kind="cave" />
 						<PixelLayer stage={tstage} step={tf} layer="back" scale={S} />
-						<ArtSprite n="hero-2" x={575} y={712} k={0.72} p={poseAt(t, 'battle', 1, 1, [], 0.4)} t={t} />
-						<ArtSprite n="hero-1" x={700} y={838} k={0.74} flip p={poseAt(t, 'battle', 1, 1)} t={t} />
-						<ArtSprite n="hero-3" x={880} y={768} k={0.74} flip p={poseAt(t, 'battle', 1, 1, [], 0.8)} t={t} />
-						<ArtSprite n="golem" x={1240} y={800} k={1.1} flip p={poseAt(t, 'breathe', 1.6, -1)} glow={GLOWS.boss} t={t} shadowW={0.7} />
+						<ArtSprite n="hero-2" x={1300} y={712} k={0.72} flip p={poseAt(t, 'battle', 1, -1, [], 0.4)} t={t} />
+						<ArtSprite n="hero-1" x={1210} y={838} k={0.74} p={poseAt(t, 'battle', 1, -1)} t={t} />
+						<ArtSprite n="hero-3" x={1035} y={768} k={0.74} p={poseAt(t, 'battle', 1, -1, [], 0.8)} t={t} />
+						<ArtSprite n="golem" x={690} y={800} k={1.1} p={poseAt(t, 'breathe', 1.6, 1)} glow={GLOWS.boss} t={t} shadowW={0.7} />
 						<PixelLayer stage={tstage} step={tf} layer="front" scale={S} />
 					</div>
 					<AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(3,5,11,0.95) 0%, rgba(3,5,11,0.7) 38%, rgba(3,5,11,0.1) 70%)' }} />

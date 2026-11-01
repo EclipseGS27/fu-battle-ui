@@ -1,9 +1,10 @@
 // The full-screen cut-in for heroic moves (Fabula Ultima Battle Animations, styles/anim.css .fua-cutin),
 // with its CSS keyframes (fua-band-in, fua-por, fua-txt, fua-streak, out) driven by the frame instead.
 import React from 'react';
-import { Easing } from 'remotion';
+import { Easing, Img } from 'remotion';
 import { DISP } from '../theme';
 import { clamp01 } from '../fx/impact';
+import { ART, ArtName, artUrl } from '../art/art';
 
 export const CutIn: React.FC<{ f: number; len?: number; name: string; user: string; color?: string; portrait: React.ReactNode }> = ({ f, len = 75, name, user, color = '#f2c45a', portrait }) => {
 	if (f < 0 || f > len) return null;
@@ -63,6 +64,25 @@ export const CutIn: React.FC<{ f: number; len?: number; name: string; user: stri
 					<b style={{ fontFamily: DISP, fontWeight: 700, fontSize: '11vh', lineHeight: 0.95, letterSpacing: '0.04em', color: '#fff', fontStyle: 'italic', textTransform: 'uppercase', textShadow: `0 0 18px ${color}b3, 4px 4px 0 rgba(0, 0, 0, 0.6)` }}>{name}</b>
 				</div>
 			</div>
+		</div>
+	);
+};
+
+// Where each hero's face is in its picture (fractions of width and height), for framing the cut-in
+const FACE: Record<string, [number, number]> = { 'hero-1': [0.6, 0.14], 'hero-2': [0.52, 0.15], 'hero-3': [0.56, 0.13] };
+
+/**
+ * The hero's picture framed on the face: the cut-in's portrait box is 170% of the band's height, starting 30%
+ * above it, so the band shows the middle 300 of its 514 pixels; the face goes in the middle of that.
+ */
+export const CutPortrait: React.FC<{ n: ArtName; width?: number }> = ({ n, width = 620 }) => {
+	const a = ART[n];
+	const [fx, fy] = FACE[n] ?? [0.5, 0.15];
+	const h = 1050;
+	const w = (a.w / a.h) * h;
+	return (
+		<div style={{ position: 'relative', height: '100%', width }}>
+			<Img src={artUrl(n)} style={{ position: 'absolute', height: h, width: w, maxWidth: 'none', top: 242 - fy * h, left: width / 2 - fx * w }} />
 		</div>
 	);
 };
