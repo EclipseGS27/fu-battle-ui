@@ -25,6 +25,9 @@
 		</aside>
 
 		<div class="fbp-adv-main">
+			{{#if fba.gm}}
+				<div class="fbp-asplayer"><button type="button" class="{{#if fba.asPlayer}}on{{/if}}" data-action="fbuiAsPlayer" aria-pressed="{{#if fba.asPlayer}}true{{else}}false{{/if}}" data-tooltip="Show this tab exactly as the players see it"><i class="fa-solid {{#if fba.asPlayer}}fa-eye-slash{{else}}fa-eye{{/if}}"></i> {{#if fba.asPlayer}}Player view (on){{else}}View as players{{/if}}</button></div>
+			{{/if}}
 			{{#with fba.detail}}
 				{{> "modules/fu-battle-ui/templates/party/profile.hbs"}}
 			{{else}}
