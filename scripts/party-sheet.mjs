@@ -125,11 +125,12 @@ function flagSet(v) {
  * The adversary list and the picked one's details, gated by the party's Study like the battle screen
  * (the GM sees everything, with a note on what players know).
  */
-export function adversaryData(entries, selected) {
+export function adversaryData(entries, selected, { asPlayer = false } = {}) {
 	const max = studyMax();
+	const gm = game.user.isGM && !asPlayer;
 	const list = entries.map((e) => {
 		const tier = tierOf(e);
-		return { uuid: e.uuid, name: e.name, img: e.img, species: game.i18n.localize(e.species ?? ''), rank: game.i18n.localize(e.rank ?? ''), known: tier > 0 || game.user.isGM, tier, tierWord: TIER_WORD[tier], pct: studyPct(e.study, max), sel: e.uuid === selected };
+		return { uuid: e.uuid, name: e.name, img: e.img, species: game.i18n.localize(e.species ?? ''), rank: game.i18n.localize(e.rank ?? ''), known: tier > 0 || gm, tier, tierWord: TIER_WORD[tier], pct: studyPct(e.study, max), sel: e.uuid === selected };
 	});
 	const entry = entries.find((e) => e.uuid === selected) ?? null;
 	let actor = null;
@@ -139,7 +140,7 @@ export function adversaryData(entries, selected) {
 		actor = null;
 	}
 	if (!entry || !actor) return { list, detail: null };
-	return { list, detail: adversaryDetail(entry, actor, tierOf(entry)) };
+	return { list, detail: adversaryDetail(entry, actor, tierOf(entry), { asPlayer }) };
 }
 
 /**
@@ -148,9 +149,11 @@ export function adversaryData(entries, selected) {
  * @param {object} entry the party's adversary entry ({uuid, study, revealed, ...})
  * @param {Actor} actor
  * @param {number} partyTier 0 unstudied, 1 basic, 2 complete, 3 detailed
+ * @param {{asPlayer?:boolean}} [opts] asPlayer: what a player sees, for the GM's preview
  */
-export function adversaryDetail(entry, actor, partyTier) {
-	const gm = game.user.isGM;
+export function adversaryDetail(entry, actor, partyTier, { asPlayer = false } = {}) {
+	// the GM can look at it the way players do: same gating, no GM extras
+	const gm = game.user.isGM && !asPlayer;
 	const tier = gm ? 3 : partyTier;
 	const info = npcInfo(actor);
 	const r = resources(actor);
@@ -212,7 +215,7 @@ export function adversaryDetail(entry, actor, partyTier) {
 		pct: studyPct(entry.study),
 		studyLine: `${TIER_WORD[partyTier]}${Number(entry.study) ? ` · ${entry.study}` : ''}`,
 		tierText: TIER_TEXT[partyTier],
-		gmNote: gm ? `You see everything. Players see: ${TIER_WORD[partyTier].toLowerCase()}.` : '',
+		gmNote: gm ? `You see everything. Players see: ${TIER_WORD[partyTier].toLowerCase()}.` : asPlayer ? 'Player view: exactly what the players see.' : '',
 		hp: r.hp,
 		hpMax: r.hpMax,
 		hpPct: Math.round((r.hp / Math.max(1, r.hpMax)) * 100),
@@ -291,6 +294,11 @@ export function registerBattlePartySheet(Base) {
 					if (actor) return openLevelUp(actor, { sheet: actor.sheet });
 				},
 				/** pick an adversary to read about */
+				/** GM: see the tab the way players do */
+				fbuiAsPlayer() {
+					this._fbAsPlayer = !this._fbAsPlayer;
+					return this.render({ parts: ['adversaries'] });
+				},
 				fbuiAdversary(event, target) {
 					this._fbAdvSel = target.dataset.uuid;
 					return this.render({ parts: ['adversaries'] });
@@ -347,7 +355,8 @@ export function registerBattlePartySheet(Base) {
 				const list = context.adversaries ?? [];
 				if (!list.some((a) => a.uuid === this._fbAdvSel)) this._fbAdvSel = list[0]?.uuid ?? null;
 				try {
-					context.fba = adversaryData(list, this._fbAdvSel);
+					const asPlayer = game.user.isGM && !!this._fbAsPlayer;
+					context.fba = { ...adversaryData(list, this._fbAdvSel, { asPlayer }), gm: game.user.isGM, asPlayer };
 				} catch (err) {
 					console.warn(`${MODULE_ID} | adversaries`, err);
 					context.fba = { list: [], detail: null };

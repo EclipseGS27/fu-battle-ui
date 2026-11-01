@@ -11,6 +11,7 @@ import { GLOW_DEFAULTS, TurnGlow, TurnGlowConfig } from './glow.mjs';
 import { registerOpportunityMenu } from './opportunity.mjs';
 import { registerConditionTips } from './conditions.mjs';
 import { registerProfileStyle } from './npc-profile.mjs';
+import { registerAutomation } from './automation.mjs';
 
 const ui2 = new BattleUI();
 
@@ -58,6 +59,7 @@ function registerSettings() {
 	reg('autoRevealAffinities', { name: 'Reveal an Affinity when it is hit', hint: 'When damage of a type lands on an enemy, players learn that Affinity.', scope: 'world', type: Boolean, default: true });
 	reg('playersFillClocks', { name: 'Players change clocks directly', hint: 'Off: a player’s Objective result is sent to the GM to approve. On: it applies at once.', scope: 'world', type: Boolean, default: false });
 	reg('tickClocksEachRound', { name: 'Tick round clocks automatically', hint: 'Clocks marked “+1 each round” fill one section when a round ends.', scope: 'world', type: Boolean, default: true });
+	registerAutomation(reg);
 	reg('surrenderPrompt', { name: 'Surrender or Sacrifice prompt', hint: 'When a Player Character drops to 0 HP, ask their player to Surrender (gain 2 Fabula Points) or Sacrifice.', scope: 'world', type: Boolean, default: true, onChange: rerender });
 
 	reg('sheetDefault', { name: 'Battle UI sheet for new characters', hint: 'Make the Battle UI sheet the default for Player Characters. Each character can still switch sheets from its Sheet button. Reload after changing.', scope: 'world', type: Boolean, default: false, requiresReload: true });
@@ -295,6 +297,22 @@ Hooks.on('createChatMessage', (msg) => {
 	}
 	const ch = combat.getFlag(MODULE_ID, 'charge');
 	if (ch && ch.cid === c.id && ch.item === check.itemName && game.users.activeGM?.isSelf) combat.unsetFlag(MODULE_ID, 'charge');
+});
+
+/* In combat the Battle UI floats its own MISS (unless Battle Animations draws one), so the system's "Miss" text
+   over the token would make two: let only ours show */
+Hooks.on('canvasReady', () => {
+	const iface = canvas?.interface;
+	if (!iface?.createScrollingText || iface.createScrollingText.fbuiWrapped) return;
+	const orig = iface.createScrollingText;
+	const miss = (game.i18n?.localize?.('FU.Miss') || 'Miss').trim().toLowerCase();
+	const wrapped = function (origin, text, options) {
+		const t = typeof text === 'string' ? text.trim().toLowerCase() : '';
+		if ((t === miss || t === 'miss') && game.combat?.started && !animationNumbers()) return Promise.resolve();
+		return orig.call(this, origin, text, options);
+	};
+	wrapped.fbuiWrapped = true;
+	iface.createScrollingText = wrapped;
 });
 
 /* Owners clear their Surrender/Sacrifice choice once the character is back on their feet */

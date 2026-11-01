@@ -78,3 +78,17 @@
 :is(#fbs-z, html) .application.fbui-check .form-footer button { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; height: 40px; border-radius: 6px; border: 1px solid var(--line); background: rgba(90, 169, 255, 0.12); color: var(--ink); font-family: var(--disp); font-size: 16px; letter-spacing: 0.12em; text-transform: uppercase; box-shadow: none; text-shadow: none; }
 :is(#fbs-z, html) .application.fbui-check .form-footer button.fbc-roll { border-color: var(--gold); background: rgba(242, 196, 90, 0.18); color: #fff3d1; }
 :is(#fbs-z, html) .application.fbui-check .form-footer button:hover { filter: brightness(1.25); box-shadow: 0 0 18px rgba(242, 196, 90, 0.25); }
+
+/* which element: the Elemental Shard and other multi-type consumables */
+.application.fbui-elements .form-footer { display: grid; grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); gap: 6px; }
+.application.fbui-elements .form-footer button { --c: #9fd0ff; font-weight: 700; letter-spacing: 0.04em; color: var(--c); border: 1px solid color-mix(in srgb, var(--c) 60%, transparent); background: color-mix(in srgb, var(--c) 14%, rgba(12, 20, 44, 0.9)); }
+.application.fbui-elements .form-footer button:hover { background: color-mix(in srgb, var(--c) 30%, rgba(12, 20, 44, 0.9)); }
+.application.fbui-elements button[data-action='air'] { --c: #8fe3c8; }
+.application.fbui-elements button[data-action='bolt'] { --c: #f7e463; }
+.application.fbui-elements button[data-action='dark'] { --c: #b89cf0; }
+.application.fbui-elements button[data-action='earth'] { --c: #d8ad6e; }
+.application.fbui-elements button[data-action='fire'] { --c: #ff8a4c; }
+.application.fbui-elements button[data-action='ice'] { --c: #8fd3ff; }
+.application.fbui-elements button[data-action='light'] { --c: #fff3b0; }
+.application.fbui-elements button[data-action='poison'] { --c: #c99cf0; }
+.application.fbui-elements .fbui-pick-note { margin: 0 0 4px; }
