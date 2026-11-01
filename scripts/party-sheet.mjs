@@ -111,16 +111,25 @@ function studyMax() {
 	}
 }
 
+const tierOf = (e) => TIER_OF[e?.studyResult] ?? 0;
+const studyPct = (study, max = studyMax()) => Math.round(Math.min(1, (Number(study) || 0) / max) * 100);
+
+/** Truthy flags of a reveal map ({id: true}) or a list of ids, as a Set */
+function flagSet(v) {
+	if (!v) return new Set();
+	if (Array.isArray(v)) return new Set(v);
+	return new Set(Object.entries(v).filter(([, on]) => on).map(([k]) => k));
+}
+
 /**
  * The adversary list and the picked one's details, gated by the party's Study like the battle screen
  * (the GM sees everything, with a note on what players know).
  */
 export function adversaryData(entries, selected) {
 	const max = studyMax();
-	const tierOf = (e) => TIER_OF[e.studyResult] ?? 0;
 	const list = entries.map((e) => {
 		const tier = tierOf(e);
-		return { uuid: e.uuid, name: e.name, img: e.img, species: game.i18n.localize(e.species ?? ''), rank: game.i18n.localize(e.rank ?? ''), known: tier > 0 || game.user.isGM, tier, tierWord: TIER_WORD[tier], pct: Math.round(Math.min(1, (Number(e.study) || 0) / max) * 100), sel: e.uuid === selected };
+		return { uuid: e.uuid, name: e.name, img: e.img, species: game.i18n.localize(e.species ?? ''), rank: game.i18n.localize(e.rank ?? ''), known: tier > 0 || game.user.isGM, tier, tierWord: TIER_WORD[tier], pct: studyPct(e.study, max), sel: e.uuid === selected };
 	});
 	const entry = entries.find((e) => e.uuid === selected) ?? null;
 	let actor = null;
@@ -130,59 +139,109 @@ export function adversaryData(entries, selected) {
 		actor = null;
 	}
 	if (!entry || !actor) return { list, detail: null };
+	return { list, detail: adversaryDetail(entry, actor, tierOf(entry)) };
+}
 
+/**
+ * What the party knows about one adversary, in the Battle UI look: the party sheet's Adversaries tab and the
+ * NPC profile window both show this.
+ * @param {object} entry the party's adversary entry ({uuid, study, revealed, ...})
+ * @param {Actor} actor
+ * @param {number} partyTier 0 unstudied, 1 basic, 2 complete, 3 detailed
+ */
+export function adversaryDetail(entry, actor, partyTier) {
 	const gm = game.user.isGM;
-	const partyTier = tierOf(entry);
 	const tier = gm ? 3 : partyTier;
 	const info = npcInfo(actor);
 	const r = resources(actor);
 	const aff = affinities(actor);
-	const revealed = entry.revealed?.affinities ?? {};
+	const revealed = entry.revealed ?? {};
+	const revAff = revealed.affinities ?? {};
 	const at = actor.system?.attributes ?? {};
 	const ATTR = [['dex', 'DEX', '#5aa9ff'], ['ins', 'INS', '#c7a6ff'], ['mig', 'MIG', '#6fe3a0'], ['wlp', 'WLP', '#f2c45a']];
+
+	// below Detailed, the GM can still reveal single skills and special rules (Project FU's profile editor)
+	const revAbil = flagSet(revealed.abilities);
+	const revRules = flagSet(revealed.rules);
+	const shown = (row) => {
+		if (tier >= 3) return true;
+		const type = actor.items?.get?.(row.id)?.type;
+		return (type === 'miscAbility' && revAbil.has(row.id)) || (type === 'rule' && revRules.has(row.id));
+	};
 	let prev = null;
-	const abilities = tier >= 3
-		? foeActionRows(actor).map((m) => {
-				const head = m.group !== prev ? m.group : '';
-				prev = m.group;
-				return { head, label: m.label, meta: m.meta, help: m.help };
-			})
-		: [];
+	const abilities = foeActionRows(actor)
+		.filter(shown)
+		.map((m) => {
+			const head = m.group !== prev ? m.group : '';
+			prev = m.group;
+			return { head, label: m.label, meta: m.meta, help: m.help };
+		});
+
+	const traits = tier >= 2 ? info.traits : [...flagSet(revealed.traits)].join(', ');
+
+	const immune = Object.entries(actor.system?.immunities ?? {})
+		.filter(([, v]) => (typeof v === 'object' ? (v?.current ?? v?.base) : v))
+		.map(([id]) => id);
+	const revImm = flagSet(revealed.statusImmunities);
+	const immunities = immune
+		.filter((id) => gm || revImm.has(id))
+		.map((id) => ({ label: STATUS_CHIPS[id]?.[0] ?? id, color: STATUS_CHIPS[id]?.[1] ?? '#9fd0ff', tip: conditionTip(id) }));
+
+	let pressure = [];
+	try {
+		if (game.settings.get('projectfu', 'pressureSystem')) {
+			const all = new Set(actor.system?.pressurePoints?.values ?? []);
+			const known = tier >= 2 ? all : flagSet(revealed.pressurePoints);
+			pressure = Object.entries(CONFIG.FU?.weaponCategories ?? {})
+				.filter(([k]) => known.has(k) && all.has(k))
+				.map(([, label]) => game.i18n.localize(label));
+		}
+	} catch {
+		pressure = [];
+	}
+
 	const tags = tier >= 1 ? [info.rankLabel, info.species].filter(Boolean) : ['Unknown'];
 	return {
-		list,
-		detail: {
-			uuid: entry.uuid,
-			name: entry.name,
-			img: entry.img ?? actor.img,
-			villain: tier >= 1 && info.villain ? info.villain.toUpperCase() : '',
-			tags,
-			tier,
-			level: info.level,
-			pct: list.find((x) => x.uuid === entry.uuid)?.pct ?? 0,
-			studyLine: `${TIER_WORD[partyTier]}${Number(entry.study) ? ` · ${entry.study}` : ''}`,
-			tierText: TIER_TEXT[partyTier],
-			gmNote: gm ? `You see everything. Players see: ${TIER_WORD[partyTier].toLowerCase()}.` : '',
-			hp: r.hp,
-			hpMax: r.hpMax,
-			hpPct: Math.round((r.hp / Math.max(1, r.hpMax)) * 100),
-			crisis: r.crisis,
-			mp: r.mp,
-			mpMax: r.mpMax,
-			mpPct: Math.round((r.mp / Math.max(1, r.mpMax)) * 100),
-			attrs: ATTR.map(([k, abbr, color]) => ({ abbr, color, die: at[k]?.current ?? at[k]?.base ?? '?' })),
-			def: info.def ?? '?',
-			mdef: info.mdef ?? '?',
-			traits: info.traits,
-			aff: AFFINITY_TYPES.map(([k, abbr, color]) => {
-				const known = tier >= 2 || !!revealed[k];
-				const word = known ? aff[k] : '?';
-				return { abbr, color, word, wordColor: AFF_COLOR[word] ?? '#eef3ff', tip: `${k[0].toUpperCase()}${k.slice(1)}: ${known ? AFF_NAME[word] : 'not known yet'}` };
-			}),
-			abilities,
-			canOpen: actor.isOwner,
-		},
+		uuid: entry.uuid,
+		name: entry.name ?? actor.name,
+		img: entry.img ?? actor.img,
+		villain: tier >= 1 && info.villain ? info.villain.toUpperCase() : '',
+		tags,
+		tier,
+		level: info.level,
+		pct: studyPct(entry.study),
+		studyLine: `${TIER_WORD[partyTier]}${Number(entry.study) ? ` · ${entry.study}` : ''}`,
+		tierText: TIER_TEXT[partyTier],
+		gmNote: gm ? `You see everything. Players see: ${TIER_WORD[partyTier].toLowerCase()}.` : '',
+		hp: r.hp,
+		hpMax: r.hpMax,
+		hpPct: Math.round((r.hp / Math.max(1, r.hpMax)) * 100),
+		crisis: r.crisis,
+		mp: r.mp,
+		mpMax: r.mpMax,
+		mpPct: Math.round((r.mp / Math.max(1, r.mpMax)) * 100),
+		attrs: ATTR.map(([k, abbr, color]) => ({ abbr, color, die: at[k]?.current ?? at[k]?.base ?? '?' })),
+		def: info.def ?? '?',
+		mdef: info.mdef ?? '?',
+		traits,
+		aff: AFFINITY_TYPES.map(([k, abbr, color]) => {
+			const known = tier >= 2 || !!revAff[k];
+			const word = known ? aff[k] : '?';
+			return { abbr, color, word, wordColor: AFF_COLOR[word] ?? '#eef3ff', tip: `${k[0].toUpperCase()}${k.slice(1)}: ${known ? AFF_NAME[word] : 'not known yet'}` };
+		}),
+		immunities,
+		pressure,
+		abilities,
+		canOpen: actor.isOwner,
 	};
+}
+
+/** The tier a Project FU NPC profile window shows (its context says which Study results were reached) */
+export function profileTier(context) {
+	if (context?.detailed) return 3;
+	if (context?.complete) return 2;
+	if (context?.basic) return 1;
+	return 0;
 }
 
 export function companionCard(entry) {

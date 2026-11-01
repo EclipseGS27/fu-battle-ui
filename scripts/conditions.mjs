@@ -30,9 +30,9 @@ function conditionsOf(token) {
 	return ids
 		.map((id) => {
 			const def = (CONFIG.statusEffects ?? []).find((e) => e.id === id);
-			if (!STATUS_CHIPS[id] && !def?.description) return null;
 			const info = conditionInfo(id);
-			if (!info) return null;
+			// statuses with nothing to say (e.g. the system's Crisis marker without rules) stay off the card
+			if (!info || (!STATUS_CHIPS[id] && !info.text)) return null;
 			return { ...info, color: STATUS_CHIPS[id]?.[1] ?? '#9fd0ff', img: def?.img ?? '' };
 		})
 		.filter(Boolean)
