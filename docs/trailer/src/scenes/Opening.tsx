@@ -120,8 +120,8 @@ export const Opening: React.FC = () => {
 						<Scenery kind="cave" />
 						<PixelLayer stage={tstage} step={tf} layer="back" scale={S} />
 						<ArtSprite n="hero-2" x={1300} y={712} k={0.72} flip p={poseAt(t, 'battle', 1, -1, [], 0.4)} t={t} />
-						<ArtSprite n="hero-1" x={1210} y={838} k={0.74} p={poseAt(t, 'battle', 1, -1)} t={t} />
-						<ArtSprite n="hero-3" x={1035} y={768} k={0.74} p={poseAt(t, 'battle', 1, -1, [], 0.8)} t={t} />
+						<ArtSprite n="hero-1" x={1210} y={838} k={0.74} flip p={poseAt(t, 'battle', 1, -1)} t={t} />
+						<ArtSprite n="hero-3" x={1035} y={768} k={0.74} flip p={poseAt(t, 'battle', 1, -1, [], 0.8)} t={t} />
 						<ArtSprite n="golem" x={690} y={800} k={1.1} p={poseAt(t, 'breathe', 1.6, 1)} glow={GLOWS.boss} t={t} shadowW={0.7} />
 						<PixelLayer stage={tstage} step={tf} layer="front" scale={S} />
 					</div>

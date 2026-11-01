@@ -192,8 +192,8 @@ const Preview: React.FC<{ f: number; len: number }> = ({ f, len }) => {
 				<Scenery kind="cave" />
 			</div>
 			<ArtSprite n="hero-2" x={1300} y={712} k={0.72} flip p={poseAt(t, 'battle', 1, -1, [], 0.4)} glow={GLOWS.hero} t={t} />
-			<ArtSprite n="hero-1" x={1210} y={838} k={0.74} p={poseAt(t, 'battle', 1, -1)} t={t} />
-			<ArtSprite n="hero-3" x={1035} y={768} k={0.74} p={poseAt(t, 'battle', 1, -1, [], 0.8)} t={t} />
+			<ArtSprite n="hero-1" x={1210} y={838} k={0.74} flip p={poseAt(t, 'battle', 1, -1)} t={t} />
+			<ArtSprite n="hero-3" x={1035} y={768} k={0.74} flip p={poseAt(t, 'battle', 1, -1, [], 0.8)} t={t} />
 			<ArtSprite n="golem" x={690} y={800} k={1.1} p={poseAt(t, 'breathe', 1.6, 1)} glow={GLOWS.boss} t={t} shadowW={0.7} />
 			<Hud
 				size={size}
@@ -309,7 +309,7 @@ const MOVES: [ArtName, string, string][] = [
 	['dragon', 'fly', 'Fly'],
 ];
 // which way each picture faces as drawn
-const FACES_RIGHT: Record<ArtName, boolean> = { 'hero-1': false, 'hero-2': true, 'hero-3': false, golem: true, dragon: true, 'phantom-wolf': true, wraith: true };
+const FACES_RIGHT: Record<ArtName, boolean> = { 'hero-1': true, 'hero-2': true, 'hero-3': true, golem: true, dragon: true, 'phantom-wolf': true, wraith: true };
 
 const Sprites: React.FC<{ f: number; len: number }> = ({ f, len }) => {
 	const moving = f >= 240;

@@ -28,8 +28,8 @@ export const SHOWCASE_LEN = FIELD_LEN + AURORA_LEN + WALL_LEN;
 
 const party = (acts: Record<string, Fighter['acts']>, hits: Record<string, number[]>): Fighter[] => [
 	{ key: 'mira', n: 'hero-2', x: 1300, y: 712, k: 0.72, flip: true, dir: -1, idle: 'battle', phase: 0.4, acts: acts.mira ?? [], hits: hits.mira ?? [], kb: 24 },
-	{ key: 'kael', n: 'hero-1', x: 1210, y: 838, k: 0.74, dir: -1, idle: 'battle', acts: acts.kael ?? [], hits: hits.kael ?? [], kb: 28 },
-	{ key: 'ren', n: 'hero-3', x: 1035, y: 768, k: 0.74, dir: -1, idle: 'battle', phase: 0.8, acts: acts.ren ?? [], hits: hits.ren ?? [], kb: 24 },
+	{ key: 'kael', n: 'hero-1', x: 1210, y: 838, k: 0.74, flip: true, dir: -1, idle: 'battle', acts: acts.kael ?? [], hits: hits.kael ?? [], kb: 28 },
+	{ key: 'ren', n: 'hero-3', x: 1035, y: 768, k: 0.74, flip: true, dir: -1, idle: 'battle', phase: 0.8, acts: acts.ren ?? [], hits: hits.ren ?? [], kb: 24 },
 ];
 
 const hpOf = (r: number, start: number, steps: [number, number][]) => steps.reduce((hp, [at, v]) => (r >= at ? v : hp), start);

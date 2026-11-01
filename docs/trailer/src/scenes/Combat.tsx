@@ -89,6 +89,7 @@ const rawFighters: Fighter[] = [
 		x: 1210,
 		y: 838,
 		k: 0.74,
+		flip: true,
 		dir: -1,
 		idle: 'battle',
 		acts: [
@@ -106,6 +107,7 @@ const rawFighters: Fighter[] = [
 		x: 1035,
 		y: 768,
 		k: 0.74,
+		flip: true,
 		dir: -1,
 		idle: 'battle',
 		phase: 0.8,
