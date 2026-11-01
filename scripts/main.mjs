@@ -10,6 +10,7 @@ import { registerBrowserStyle } from './browser-style.mjs';
 import { GLOW_DEFAULTS, TurnGlow, TurnGlowConfig } from './glow.mjs';
 import { registerOpportunityMenu } from './opportunity.mjs';
 import { registerConditionTips } from './conditions.mjs';
+import { registerProfileStyle } from './npc-profile.mjs';
 
 const ui2 = new BattleUI();
 
@@ -78,6 +79,7 @@ function registerSettings() {
 	reg('checkDialog', { name: 'Battle UI check dialog', hint: 'Show Project FU’s check prompt (Attribute, Open, Opposed, Group, Ritual) in the Battle UI look.', scope: 'client', type: Boolean, default: true });
 	reg('browserStyle', { name: 'Battle UI compendium browser', hint: 'Show Project FU’s compendium browser in the Battle UI look.', scope: 'client', type: Boolean, default: true });
 	reg('opportunityMenu', { name: 'Opportunity menu', hint: 'When one of your Checks crits, open a menu with the Opportunities you can pick: the item’s own, then the world’s opportunity table (Project FU homebrew setting) or the Core Rulebook list.', scope: 'client', type: String, choices: { auto: 'Open as soon as I crit', click: 'Only from the chat card button', off: 'Off (Project FU’s own dialog)' }, default: 'auto' });
+	reg('profileStyle', { name: 'Battle UI NPC profile', hint: 'Show Project FU’s NPC profile window (what the party has learned about an adversary) in the Battle UI look.', scope: 'client', type: Boolean, default: true });
 	reg('conditionTips', { name: 'Condition cards on tokens', hint: 'Hover a token on the map to see what each of its conditions does and how long it lasts.', scope: 'client', type: Boolean, default: true });
 	reg('clearTargetsOnTurn', { name: 'Clear targets when the turn changes', hint: 'Your targets are dropped whenever a turn starts or ends, so the next action starts fresh.', scope: 'client', type: Boolean, default: true });
 	reg('banners', { name: 'Action banners', hint: 'Show a banner across the screen when someone acts.', scope: 'client', type: Boolean, default: true });
@@ -91,6 +93,7 @@ function registerSettings() {
 registerCheckDialog();
 registerBrowserStyle();
 registerConditionTips();
+registerProfileStyle();
 
 Hooks.once('init', () => {
 	registerSettings();

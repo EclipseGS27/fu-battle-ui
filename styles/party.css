@@ -332,46 +332,63 @@
 .application.fbui-party .fbp-adv :is(em, .study).t3 { color: var(--gold); }
 .application.fbui-party .fbp-adv .t3 .st i, .application.fbui-party .fbp-adv .st.t3 i { background: var(--gold); }
 
-.application.fbui-party .fbp-adv-main { min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 6px; }
-.application.fbui-party .fbp-adv-main .hd { display: grid; grid-template-columns: 76px minmax(0, 1fr) auto; gap: 12px; align-items: center; }
-.application.fbui-party .fbp-adv-main .hd img { width: 76px; height: 76px; object-fit: cover; border-radius: 6px; border: 1px solid var(--line2); }
-.application.fbui-party .fbp-adv-main .hd small { font-family: var(--disp); font-size: 11px; letter-spacing: 0.18em; color: #ff8d99; }
-.application.fbui-party .fbp-adv-main .hd b { display: block; font-family: var(--disp); font-weight: 400; font-size: 28px; line-height: 1.05; }
-.application.fbui-party .fbp-adv-main .hd .tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 3px; }
-.application.fbui-party .fbp-adv-main .hd .tags span { font-size: 12px; padding: 0 8px; border-radius: 999px; border: 1px solid rgba(238, 243, 255, 0.25); color: var(--ink2); }
-.application.fbui-party .fbp-adv-main .hd .lv { font-family: var(--disp); font-size: 22px; color: var(--gold); }
-.application.fbui-party .fbp-adv-main .study { padding: 8px 12px; border-radius: 6px; background: var(--glass2); border-left: 3px solid currentColor; color: var(--ink3); }
-.application.fbui-party .fbp-adv-main .study .ln { display: flex; justify-content: space-between; font-family: var(--disp); letter-spacing: 0.08em; text-transform: uppercase; font-size: 13px; }
-.application.fbui-party .fbp-adv-main .study .ln b { font-weight: 400; color: inherit; }
-.application.fbui-party .fbp-adv-main .study .bar { height: 4px; margin: 4px 0; border-radius: 2px; background: rgba(255, 255, 255, 0.08); overflow: hidden; }
-.application.fbui-party .fbp-adv-main .study .bar i { display: block; height: 100%; background: currentColor; }
-.application.fbui-party .fbp-adv-main .study p { margin: 0; font-size: 13px; color: var(--ink2); }
-.application.fbui-party .fbp-adv-main .study p.gm { color: var(--ink3); font-style: italic; }
-.application.fbui-party .fbp-adv-main .res { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.application.fbui-party .fbp-adv-main .res .r > span { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 3px; }
-.application.fbui-party .fbp-adv-main .res small { font-family: var(--disp); font-size: 12px; letter-spacing: 0.12em; font-weight: 700; }
-.application.fbui-party .fbp-adv-main .res .hp small { color: #6fe3a0; }
-.application.fbui-party .fbp-adv-main .res .hp.crisis :is(small, b) { color: var(--crisis); }
-.application.fbui-party .fbp-adv-main .res .mp small { color: #7cb8ff; }
-.application.fbui-party .fbp-adv-main .res b { font-family: var(--disp); font-weight: 400; font-size: 20px; }
-.application.fbui-party .fbp-adv-main .res em { font-style: normal; font-size: 0.75em; color: var(--ink3); margin-left: 2px; }
-.application.fbui-party .fbp-adv-main .row2 { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 10px 14px; padding: 8px 12px; border-radius: 6px; background: rgba(12, 20, 44, 0.55); border: 1px solid var(--line3); }
-.application.fbui-party .fbp-adv-main .attrs { display: flex; gap: 14px; }
-.application.fbui-party .fbp-adv-main .attrs .a { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-.application.fbui-party .fbp-adv-main .attrs .dia { width: 34px; height: 34px; margin-top: 5px; transform: rotate(45deg); display: grid; place-items: center; border: 2px solid var(--c); background: color-mix(in srgb, var(--c) 22%, transparent); }
-.application.fbui-party .fbp-adv-main .attrs .dia > span { transform: rotate(-45deg); font-family: var(--disp); font-weight: 700; font-size: 14px; }
-.application.fbui-party .fbp-adv-main .attrs .a > b { font-family: var(--disp); font-weight: 400; font-size: 12px; color: var(--ink2); }
-.application.fbui-party .fbp-adv-main .defs { display: flex; gap: 6px; }
-.application.fbui-party .fbp-adv-main .defs span { display: flex; flex-direction: column; align-items: center; min-width: 56px; padding: 3px 8px; border-radius: 5px; background: var(--glass); border: 1px solid var(--line2); }
-.application.fbui-party .fbp-adv-main .defs small { font-family: var(--disp); font-size: 10px; letter-spacing: 0.14em; color: var(--ink3); }
-.application.fbui-party .fbp-adv-main .defs b { font-family: var(--disp); font-weight: 400; font-size: 20px; }
-.application.fbui-party .fbp-adv-main .traits { margin: 0; font-size: 13px; color: var(--ink2); }
-.application.fbui-party .fbp-adv-main .traits small { font-family: var(--disp); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink3); margin-right: 6px; }
-.application.fbui-party .fbp-adv-main .aff { display: flex; flex-direction: column; gap: 5px; }
-.application.fbui-party .fbp-adv-main .abil { display: flex; flex-direction: column; gap: 3px; }
-.application.fbui-party .fbp-adv-main .abil h4 { margin: 6px 0 0; border: 0; font-family: var(--disp); font-weight: 400; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink3); }
-.application.fbui-party .fbp-adv-main .abil details { border-radius: 5px; background: var(--glass2); }
-.application.fbui-party .fbp-adv-main .abil summary { display: flex; justify-content: space-between; gap: 8px; padding: 5px 10px; cursor: pointer; font-size: 14px; }
-.application.fbui-party .fbp-adv-main .abil summary span { font-family: var(--disp); font-size: 13px; color: #ff8d99; white-space: nowrap; }
-.application.fbui-party .fbp-adv-main .abil details p { margin: 0; padding: 0 10px 8px; font-size: 13px; line-height: 1.45; color: var(--ink2); white-space: pre-line; }
-.application.fbui-party .fbp-adv-main footer { display: flex; gap: 8px; margin-top: auto; padding-top: 6px; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main { min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 6px; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .hd { display: grid; grid-template-columns: 76px minmax(0, 1fr) auto; gap: 12px; align-items: center; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .hd img { width: 76px; height: 76px; object-fit: cover; border-radius: 6px; border: 1px solid var(--line2); }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .hd small { font-family: var(--disp); font-size: 11px; letter-spacing: 0.18em; color: #ff8d99; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .hd b { display: block; font-family: var(--disp); font-weight: 400; font-size: 28px; line-height: 1.05; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .hd .tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 3px; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .hd .tags span { font-size: 12px; padding: 0 8px; border-radius: 999px; border: 1px solid rgba(238, 243, 255, 0.25); color: var(--ink2); }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .hd .lv { font-family: var(--disp); font-size: 22px; color: var(--gold); }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .study { padding: 8px 12px; border-radius: 6px; background: var(--glass2); border-left: 3px solid currentColor; color: var(--ink3); }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .study .ln { display: flex; justify-content: space-between; font-family: var(--disp); letter-spacing: 0.08em; text-transform: uppercase; font-size: 13px; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .study .ln b { font-weight: 400; color: inherit; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .study .bar { height: 4px; margin: 4px 0; border-radius: 2px; background: rgba(255, 255, 255, 0.08); overflow: hidden; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .study .bar i { display: block; height: 100%; background: currentColor; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .study p { margin: 0; font-size: 13px; color: var(--ink2); }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .study p.gm { color: var(--ink3); font-style: italic; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .res { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .res .r > span { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 3px; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .res small { font-family: var(--disp); font-size: 12px; letter-spacing: 0.12em; font-weight: 700; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .res .hp small { color: #6fe3a0; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .res .hp.crisis :is(small, b) { color: var(--crisis); }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .res .mp small { color: #7cb8ff; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .res b { font-family: var(--disp); font-weight: 400; font-size: 20px; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .res em { font-style: normal; font-size: 0.75em; color: var(--ink3); margin-left: 2px; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .row2 { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 10px 14px; padding: 8px 12px; border-radius: 6px; background: rgba(12, 20, 44, 0.55); border: 1px solid var(--line3); }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .attrs { display: flex; gap: 14px; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .attrs .a { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .attrs .dia { width: 34px; height: 34px; margin-top: 5px; transform: rotate(45deg); display: grid; place-items: center; border: 2px solid var(--c); background: color-mix(in srgb, var(--c) 22%, transparent); }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .attrs .dia > span { transform: rotate(-45deg); font-family: var(--disp); font-weight: 700; font-size: 14px; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .attrs .a > b { font-family: var(--disp); font-weight: 400; font-size: 12px; color: var(--ink2); }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .defs { display: flex; gap: 6px; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .defs span { display: flex; flex-direction: column; align-items: center; min-width: 56px; padding: 3px 8px; border-radius: 5px; background: var(--glass); border: 1px solid var(--line2); }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .defs small { font-family: var(--disp); font-size: 10px; letter-spacing: 0.14em; color: var(--ink3); }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .defs b { font-family: var(--disp); font-weight: 400; font-size: 20px; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .traits { margin: 0; font-size: 13px; color: var(--ink2); }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .traits small { font-family: var(--disp); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink3); margin-right: 6px; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .aff { display: flex; flex-direction: column; gap: 5px; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .abil { display: flex; flex-direction: column; gap: 3px; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .abil h4 { margin: 6px 0 0; border: 0; font-family: var(--disp); font-weight: 400; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink3); }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .abil details { border-radius: 5px; background: var(--glass2); }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .abil summary { display: flex; justify-content: space-between; gap: 8px; padding: 5px 10px; cursor: pointer; font-size: 14px; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .abil summary span { font-family: var(--disp); font-size: 13px; color: #ff8d99; white-space: nowrap; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .abil details p { margin: 0; padding: 0 10px 8px; font-size: 13px; line-height: 1.45; color: var(--ink2); white-space: pre-line; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main footer { display: flex; gap: 8px; margin-top: auto; padding-top: 6px; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .chips { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .chips .grp { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
+.application:is(.fbui-party, .fbui-profile) .fbp-adv-main .chips .cap { margin-right: 3px; }
+
+/* Project FU's NPC profile window, drawn like the Adversaries tab */
+:is(#fbs-z, html) .application.fbui-profile .window-content {
+	display: block;
+	padding: 16px 18px 14px;
+	overflow: hidden;
+	background:
+		radial-gradient(600px 340px at 10% -5%, rgba(255, 107, 122, 0.14), transparent 70%),
+		radial-gradient(600px 400px at 105% 30%, rgba(90, 169, 255, 0.14), transparent 70%),
+		linear-gradient(180deg, #0d1830, #0a1222 60%, #0b1220);
+}
+.application.fbui-profile .fbp-adv-main { height: 100%; }
+.application.fbui-profile .fbp-adv-main .hd { grid-template-columns: 96px minmax(0, 1fr) auto; }
+.application.fbui-profile .fbp-adv-main .hd img { width: 96px; height: 96px; }

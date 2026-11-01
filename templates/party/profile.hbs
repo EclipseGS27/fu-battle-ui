@@ -1,0 +1,58 @@
+{{!-- What the party knows about one adversary: the party sheet's Adversaries tab and the NPC profile window --}}
+<header class="hd">
+	<img src="{{img}}" alt="">
+	<div>
+		<small>{{#if villain}}VILLAIN · {{villain}}{{else}}ADVERSARY{{/if}}</small>
+		<b>{{name}}</b>
+		<span class="tags">{{#each tags}}<span>{{this}}</span>{{/each}}</span>
+	</div>
+	<span class="lv">{{#if (gt tier 0)}}Lv {{level}}{{else}}Lv ?{{/if}}</span>
+</header>
+<div class="study t{{tier}}">
+	<div class="ln"><span>Study</span><b>{{studyLine}}</b></div>
+	<div class="bar"><i style="width:{{pct}}%"></i></div>
+	<p>{{tierText}}</p>
+	{{#if gmNote}}<p class="gm">{{gmNote}}</p>{{/if}}
+</div>
+
+{{#if (gt tier 0)}}
+	<div class="res">
+		<div class="r hp {{#if crisis}}crisis{{/if}}"><span><small>HP</small><b>{{hp}}<em>/ {{hpMax}}</em></b></span><div class="fbs-bar hp {{#if crisis}}crisis{{/if}}"><span style="width:{{hpPct}}%"></span></div></div>
+		<div class="r mp"><span><small>MP</small><b>{{mp}}<em>/ {{mpMax}}</em></b></span><div class="fbs-bar mp"><span style="width:{{mpPct}}%"></span></div></div>
+	</div>
+{{/if}}
+
+{{#if (gt tier 1)}}
+	<div class="row2">
+		<div class="attrs">{{#each attrs}}<span class="a"><span class="dia" style="--c:{{color}}"><span>d{{die}}</span></span><b>{{abbr}}</b></span>{{/each}}</div>
+		<div class="defs"><span><small>DEF</small><b>{{def}}</b></span><span><small>M.DEF</small><b>{{mdef}}</b></span></div>
+	</div>
+{{/if}}
+{{#if traits}}<p class="traits"><small>Traits</small> {{traits}}</p>{{/if}}
+
+<div class="aff">
+	<small class="cap">Affinities</small>
+	<div class="fbs-aff">{{#each aff}}<span class="cell" data-tooltip="{{tip}}"><small style="color:{{color}}">{{abbr}}</small><b style="color:{{wordColor}}">{{word}}</b></span>{{/each}}</div>
+</div>
+
+{{#if (or immunities.length pressure.length)}}
+	<div class="chips">
+		{{#if immunities.length}}<span class="grp"><small class="cap">Immune to</small>{{#each immunities}}<span class="fbs-chip on" style="--c:{{color}}" data-tooltip="{{tip}}">{{label}}</span>{{/each}}</span>{{/if}}
+		{{#if pressure.length}}<span class="grp"><small class="cap">Pressure points</small>{{#each pressure}}<span class="fbs-chip on" style="--c:#ff9a6b">{{this}}</span>{{/each}}</span>{{/if}}
+	</div>
+{{/if}}
+
+{{#if abilities.length}}
+	<div class="abil">
+		<small class="cap">{{#if (gt tier 2)}}Attacks, spells, skills and special rules{{else}}Revealed skills and special rules{{/if}}</small>
+		{{#each abilities}}
+			{{#if head}}<h4>{{head}}</h4>{{/if}}
+			<details><summary><b>{{label}}</b><span>{{meta}}</span></summary><p>{{help}}</p></details>
+		{{/each}}
+	</div>
+{{/if}}
+
+<footer>
+	{{#unless inWindow}}<button type="button" class="fbs-btn" data-action="revealNpc" data-actor="{{uuid}}"><i class="fa-solid fa-book-open"></i> Profile window</button>{{/unless}}
+	{{#if canOpen}}<button type="button" class="fbs-btn" data-action="{{#if inWindow}}revealActor{{else}}fbuiOpenActor{{/if}}" data-uuid="{{uuid}}"><i class="fa-solid fa-id-card"></i> Open sheet</button>{{/if}}
+</footer>

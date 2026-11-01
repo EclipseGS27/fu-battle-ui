@@ -86,11 +86,22 @@ export function affinities(actor) {
 /*  What a condition does                                              */
 /* ------------------------------------------------------------------ */
 
-/** For statuses Project FU gives no rules text, said from what the status changes in its own data */
+/**
+ * Project FU keeps a status's rules under "<its name key>Rule" (FU.Dazed → FU.DazedRule), not on the status itself,
+ * and some statuses have none. Those get a line said from what the status changes in the system's own data.
+ */
 const CONDITION_FALLBACK = {
+	accelerated: 'Acting with extra speed.',
 	aura: 'Magic Defense is at least 12 (13 from level 20, 14 from level 40).',
 	barrier: 'Defense is at least 12 (13 from level 20, 14 from level 40).',
-	ko: 'Knocked out: 0 Hit Points.',
+	focus: 'Concentrating, for skills and spells that need focus.',
+	ko: 'At 0 Hit Points. Can’t act until brought back.',
+	pressure: 'Hits against weak points build up toward a Stagger.',
+	provoked: 'Your attacks and offensive spells must target the creature that provoked you, if able.',
+	reflect: 'Offensive spells that target you are turned back on their caster.',
+	regen: 'Recover Hit Points at the start of each of your turns.',
+	sleep: 'Can’t act until you take damage or the effect ends.',
+	stagger: 'You lose your remaining turns this round.',
 };
 
 const DURATION_TEXT = {
@@ -101,23 +112,24 @@ const DURATION_TEXT = {
 	endOfRound: 'Lasts until the end of the round.',
 };
 
+/** A localization key's text, or '' when the key has none */
+const locText = (key) => (key && game.i18n.has(key) ? game.i18n.localize(key) : '');
+
 /**
- * A condition's name, what it does and how long it lasts, from Project FU's status definitions (localized).
+ * A condition's name, what it does and how long it lasts, from Project FU's status definitions and rule
+ * texts (localized).
  * @param {string} id e.g. 'dazed'
  * @returns {{id:string, name:string, text:string, duration:string}|null}
  */
 export function conditionInfo(id) {
 	const def = (CONFIG?.statusEffects ?? []).find((e) => e.id === id);
 	if (!def && !STATUS_CHIPS[id]) return null;
-	const loc = (k) => (k ? game.i18n.localize(k) : '');
-	const name = loc(def?.name) || STATUS_CHIPS[id]?.[0] || cap(id);
-	let text = '';
-	if (def?.description) {
-		const t = loc(def.description);
-		if (t && t !== def.description) text = fullText(t).replace(/\n+/g, ' ');
-	}
+	const name = locText(def?.name) || STATUS_CHIPS[id]?.[0] || cap(id);
+	const raw = locText(def?.description) || (def?.name ? locText(`${def.name}Rule`) : '');
+	let text = raw ? fullText(raw.replace(/<(ul|ol|li)\b[^>]*>/gi, ' ')).replace(/\s*\n+\s*/g, ' ').trim() : '';
 	text ||= CONDITION_FALLBACK[id] ?? '';
-	if (text && /die size/i.test(text)) text += ' Dice never go below d6.';
+	if (text && /die size by 1/i.test(text) && /^(reduce|decrease)/i.test(text)) text += ' Dice never go below d6.';
+	if (text && /die size by 1/i.test(text) && /^increase/i.test(text)) text += ' Dice never go above d12.';
 	const duration = DURATION_TEXT[def?.system?.duration?.event] ?? '';
 	return { id, name, text, duration };
 }
