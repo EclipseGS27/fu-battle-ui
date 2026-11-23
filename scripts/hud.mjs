@@ -672,7 +672,13 @@ export class BattleUI {
 				}
 				return row;
 			});
-			help = (COMMANDS.find((x) => x[0] === st.hover) ?? COMMANDS[0])[2];
+			// Zero Power: its own button at the top, glowing gold, only once its clock is full
+			const z = zeroPower(actor);
+			if (z?.ready) {
+				const zhelp = `${z.name}: your Zero Power is ready. Use it now; its clock empties afterwards.`;
+				rows.unshift({ id: z.item.id, label: `Zero Power · ${z.name}`, meta: 'READY', help: zhelp, action: 'zero', cls: 'zero' });
+			}
+			help = st.hover && st.hover === z?.item?.id ? rows[0].help : (COMMANDS.find((x) => x[0] === st.hover) ?? COMMANDS[0])[2];
 		} else if (st.menu === 'spell') {
 			title = 'Spells';
 			rows = spellRows(actor).map((x) => ({ ...x, action: 'item' }));
@@ -711,7 +717,7 @@ export class BattleUI {
 		const rowHtml = rows
 			.map((m) => {
 				const on = st.hover === m.id && !m.disabled;
-				return `<button type="button" class="fbui-cmd-row ${on ? 'on' : ''}" data-action="${m.action}" data-id="${esc(m.id)}" ${m.n != null ? `data-n="${m.n}"` : ''} data-help="${esc(m.help ?? '')}" ${m.disabled ? 'disabled' : ''}><span class="cur"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 1 12 7 2 13Z" fill="currentColor"/></svg></span><span class="l">${esc(m.label)}</span>${m.img ? `<img class="ico" src="${esc(m.img)}" alt="">` : ''}<span class="m">${esc(m.meta ?? '')}</span></button>`;
+				return `<button type="button" class="fbui-cmd-row ${on ? 'on' : ''} ${m.cls ?? ''}" data-action="${m.action}" data-id="${esc(m.id)}" ${m.n != null ? `data-n="${m.n}"` : ''} data-help="${esc(m.help ?? '')}" ${m.disabled ? 'disabled' : ''}><span class="cur"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 1 12 7 2 13Z" fill="currentColor"/></svg></span><span class="l">${esc(m.label)}</span>${m.img ? `<img class="ico" src="${esc(m.img)}" alt="">` : ''}<span class="m">${esc(m.meta ?? '')}</span></button>`;
 			})
 			.join('');
 		const back = st.menu !== 'root' ? `<button type="button" class="fbui-cmd-row back" data-action="back"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 3 5 8l5 5"/></svg><span class="l">Back</span></button>` : '';
@@ -796,7 +802,7 @@ export class BattleUI {
 					: '';
 				const tag = canPick ? 'button type="button"' : 'div';
 				const close = canPick ? 'button' : 'div';
-				return `<${tag} class="fbui-card ${isActive ? 'active' : ''} ${did ? 'did' : ''} ${c.isDefeated ? 'down' : ''} ${canPick ? 'pickable' : ''}" data-cid="${c.id}" ${canPick ? 'data-action="startTurn"' : ''} aria-label="${esc(c.name)}${did ? ', already acted' : canPick ? ', choose to act' : ''}">
+				return `<${tag} class="fbui-card ${isActive ? 'active' : ''} ${did ? 'did' : ''} ${c.isDefeated ? 'down' : ''} ${z?.ready && !c.isDefeated ? 'zero-ready' : ''} ${canPick ? 'pickable' : ''}" data-cid="${c.id}" ${canPick ? 'data-action="startTurn"' : ''} aria-label="${esc(c.name)}${did ? ', already acted' : canPick ? ', choose to act' : ''}">
 					<span class="top">${this.#dia(c)}<span class="nm"><b>${esc(c.name)}</b><small>${esc(classLine(actor))}</small></span>${badge ? `<span class="badge ${badgeCls}">${badge}</span>` : ''}</span>
 					<span class="meter"><span class="k hp">HP</span><span class="bar hp ${r.crisis ? 'crisis' : ''}"><span style="width:${pct(r.hp, r.hpMax)}%"></span><i></i></span><span class="v ${r.crisis ? 'crisis' : ''}">${r.hp}<small>/${r.hpMax}</small></span></span>
 					<span class="meter"><span class="k mp">MP</span><span class="bar mp"><span style="width:${pct(r.mp, r.mpMax)}%"></span></span><span class="v">${r.mp}<small>/${r.mpMax}</small></span></span>
@@ -1030,6 +1036,15 @@ export class BattleUI {
 					const offensive = item.system?.isOffensive?.value || ['basic', 'weapon', 'customWeapon'].includes(item.type) || (active?.faction === HOSTILE && item.type !== 'spell');
 					if (offensive) this.ensureTarget();
 					await item.roll();
+					return;
+				}
+				case 'zero': {
+					const z = zeroPower(actor);
+					if (!z?.ready || z.item.id !== btn.dataset.id) return;
+					this.ensureTarget();
+					await z.item.roll();
+					// using a Zero Power empties its clock
+					await z.item.update({ 'system.data.progress.current': 0 }).catch((err) => console.warn(`${MODULE_ID} | could not reset the Zero Power clock`, err));
 					return;
 				}
 				case 'consumable':

@@ -248,6 +248,15 @@ body.fbui-replace #combat-hud, body.fbui-replace #combat-hud-controls { display:
 #fbui .fbui-cmd-row[disabled] { color: rgba(238, 243, 255, 0.35); }
 #fbui .fbui-cmd-row[disabled] .m { color: rgba(238, 243, 255, 0.3); }
 #fbui .fbui-cmd-row.back { font-size: 15px; color: var(--ink2); }
+/* Zero Power: a gold button that only appears when the clock is full */
+#fbui .fbui-cmd-row.zero { margin: 2px 0 6px; padding: 6px 12px; color: #fff4d6; font-family: var(--disp); letter-spacing: 0.06em; border: 1px solid var(--gold); background: linear-gradient(90deg, rgba(242, 196, 90, 0.38), rgba(242, 196, 90, 0.08)); animation: fbui-zero-glow 1.6s ease-in-out infinite; }
+#fbui .fbui-cmd-row.zero .cur { opacity: 1; }
+#fbui .fbui-cmd-row.zero .m { color: #0b1220; background: var(--gold); padding: 0 6px; border-radius: 2px; }
+#fbui .fbui-cmd-row.zero.on, #fbui .fbui-cmd-row.zero:hover { background: linear-gradient(90deg, rgba(242, 196, 90, 0.6), rgba(242, 196, 90, 0.14)); }
+@keyframes fbui-zero-glow { 0%, 100% { box-shadow: 0 0 6px rgba(242, 196, 90, 0.45), inset 0 0 6px rgba(242, 196, 90, 0.2); } 50% { box-shadow: 0 0 18px rgba(242, 196, 90, 0.95), inset 0 0 10px rgba(242, 196, 90, 0.4); } }
+@media (prefers-reduced-motion: reduce) { #fbui .fbui-cmd-row.zero { animation: none; box-shadow: 0 0 12px rgba(242, 196, 90, 0.8); } }
+/* party card of a hero whose Zero Power is ready */
+#fbui .fbui-card.zero-ready { box-shadow: 0 0 0 1px var(--gold), 0 0 14px rgba(242, 196, 90, 0.55); }
 #fbui .fbui-panel.foe .fbui-cmd-row.on, #fbui .fbui-panel.foe .fbui-cmd-row:hover { background: linear-gradient(90deg, rgba(255, 107, 122, 0.3), rgba(255, 107, 122, 0.04)); }
 #fbui .fbui-sep { font-family: var(--disp); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(238, 243, 255, 0.5); padding: 7px 12px 2px; border-top: 1px solid rgba(159, 208, 255, 0.12); margin-top: 3px; }
 #fbui .fbui-sep:first-child { border-top: 0; margin-top: 0; padding-top: 2px; }

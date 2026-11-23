@@ -22,6 +22,21 @@ async function syncSystemDamage() {
 	}
 }
 
+/**
+ * Keep Project FU's "Spend Resource" automation matching this module's switch (GM only). With it on, the system
+ * takes a spell's or skill's MP (or HP / IP) cost from the user as its card is posted, Affinities and rule
+ * elements that change the cost included.
+ */
+async function syncSystemSpend() {
+	if (!game.user.isGM) return;
+	try {
+		const want = !!setting('autoSpend');
+		if (game.settings.get(SYSTEM, 'automationUpdateResource') !== want) await game.settings.set(SYSTEM, 'automationUpdateResource', want);
+	} catch (err) {
+		console.warn(`${MODULE_ID} | could not change Project FU's resource automation`, err);
+	}
+}
+
 /** Chat cards already handled here, so a re-render never heals twice */
 const healed = new Set();
 
@@ -90,8 +105,17 @@ export function registerAutomation(reg) {
 		default: false,
 		onChange: syncSystemDamage,
 	});
+	reg('autoSpend', {
+		name: 'Spend MP automatically',
+		hint: 'Casting a spell or using a skill takes its MP cost (or HP / IP cost) from the user as the card is posted, without clicking the card. Turns on Project FU’s own “Spend Resource” automation.',
+		scope: 'world',
+		type: Boolean,
+		default: true,
+		onChange: syncSystemSpend,
+	});
 	reg('pickElement', { name: 'Choose the element of consumables', hint: 'Items that deal one of several damage types (the Elemental Shard) ask which one, instead of offering every type on the card.', scope: 'client', type: Boolean, default: true });
 	Hooks.once('ready', syncSystemDamage);
+	Hooks.once('ready', syncSystemSpend);
 	Hooks.on('renderChatMessageHTML', autoHeal);
 	Hooks.on('projectfu.events.consumables.create', onConsumable);
 }

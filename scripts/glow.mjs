@@ -1,5 +1,5 @@
 import { MODULE_ID, esc, setting } from './util.mjs';
-import { FRIENDLY } from './model.mjs';
+import { FRIENDLY, zeroPower } from './model.mjs';
 
 /**
  * Turn glow: the token whose turn it is gets a soft outline glow instead of Foundry's turn marker.
@@ -14,6 +14,7 @@ export const GLOW_PROFILES = [
 	['foeCrisis', 'Enemies in Crisis'],
 	['boss', 'Bosses'],
 	['bossCrisis', 'Bosses in Crisis'],
+	['zero', 'Zero Power ready'],
 ];
 export const BOSS_RULES = { 'villain-champion': 'Villains and Champions', villain: 'Villains only', champion: 'Champions only', none: 'Nobody (bosses glow like other enemies)' };
 
@@ -21,6 +22,7 @@ export const GLOW_DEFAULTS = {
 	enabled: true,
 	hideMarker: true,
 	boss: 'villain-champion',
+	zeroIdle: true,
 	profiles: {
 		hero: { style: 'soft', color: '#5aa9ff', strength: 1, size: 1, speed: 1 },
 		heroCrisis: { style: 'pulse', color: '#ff5a64', strength: 1.3, size: 1.15, speed: 1.3 },
@@ -28,6 +30,7 @@ export const GLOW_DEFAULTS = {
 		foeCrisis: { style: 'flicker', color: '#ff3b3b', strength: 1.3, size: 1.1, speed: 1 },
 		boss: { style: 'energy', color: '#b072ff', strength: 1.8, size: 1.9, speed: 1 },
 		bossCrisis: { style: 'energy', color: '#ff2a55', strength: 2.3, size: 2.2, speed: 1.6 },
+		zero: { style: 'energy', color: '#f2c45a', strength: 1.7, size: 1.6, speed: 1.2 },
 	},
 };
 
@@ -39,7 +42,7 @@ const clampN = (v, lo, hi, d) => {
 /** Saved config merged over the defaults, every value checked */
 export function glowConfig(raw = setting('turnGlow')) {
 	const src = raw && typeof raw === 'object' ? raw : {};
-	const out = { enabled: src.enabled ?? GLOW_DEFAULTS.enabled, hideMarker: src.hideMarker ?? GLOW_DEFAULTS.hideMarker, boss: BOSS_RULES[src.boss] ? src.boss : GLOW_DEFAULTS.boss, profiles: {} };
+	const out = { enabled: src.enabled ?? GLOW_DEFAULTS.enabled, hideMarker: src.hideMarker ?? GLOW_DEFAULTS.hideMarker, boss: BOSS_RULES[src.boss] ? src.boss : GLOW_DEFAULTS.boss, zeroIdle: src.zeroIdle ?? GLOW_DEFAULTS.zeroIdle, profiles: {} };
 	for (const [id] of GLOW_PROFILES) {
 		const d = GLOW_DEFAULTS.profiles[id];
 		const p = src.profiles?.[id] ?? {};
@@ -141,10 +144,14 @@ function isBoss(actor, rule) {
 	return villain || champion;
 }
 
+const zeroReady = (actor) => !!zeroPower(actor)?.ready;
+
 export function profileFor(combatant, cfg = glowConfig()) {
 	const actor = combatant?.actor;
 	if (!actor) return null;
 	const hero = combatant.faction ? combatant.faction === FRIENDLY : (combatant.token?.disposition ?? 0) > 0;
+	// a hero whose Zero Power is ready takes its turn in the Zero Power look
+	if (hero && zeroReady(actor) && cfg.profiles.zero?.style !== 'none') return cfg.profiles.zero;
 	const side = hero ? 'hero' : isBoss(actor, cfg.boss) ? 'boss' : 'foe';
 	return cfg.profiles[inCrisis(actor) ? `${side}Crisis` : side];
 }
@@ -169,7 +176,7 @@ class TurnGlowController {
 
 	init() {
 		const sync = () => this.sync();
-		for (const h of ['canvasReady', 'combatStart', 'updateCombat', 'deleteCombat', 'createCombatant', 'deleteCombatant', 'updateCombatant', 'updateActor', 'createToken', 'deleteToken']) Hooks.on(h, () => setTimeout(sync, 0));
+		for (const h of ['canvasReady', 'combatStart', 'updateCombat', 'deleteCombat', 'createCombatant', 'deleteCombatant', 'updateCombatant', 'updateActor', 'updateItem', 'createToken', 'deleteToken']) Hooks.on(h, () => setTimeout(sync, 0));
 		// a redraw (new art, size change) replaces the token's mesh: put the glow back on the new one
 		Hooks.on('refreshToken', (token) => {
 			if (token === this.token && this.filter && !token.mesh?.filters?.includes(this.filter)) this.#attach(token);
@@ -189,6 +196,7 @@ class TurnGlowController {
 	reconfigure() {
 		this._cfg = null;
 		this.sync();
+		ZeroGlow.sync();
 	}
 
 	/** The token to glow right now, and how */
@@ -291,60 +299,172 @@ class TurnGlowController {
 		const dt = (canvas.app.ticker.deltaMS ?? 16) / 1000;
 		this.t += dt;
 		this.age += dt;
-		const t = this.t * p.speed;
-		const zoom = canvas.stage?.scale?.x ?? 1;
-		const base = Math.max(6, Math.min(token.w ?? 100, token.h ?? 100) * 0.12) * p.size;
-		let strength = p.strength;
-		let reach = base;
-		let energy = 0;
-		let core = 0;
-		let inner = 0.08;
-		switch (p.style) {
-			case 'soft':
-				strength *= 0.85 + 0.15 * Math.sin(t * 1.8);
-				break;
-			case 'pulse': {
-				const k = 0.5 + 0.5 * Math.sin(t * 3.4);
-				strength *= 0.5 + 0.65 * k;
-				reach *= 0.85 + 0.3 * k;
-				inner = 0.18 * k;
-				break;
-			}
-			case 'energy':
-				energy = 1;
-				core = 0.85;
-				inner = 0.3;
-				reach *= 1.15;
-				strength *= 0.9 + 0.12 * Math.sin(t * 5);
-				break;
-			case 'flicker': {
-				energy = 0.35;
-				inner = 0.2;
-				let k = 0.62 + 0.24 * Math.sin(t * 13.7) + 0.14 * Math.sin(t * 31.1 + 1.3);
-				if (Math.random() < 0.03) k -= 0.45;
-				strength *= Math.min(1.15, Math.max(0.15, k));
-				break;
-			}
-		}
-		strength *= Math.min(1, this.age / 0.35);
-		const px = Math.min(140, reach * zoom);
-		const u = f.uniforms;
-		const [r, g, b] = hex(p.color);
-		u.uColor[0] = r;
-		u.uColor[1] = g;
-		u.uColor[2] = b;
-		u.uStrength = strength;
-		u.uReach = px;
-		u.uTime = t;
-		u.uEnergy = energy;
-		u.uCore = core;
-		u.uInner = inner;
-		f.padding = Math.ceil(px * (1 + energy * 0.4)) + 4;
+		driveGlow(f, token, p, this.t, this.age);
 		if (this.cfg.hideMarker) this.#hideMarker(token);
 	}
 }
 
+/** One frame of a glow look on a token's filter. `scale` dims it (the between-turns Zero Power glow). */
+function driveGlow(f, token, p, time, age, scale = 1) {
+	const t = time * p.speed;
+	const zoom = canvas.stage?.scale?.x ?? 1;
+	const base = Math.max(6, Math.min(token.w ?? 100, token.h ?? 100) * 0.12) * p.size * (0.6 + 0.4 * scale);
+	let strength = p.strength * scale;
+	let reach = base;
+	let energy = 0;
+	let core = 0;
+	let inner = 0.08;
+	switch (p.style) {
+		case 'soft':
+			strength *= 0.85 + 0.15 * Math.sin(t * 1.8);
+			break;
+		case 'pulse': {
+			const k = 0.5 + 0.5 * Math.sin(t * 3.4);
+			strength *= 0.5 + 0.65 * k;
+			reach *= 0.85 + 0.3 * k;
+			inner = 0.18 * k;
+			break;
+		}
+		case 'energy':
+			energy = 1;
+			core = 0.85;
+			inner = 0.3;
+			reach *= 1.15;
+			strength *= 0.9 + 0.12 * Math.sin(t * 5);
+			break;
+		case 'flicker': {
+			energy = 0.35;
+			inner = 0.2;
+			let k = 0.62 + 0.24 * Math.sin(t * 13.7) + 0.14 * Math.sin(t * 31.1 + 1.3);
+			if (Math.random() < 0.03) k -= 0.45;
+			strength *= Math.min(1.15, Math.max(0.15, k));
+			break;
+		}
+	}
+	strength *= Math.min(1, age / 0.35);
+	const px = Math.min(140, reach * zoom);
+	const u = f.uniforms;
+	const [r, g, b] = hex(p.color);
+	u.uColor[0] = r;
+	u.uColor[1] = g;
+	u.uColor[2] = b;
+	u.uStrength = strength;
+	u.uReach = px;
+	u.uTime = t;
+	u.uEnergy = energy;
+	u.uCore = core;
+	u.uInner = inner;
+	f.padding = Math.ceil(px * (1 + energy * 0.4)) + 4;
+}
+
 export const TurnGlow = new TurnGlowController();
+
+/* ------------------------------------------------------------------ */
+/*  Zero Power ready: a gold glow between turns                        */
+/* ------------------------------------------------------------------ */
+
+/**
+ * While a conflict runs, every hero whose Zero Power clock is full keeps a dimmer gold glow, so the table can see
+ * who has it ready. On that hero's own turn the turn glow takes over in the full Zero Power look.
+ * Its filters carry `fbuiZero` (not `fbuiGlow`), so the turn glow never removes them and the other way round.
+ */
+class ZeroGlowController {
+	constructor() {
+		this.on = new Map(); // token id -> { token, filter, age }
+		this.t = 0;
+		this._tick = () => this.#tick();
+		this._ticking = false;
+	}
+
+	init() {
+		const sync = () => setTimeout(() => this.sync(), 0);
+		for (const h of ['canvasReady', 'combatStart', 'updateCombat', 'deleteCombat', 'createCombatant', 'deleteCombatant', 'updateCombatant', 'updateActor', 'createItem', 'updateItem', 'deleteItem', 'createToken', 'deleteToken', 'drawToken']) Hooks.on(h, sync);
+		Hooks.on('refreshToken', (token) => {
+			const e = this.on.get(token.id);
+			if (e && e.token === token && !token.mesh?.filters?.includes(e.filter)) this.#attach(e);
+		});
+		this.sync();
+	}
+
+	/** Heroes on this scene's conflict with a ready Zero Power, not counting whoever is acting */
+	#wanted() {
+		const out = new Map();
+		const cfg = TurnGlow.cfg;
+		const p = cfg.profiles.zero;
+		if (!cfg.enabled || !cfg.zeroIdle || !p || p.style === 'none' || !canvas?.ready) return out;
+		const combat = game.combat;
+		if (!combat?.started || (combat.scene && combat.scene !== canvas.scene)) return out;
+		const active = combat.combatant?.id;
+		for (const c of combat.combatants) {
+			if (c.id === active || c.isDefeated) continue;
+			const hero = c.faction ? c.faction === FRIENDLY : (c.token?.disposition ?? 0) > 0;
+			const token = c.token?.object;
+			if (hero && token && zeroReady(c.actor)) out.set(token.id, token);
+		}
+		return out;
+	}
+
+	sync() {
+		const want = this.#wanted();
+		for (const [id, e] of this.on) {
+			if (want.get(id) !== e.token) {
+				this.#detach(e);
+				this.on.delete(id);
+			}
+		}
+		for (const [id, token] of want) {
+			if (this.on.has(id)) continue;
+			const filter = makeFilter();
+			filter.fbuiGlow = false;
+			filter.fbuiZero = true;
+			const e = { token, filter, age: 0 };
+			this.on.set(id, e);
+			this.#attach(e);
+		}
+		this.#run(this.on.size > 0);
+	}
+
+	#attach(e) {
+		const mesh = e.token?.mesh;
+		if (!mesh) return;
+		const list = (mesh.filters ?? []).filter((f) => !f?.fbuiZero);
+		mesh.filters = [...list, e.filter];
+	}
+
+	#detach(e) {
+		const mesh = e.token?.mesh;
+		if (mesh?.filters) {
+			const list = mesh.filters.filter((f) => f !== e.filter && !f?.fbuiZero);
+			mesh.filters = list.length ? list : null;
+		}
+	}
+
+	#run(on) {
+		const ticker = canvas?.app?.ticker;
+		if (!ticker) return;
+		if (on && !this._ticking) {
+			ticker.add(this._tick);
+			this._ticking = true;
+		} else if (!on && this._ticking) {
+			ticker.remove(this._tick);
+			this._ticking = false;
+		}
+	}
+
+	#tick() {
+		const p = TurnGlow.cfg.profiles.zero;
+		if (!p) return;
+		const dt = (canvas.app.ticker.deltaMS ?? 16) / 1000;
+		this.t += dt;
+		for (const e of this.on.values()) {
+			if (!e.token || e.token.destroyed) continue;
+			e.age += dt;
+			driveGlow(e.filter, e.token, p, this.t, e.age, 0.55);
+		}
+	}
+}
+
+export const ZeroGlow = new ZeroGlowController();
 
 /* ------------------------------------------------------------------ */
 /*  Settings window                                                    */
@@ -390,11 +510,13 @@ export class TurnGlowConfig extends ApplicationV2 {
 				<label class="row"><input type="checkbox" name="enabled" ${cfg.enabled ? 'checked' : ''}> Turn glow on</label>
 				<label class="row"><input type="checkbox" name="hideMarker" ${cfg.hideMarker ? 'checked' : ''}> Hide Foundry’s turn marker while a token glows</label>
 				<label class="row">Bosses are <select name="boss">${opt(BOSS_RULES, cfg.boss)}</select></label>
+				<label class="row"><input type="checkbox" name="zeroIdle" ${cfg.zeroIdle ? 'checked' : ''}> Heroes with a ready Zero Power keep a dimmer glow between turns</label>
 			</div>
 			<table class="gt">
 				<thead><tr><th></th><th>Style</th><th>Color</th><th>Strength</th><th>Size</th><th>Speed</th><th></th></tr></thead>
 				<tbody>${rows}</tbody>
 			</table>
+			<p class="note">Zero Power ready: a hero whose Zero Power clock is full takes their turn in this look instead of the hero one.</p>
 			<p class="note">Soft: a gentle steady glow. Pulse: breathes in and out. Energy aura: a rippling aura with a bright core. Flicker: unstable, like it might give out.</p>
 			<div class="foot"><button type="button" class="btn" data-action="reset">Defaults</button><span class="sp"></span><button type="submit" class="btn gold">Save</button></div>`;
 		div.querySelectorAll('input[type=range]').forEach((r) => r.addEventListener('input', () => (r.nextElementSibling.textContent = Number(r.value).toFixed(1))));
@@ -412,7 +534,7 @@ export class TurnGlowConfig extends ApplicationV2 {
 
 	static #expand(flat) {
 		const o = foundry.utils.expandObject(flat);
-		return glowConfig({ ...o, enabled: !!o.enabled, hideMarker: !!o.hideMarker });
+		return glowConfig({ ...o, enabled: !!o.enabled, hideMarker: !!o.hideMarker, zeroIdle: !!o.zeroIdle });
 	}
 
 	static async #onSubmit(event, form, formData) {

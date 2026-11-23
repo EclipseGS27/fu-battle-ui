@@ -49,7 +49,9 @@ export function zeroPower(actor) {
 	const z = items.find((i) => i.type === 'optionalFeature' && i.system?.optionalType === 'projectfu.zeroPower');
 	const p = z?.system?.data?.progress;
 	if (!z || !p) return null;
-	return { name: z.name, current: num(p.current), max: Math.max(1, num(p.max, 6)), item: z };
+	const current = num(p.current);
+	const max = Math.max(1, num(p.max, 6));
+	return { name: z.name, current, max, ready: current >= max, item: z };
 }
 
 export function npcInfo(actor) {
@@ -533,6 +535,8 @@ export function skillRows(actor) {
 	return itemsOf(actor)
 		.filter((i) => SKILL_TYPES.includes(i.type))
 		.filter((i) => i.type !== 'skill' || num(i.system?.level?.value) > 0)
+		// Zero Powers get their own button in the command menu, shown once the clock is full
+		.filter((i) => !(i.type === 'optionalFeature' && i.system?.optionalType === 'projectfu.zeroPower'))
 		.sort((a, b) => SKILL_TYPES.indexOf(a.type) - SKILL_TYPES.indexOf(b.type) || a.name.localeCompare(b.name))
 		.map((i) => {
 			let meta = '';

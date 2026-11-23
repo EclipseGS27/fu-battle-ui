@@ -1,13 +1,13 @@
 import { AFFINITY_TYPES, AFF_WORD, MODULE_ID, SOCKET, animationNumbers, cap, setting } from './util.mjs';
 import { Clocks } from './clocks.mjs';
 import { BattleUI } from './hud.mjs';
-import { loadBasicConsumables } from './points.mjs';
+import { loadBasicConsumables, onReviveUpdate, trackRevive } from './points.mjs';
 import { registerSfxSettings, sfx } from './sfx.mjs';
 import { FRIENDLY, actorKey, combatantsOf } from './model.mjs';
 import { sheetData } from './sheet.mjs';
 import { registerCheckDialog } from './check-dialog.mjs';
 import { registerBrowserStyle } from './browser-style.mjs';
-import { GLOW_DEFAULTS, TurnGlow, TurnGlowConfig } from './glow.mjs';
+import { GLOW_DEFAULTS, TurnGlow, TurnGlowConfig, ZeroGlow } from './glow.mjs';
 import { registerOpportunityMenu } from './opportunity.mjs';
 import { registerConditionTips } from './conditions.mjs';
 import { registerProfileStyle } from './npc-profile.mjs';
@@ -132,6 +132,7 @@ Hooks.once('ready', async () => {
 	await loadBasicConsumables();
 	ui2.mount();
 	TurnGlow.init();
+	ZeroGlow.init();
 	registerOpportunityMenu();
 	for (const c of game.combats ?? []) {
 		ui2.lastRound.set(c.id, c.round);
@@ -200,6 +201,8 @@ function onSocket(msg) {
 		case 'clockRequest':
 			if (game.users.activeGM?.isSelf) ui2.addPending(msg.payload);
 			return;
+		case 'revive':
+			return trackRevive(msg.uuids);
 		case 'notify':
 			if (msg.userId === game.user.id) ui.notifications.info(msg.text);
 			return;
@@ -224,29 +227,46 @@ Hooks.on('updateScene', (scene, changed) => {
 Hooks.on('createCombat', rerender);
 Hooks.on('deleteCombat', (combat) => {
 	ui2.lastRound.delete(combat.id);
+	lastActor.delete(combat.id);
+	if (setting('clearTargetsOnTurn') !== false) clearTargets();
 	rerender();
 });
 Hooks.on('combatStart', () => {
 	if (setting('autoOpen')) ui2.open();
 });
 
-/** Each client drops its own targets when the acting combatant changes, so the last turn's targets don't carry over */
+/**
+ * Each client drops its own targets when the acting combatant changes, so the last turn's targets don't carry over.
+ * The battle screen's own remembered target goes too: Attack, Hinder and Study re-target it when nothing is
+ * targeted, which used to bring last turn's target straight back.
+ */
 function clearTargets() {
+	ui2.state.target = null;
 	if (!game.user.targets?.size) return;
 	try {
 		if (canvas?.tokens?.setTargets) canvas.tokens.setTargets([]);
-		else for (const t of [...game.user.targets]) t.setTarget(false, { releaseOthers: false, groupSelection: true });
 	} catch (err) {
 		console.warn(`${MODULE_ID} | could not clear targets`, err);
+	}
+	// older cores, or a token the layer call missed (hidden, on another scene): release them one by one
+	for (const t of [...(game.user.targets ?? [])]) {
+		try {
+			t.setTarget(false, { releaseOthers: false, groupSelection: true });
+		} catch (err) {
+			console.warn(`${MODULE_ID} | could not clear a target`, err);
+		}
 	}
 }
 
 const lastActor = new Map();
 Hooks.on('updateCombat', (combat, changed) => {
+	// Project FU ends a turn by setting system.activeCombatant to null and starts one by setting it to the combatant,
+	// so both the end and the start of every turn land here (an Elite acting twice in a row included)
 	const turnChanged = foundry.utils.hasProperty(changed, 'system.activeCombatant') || 'turn' in changed || 'round' in changed;
 	if (turnChanged && combat === game.combat) {
-		const now = combat.combatant?.id ?? null;
-		if (lastActor.get(combat.id) !== now) {
+		const now = combat.system?.activeCombatant ?? combat.combatant?.id ?? null;
+		const ended = foundry.utils.hasProperty(changed, 'system.activeCombatant') && changed.system.activeCombatant == null;
+		if (lastActor.get(combat.id) !== now || ended) {
 			lastActor.set(combat.id, now);
 			if (setting('clearTargetsOnTurn') !== false) clearTargets();
 		}
@@ -313,6 +333,11 @@ Hooks.on('canvasReady', () => {
 	};
 	wrapped.fbuiWrapped = true;
 	iface.createScrollingText = wrapped;
+});
+
+/* GM: a creature revived by a Phoenix Down is no longer defeated once it has HP again */
+Hooks.on('updateActor', (actor) => {
+	if (game.users.activeGM?.isSelf) onReviveUpdate(actor);
 });
 
 /* Owners clear their Surrender/Sacrifice choice once the character is back on their feet */
