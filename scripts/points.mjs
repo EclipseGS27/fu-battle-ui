@@ -1,4 +1,5 @@
-import { MODULE_ID, SOCKET, esc } from './util.mjs';
+import { MODULE_ID, SOCKET, esc, setting } from './util.mjs';
+import { pickElement } from './automation.mjs';
 import { itemHelp, resources } from './model.mjs';
 import { sfx } from './sfx.mjs';
 
@@ -202,6 +203,21 @@ export async function useConsumable(actor, id) {
 		const fallen = reviveTargets();
 		if (!fallen.length) return sfx('error'), ui.notifications.warn(`Target a creature at 0 HP to use ${item.name}.`);
 		announceRevive(fallen);
+	}
+	// Project FU 4.x adds one damage action per element and its event can't remove them, so ask here first and roll
+	// the item with just that element (5.x asks through its consumable event instead)
+	const types = [...(item.system?.damage?.types ?? [])];
+	const fu4 = !foundry.utils.isNewerVersion(game.system?.version ?? '0', '4.99.99');
+	if (fu4 && setting('pickElement') && item.system?.damage?.enabled && types.length > 1) {
+		const choice = await pickElement(item, types);
+		if (choice && types.includes(choice)) {
+			item.system.damage.types = new Set([choice]);
+			try {
+				return await item.roll();
+			} finally {
+				item.reset?.();
+			}
+		}
 	}
 	return item.roll();
 }

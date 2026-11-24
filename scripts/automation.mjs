@@ -1,4 +1,4 @@
-import { MODULE_ID, setting } from './util.mjs';
+import { MODULE_ID, onFuEvent, setting } from './util.mjs';
 
 /**
  * Two conveniences on top of Project FU:
@@ -67,7 +67,7 @@ function autoHeal(message, html) {
 }
 
 /** Pick one damage type for a consumable that offers several */
-async function pickElement(item, types) {
+export async function pickElement(item, types) {
 	const D = foundry.applications.api.DialogV2;
 	const label = (t) => game.i18n.localize(CONFIG.FU?.damageTypes?.[t] ?? t) || t;
 	return D.wait({
@@ -86,14 +86,17 @@ function onConsumable(event, register) {
 	if (!setting('pickElement')) return;
 	const damage = event?.actions?.damage;
 	const types = damage ? Object.keys(damage) : [];
-	if (types.length < 2 || typeof register !== 'function') return;
-	register(async () => {
+	if (types.length < 2) return undefined;
+	const pick = async () => {
 		const item = event.consumable?.parent ?? null;
 		const choice = await pickElement(item, types);
 		// closed without choosing: leave every type on the card, as before
 		if (!choice || !damage[choice]) return;
 		for (const t of types) if (t !== choice) delete damage[t];
-	});
+	};
+	// Project FU 5.x: register a callback it awaits; 4.x: its AsyncHooks await this listener itself
+	if (typeof register === 'function') return void register(pick);
+	return pick();
 }
 
 export function registerAutomation(reg) {
@@ -117,5 +120,5 @@ export function registerAutomation(reg) {
 	Hooks.once('ready', syncSystemDamage);
 	Hooks.once('ready', syncSystemSpend);
 	Hooks.on('renderChatMessageHTML', autoHeal);
-	Hooks.on('projectfu.events.consumables.create', onConsumable);
+	onFuEvent('projectfu.events.consumables.create', onConsumable);
 }
