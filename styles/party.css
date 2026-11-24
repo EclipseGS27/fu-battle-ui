@@ -398,3 +398,7 @@
 .application:is(.fbui-party, .fbui-profile) .fbp-asplayer button { all: unset; box-sizing: border-box; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(159, 208, 255, 0.35); background: rgba(90, 169, 255, 0.1); color: #eef3ff; font-size: 12px; letter-spacing: 0.04em; }
 .application:is(.fbui-party, .fbui-profile) .fbp-asplayer button:hover { border-color: #f2c45a; color: #fff3d1; }
 .application:is(.fbui-party, .fbui-profile) .fbp-asplayer button.on { border-color: #f2c45a; background: rgba(242, 196, 90, 0.18); color: #fff3d1; }
+
+/* Project FU list fields (party tags) on the dark sheet */
+.fbui-sheet .fu-form__array { background: rgba(255, 255, 255, 0.04); color: inherit; border-color: rgba(159, 208, 255, 0.2); }
+.fbui-sheet .fu-form__array input { color: inherit; background: rgba(0, 0, 0, 0.25); }

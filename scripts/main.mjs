@@ -188,16 +188,19 @@ function onDamage(ev) {
 /*  Socket                                                             */
 /* ------------------------------------------------------------------ */
 
-function onSocket(msg) {
+function onSocket(msg, userId) {
 	if (!msg?.type) return;
 	switch (msg.type) {
 		case 'banner':
 			return ui2.banner(msg.data);
 		case 'float':
 			return handleFloat(msg.data);
-		case 'clockApply':
-			if (game.users.activeGM?.isSelf) Clocks.apply(msg.payload);
+		case 'clockApply': {
+			// players may only tick clocks, and only when the GM allows it; anything else goes through approval
+			const fromGM = !!game.users.get(userId)?.isGM;
+			if (game.users.activeGM?.isSelf && (fromGM || (setting('playersFillClocks') && msg.payload?.op === 'tick'))) Clocks.apply(msg.payload);
 			return;
+		}
 		case 'clockRequest':
 			if (game.users.activeGM?.isSelf) ui2.addPending(msg.payload);
 			return;
