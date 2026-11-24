@@ -46,7 +46,7 @@ export function classLine(actor) {
 
 export function zeroPower(actor) {
 	const items = actor?.items?.contents ?? [...(actor?.items ?? [])];
-	const z = items.find((i) => i.type === 'optionalFeature' && i.system?.optionalType === 'projectfu.zeroPower');
+	const z = items.find((i) => i.type === 'optionalFeature' && (i.system?.data?.type ?? i.system?.optionalType) === 'projectfu.zeroPower');
 	const p = z?.system?.data?.progress;
 	if (!z || !p) return null;
 	const current = num(p.current);
@@ -151,9 +151,9 @@ export const actorKey = (actor) => (actor?.resolveUuid?.() ?? actor?.uuid ?? '')
 
 function partyEntry(actor) {
 	try {
-		const id = game.settings.get('projectfu', 'activeParty');
-		if (!id) return null;
-		const party = fromUuidSync(`Actor.${id}`);
+		const v = game.settings.get('projectfu', 'optionActiveParty');
+		if (!v) return null;
+		const party = v instanceof Actor ? v : game.actors.get(v);
 		const uuid = actor.resolveUuid?.() ?? actor.uuid;
 		return party?.system?.adversaries?.find?.((a) => a.uuid === uuid) ?? null;
 	} catch {
@@ -536,14 +536,14 @@ export function skillRows(actor) {
 		.filter((i) => SKILL_TYPES.includes(i.type))
 		.filter((i) => i.type !== 'skill' || num(i.system?.level?.value) > 0)
 		// Zero Powers get their own button in the command menu, shown once the clock is full
-		.filter((i) => !(i.type === 'optionalFeature' && i.system?.optionalType === 'projectfu.zeroPower'))
+		.filter((i) => !(i.type === 'optionalFeature' && (i.system?.data?.type ?? i.system?.optionalType) === 'projectfu.zeroPower'))
 		.sort((a, b) => SKILL_TYPES.indexOf(a.type) - SKILL_TYPES.indexOf(b.type) || a.name.localeCompare(b.name))
 		.map((i) => {
 			let meta = '';
 			if (i.type === 'skill') meta = `SL ${num(i.system?.level?.value)}`;
 			else if (i.type === 'heroic') meta = 'heroic';
 			else if (i.type === 'classFeature') meta = String(i.system?.featureType ?? '').replace(/^projectfu\./, '');
-			else if (i.type === 'optionalFeature') meta = String(i.system?.optionalType ?? '').replace(/^projectfu\./, '').replace(/([A-Z])/g, ' $1').toLowerCase();
+			else if (i.type === 'optionalFeature') meta = String((i.system?.data?.type ?? i.system?.optionalType) ?? '').replace(/^projectfu\./, '').replace(/([A-Z])/g, ' $1').toLowerCase();
 			return { id: i.id, label: i.name, meta, disabled: false, help: itemHelp(i) };
 		});
 }
